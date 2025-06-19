@@ -1,7 +1,7 @@
-import { SignIn } from "./pages/signin";
+import { Router } from "./router/routes";
 
 function App() {
-  return <SignIn />;
+  return <Router />;
 }
 
 export default App;

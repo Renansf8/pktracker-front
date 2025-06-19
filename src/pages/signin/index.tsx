@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router";
 
 export function SignIn() {
   return (
     <div className="flex justify-center items-center h-screen">
-      <Card className="mx-auto max-w-sm w-full bg-background text-text border-input-border">
+      <Card className="mx-auto max-w-sm w-full bg-background text-text-primary border-input-border">
         <CardHeader>
           <CardTitle>Faça login para continuar</CardTitle>
           <CardDescription className="text-text-secondary">
@@ -35,12 +36,12 @@ export function SignIn() {
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Senha</Label>
-                  <a
+                  {/* <a
                     href="#"
                     className="ml-auto inline-block text-sm text-text-secondary"
                   >
                     Esqueceu sua senha?
-                  </a>
+                  </a> */}
                 </div>
                 <Input
                   id="password"
@@ -57,9 +58,9 @@ export function SignIn() {
             </div>
             <div className="mt-4 text-center text-sm font-bold">
               Não tem uma conta?{" "}
-              <a href="#" className=" text-text-secondary">
+              <Link to="/signup" className=" text-text-secondary">
                 Criar conta
-              </a>
+              </Link>
             </div>
           </form>
         </CardContent>
