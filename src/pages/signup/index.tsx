@@ -1,3 +1,11 @@
+import { useNavigate, Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+
+import { useRegister } from "@/services/hooks/useAuth";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,16 +17,12 @@ import {
   FormControl,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Link } from "react-router";
 
 const schema = z.object({
-  nome: z.string().min(1, { message: "Nome é obrigatório" }),
-  sobrenome: z.string().min(1, { message: "Sobrenome é obrigatório" }),
+  name: z.string().min(1, { message: "Nome é obrigatório" }),
+  lastName: z.string().min(1, { message: "Sobrenome é obrigatório" }),
   email: z.string().email({ message: "Email é obrigatório" }),
-  senha: z
+  password: z
     .string()
     .min(8, { message: "Senha deve ter pelo menos 8 caracteres" }),
 });
@@ -26,18 +30,31 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function SignUp() {
+  const { mutate, isPending } = useRegister();
+  const navigate = useNavigate();
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      nome: "",
-      sobrenome: "",
+      name: "",
+      lastName: "",
       email: "",
-      senha: "",
+      password: "",
     },
   });
 
   const handleSubmit = (data: FormData) => {
-    console.log(data);
+    mutate(data, {
+      onSuccess: () => {
+        toast.success("Conta criada com sucesso");
+        navigate("/signin");
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (error: any) => {
+        // Handle error (show toast, etc.)
+        console.error("Registration failed:", error);
+        toast.error(`Erro: ${error.response?.data.message}`);
+      },
+    });
   };
 
   return (
@@ -52,7 +69,7 @@ export function SignUp() {
               <div className="flex flex-col gap-6">
                 <FormField
                   control={form.control}
-                  name="nome"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nome</FormLabel>
@@ -69,7 +86,7 @@ export function SignUp() {
                 />
                 <FormField
                   control={form.control}
-                  name="sobrenome"
+                  name="lastName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Sobrenome</FormLabel>
@@ -103,7 +120,7 @@ export function SignUp() {
                 />
                 <FormField
                   control={form.control}
-                  name="senha"
+                  name="password"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Senha</FormLabel>
@@ -121,7 +138,7 @@ export function SignUp() {
                 />
                 <div className="flex flex-col gap-3">
                   <Button type="submit" className="w-full p-0 bg-black">
-                    Login
+                    {isPending ? "Criando..." : "Criar"}
                   </Button>
                 </div>
               </div>
