@@ -1,8 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
 import { API_ENDPOINTS } from "../api/endpoints";
+import { useAuth } from "@/contexts/AuthContext";
 // import { authQueryKeys } from '../queries/auth';
-import type { CreateUserRequest, LoginResponse } from "../api/types";
+import type {
+  CreateUserRequest,
+  LoginRequest,
+  LoginResponse,
+} from "../api/types";
 
 export const useRegister = () => {
   // const queryClient = useQueryClient();
@@ -16,6 +21,23 @@ export const useRegister = () => {
     // },
     onSuccess: (data) => {
       console.log(data);
+    },
+  });
+};
+
+export const useLogin = () => {
+  const { login } = useAuth();
+
+  return useMutation({
+    mutationFn: async (loginData: LoginRequest) => {
+      const rawResponse = await apiClient.post<LoginResponse>(
+        API_ENDPOINTS.AUTH.LOGIN,
+        loginData
+      );
+      return rawResponse.data; // { accessToken }
+    },
+    onSuccess: (data) => {
+      login(data.accessToken); // Store token
     },
   });
 };

@@ -1,8 +1,4 @@
-import axios, {
-  type AxiosInstance,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-} from "axios";
+import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
 interface ApiResponse<T = unknown> {
   data: T;
@@ -39,7 +35,7 @@ const createApiClient = (): AxiosInstance => {
       if (error.response?.status === 401) {
         // Handle unauthorized access
         localStorage.removeItem("auth_token");
-        window.location.href = "/signin";
+        // window.location.href = "/signin";
       }
       return Promise.reject(error);
     }
@@ -50,46 +46,6 @@ const createApiClient = (): AxiosInstance => {
 
 // Create the client instance
 const apiClient = createApiClient();
-
-// API methods
-export const api = {
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await apiClient.get<ApiResponse<T>>(url, config);
-    return response.data.data;
-  },
-
-  async post<T>(
-    url: string,
-    data?: unknown,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
-    const response = await apiClient.post<ApiResponse<T>>(url, data, config);
-    return response.data.data;
-  },
-
-  async put<T>(
-    url: string,
-    data?: unknown,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
-    const response = await apiClient.put<ApiResponse<T>>(url, data, config);
-    return response.data.data;
-  },
-
-  async patch<T>(
-    url: string,
-    data?: unknown,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
-    const response = await apiClient.patch<ApiResponse<T>>(url, data, config);
-    return response.data.data;
-  },
-
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await apiClient.delete<ApiResponse<T>>(url, config);
-    return response.data.data;
-  },
-};
 
 // Export the raw client if needed for advanced use cases
 export { apiClient };

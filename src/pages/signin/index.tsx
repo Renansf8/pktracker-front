@@ -7,10 +7,56 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import {
+  Form,
+  FormField,
+  FormMessage,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "@/services/hooks/useAuth";
+import { toast } from "sonner";
+
+const schema = z.object({
+  email: z.string().email({ message: "Email é obrigatório" }),
+  password: z
+    .string()
+    .min(8, { message: "Senha deve ter pelo menos 8 caracteres" }),
+});
+
+type FormData = z.infer<typeof schema>;
 
 export function SignIn() {
+  const navigate = useNavigate();
+
+  const { mutate: login } = useLogin();
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (data: FormData) => {
+    login(data, {
+      onSuccess: () => {
+        navigate("/");
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (error: any) => {
+        // Handle error (show toast, etc.)
+        console.error("Login failed:", error);
+        toast.error(`Erro: ${error.response?.data.message}`);
+      },
+    });
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <Card className="mx-auto max-w-sm w-full bg-background text-text-primary border-input-border">
@@ -21,48 +67,58 @@ export function SignIn() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  className="border-input-border"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="flex flex-col gap-6">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="border-input-border"
+                          placeholder="m@exemplo.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Senha</Label>
-                  {/* <a
-                    href="#"
-                    className="ml-auto inline-block text-sm text-text-secondary"
-                  >
-                    Esqueceu sua senha?
-                  </a> */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Senha</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="border-input-border"
+                          type="password"
+                          placeholder="********"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-col gap-3">
+                  <Button type="submit" className="w-full p-0 bg-black">
+                    Login
+                  </Button>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  className="border-input-border"
-                />
               </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full p-0 bg-black">
-                  Login
-                </Button>
+              <div className="mt-4 text-center text-sm font-bold">
+                Não tem uma conta?{" "}
+                <Link to="/signup" className=" text-text-secondary">
+                  Criar conta
+                </Link>
               </div>
-            </div>
-            <div className="mt-4 text-center text-sm font-bold">
-              Não tem uma conta?{" "}
-              <Link to="/signup" className=" text-text-secondary">
-                Criar conta
-              </Link>
-            </div>
-          </form>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

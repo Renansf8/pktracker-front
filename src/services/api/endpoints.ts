@@ -9,5 +9,6 @@ export const API_ENDPOINTS = {
     PROFILE: "/users/profile",
     UPDATE: "/users/profile",
     DELETE: "/users/profile",
+    ME: "/users/me",
   },
 } as const;

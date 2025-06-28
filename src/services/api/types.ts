@@ -1,10 +1,6 @@
 export interface User {
-  id: string;
   name: string;
-  lastName: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface CreateUserRequest {
@@ -16,12 +12,11 @@ export interface CreateUserRequest {
 
 export interface LoginRequest {
   email: string;
-  senha: string;
+  password: string;
 }
 
 export interface LoginResponse {
-  user: User;
-  token: string;
+  accessToken: string;
 }
 
 // Generic API response
