@@ -6,6 +6,7 @@
 @theme {
   --color-background: #1a1a1a;
   --color-background-secondary: #adadad;
+  --color-background-tertiary: #363636;
   --color-success: #0ad90a;
   --color-error: #ff0000;
   --color-text-primary: #ffffff;

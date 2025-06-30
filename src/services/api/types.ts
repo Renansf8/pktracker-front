@@ -1,6 +1,16 @@
 export interface User {
   name: string;
   email: string;
+  bank: Bank;
+}
+
+interface Bank {
+  id: string;
+  userId: string;
+  bank: number;
+  totalDeposit: number;
+  totalWithdrawal: number;
+  profit: number;
 }
 
 export interface CreateUserRequest {
