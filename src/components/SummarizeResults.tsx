@@ -126,6 +126,7 @@ export const SummarizeResults = () => {
             totalProfit={totalProfit}
             totalWinnings={totalWinnings}
             abi={abi}
+            totalBuyIn={totalBuyIn}
           />
         </TabsContent>
         <TabsContent value="mes">
@@ -135,6 +136,7 @@ export const SummarizeResults = () => {
             totalProfit={monthlyTotalProfit}
             totalWinnings={monthlyTotalWinnings}
             abi={monthlyAbi}
+            totalBuyIn={monthlyTotalBuyIn}
           />
         </TabsContent>
       </Tabs>

@@ -1,11 +1,14 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { useGetUser } from "@/services/hooks/useGetUser";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 
 export const NavBar = () => {
-  const { data: user } = useGetUser();
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
   const handleLogout = () => {
     logout();
     navigate("/signin");
@@ -17,12 +20,39 @@ export const NavBar = () => {
         <p className="text-2xl font-bold">PKTracker</p>
       </div>
       <div className="flex gap-8">
-        <Link to="/">Dashboard</Link>
-        <Link to="/tournaments">Torneios</Link>
-        <Link to="/stats">Estatísticas</Link>
-        <Link to="/profile">{user?.name}</Link>
-
-        <Link className="p-0" to="/signin" onClick={handleLogout}>
+        <Link
+          to="/"
+          className={`pb-1 ${
+            isActive("/") ? "border-b-2 border-purple-500" : ""
+          }`}
+        >
+          Dashboard
+        </Link>
+        <Link
+          to="/tournaments"
+          className={`pb-1 ${
+            isActive("/tournaments") ? "border-b-2 border-purple-500" : ""
+          }`}
+        >
+          Torneios
+        </Link>
+        <Link
+          to="/stats"
+          className={`pb-1 ${
+            isActive("/stats") ? "border-b-2 border-purple-500" : ""
+          }`}
+        >
+          Estatísticas
+        </Link>
+        <Link
+          to="/profile"
+          className={`pb-1 ${
+            isActive("/profile") ? "border-b-2 border-purple-500" : ""
+          }`}
+        >
+          Perfil
+        </Link>
+        <Link to="/signin" onClick={handleLogout} className="p-0">
           Sair
         </Link>
       </div>

@@ -4,12 +4,14 @@ interface ActivityCardProps {
   title: string;
   value: number;
   isValuePositiveOrNegative?: boolean;
+  isCurrency?: boolean;
 }
 
 export const ActivityCard = ({
   title,
   value,
   isValuePositiveOrNegative,
+  isCurrency,
 }: ActivityCardProps) => {
   return (
     <Card className="bg-background-tertiary border-input-border p-4 w-full">
@@ -20,8 +22,10 @@ export const ActivityCard = ({
             value > 0 ? "text-green-500" : "text-red-500"
           }`}
         >
-          {value}
+          $ {value}
         </p>
+      ) : isCurrency ? (
+        <p className="text-2xl text-text-primary">$ {value}</p>
       ) : (
         <p className="text-2xl text-text-primary">{value}</p>
       )}

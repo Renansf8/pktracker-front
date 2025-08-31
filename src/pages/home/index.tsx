@@ -41,19 +41,22 @@ export const Home = () => {
     return <div>Loading...</div>;
   }
 
+  console.log("totalWinnings", totalWinnings);
+
   return (
     <div>
       <NavBar />
       <div className="flex flex-col justify-center w-[80%] mx-auto mt-8">
         <p className="text-text-primary">Fala, {user?.name} </p>
         <p className="text-text-primary">
-          Banca: <b>{user?.bank.bank.toFixed(2)} U$</b>
+          Banca: <b>$ {user?.bank.bank.toFixed(2)}</b>
         </p>
         <SummarizeCards
           totalTournaments={totalTournaments}
           totalProfit={totalProfit}
           totalWinnings={totalWinnings}
           abi={abi}
+          totalBuyIn={totalBuyIn}
         />
         <SummarizeResults />
       </div>

@@ -65,9 +65,11 @@
 
 a {
   font-weight: 500;
+  color: #ffffff;
+  transition: all 0.25s;
 }
 a:hover {
-  text-decoration: underline;
+  color: #bdbdbd;
 }
 
 body {
