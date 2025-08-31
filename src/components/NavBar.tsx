@@ -18,8 +18,8 @@ export const NavBar = () => {
       </div>
       <div className="flex gap-8">
         <Link to="/">Dashboard</Link>
-        <Link to="/tournaments">Tournaments</Link>
-        <Link to="/stats">Stats</Link>
+        <Link to="/tournaments">Torneios</Link>
+        <Link to="/stats">Estatísticas</Link>
         <Link to="/profile">{user?.name}</Link>
 
         <Link className="p-0" to="/signin" onClick={handleLogout}>

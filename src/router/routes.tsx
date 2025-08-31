@@ -4,6 +4,7 @@ import { SignUp } from "../pages/signup";
 import { Home } from "@/pages/home";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
+import { Tournaments } from "@/pages/tournaments";
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -48,6 +49,14 @@ export const Router = () => {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tournaments"
+          element={
+            <ProtectedRoute>
+              <Tournaments />
             </ProtectedRoute>
           }
         />

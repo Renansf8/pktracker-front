@@ -11,4 +11,8 @@ export const API_ENDPOINTS = {
     DELETE: "/users/profile",
     ME: "/users/me",
   },
+  TOURNAMENTS: {
+    GET_ALL: "/tournaments",
+    CREATE: "/tournaments",
+  },
 } as const;
