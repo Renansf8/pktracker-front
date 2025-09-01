@@ -10,12 +10,12 @@ export const NavBar = () => {
     return location.pathname === path;
   };
   const handleLogout = () => {
-    logout();
     navigate("/signin");
+    logout();
   };
 
   return (
-    <div className="flex justify-between items-center p-4 text-text-primary">
+    <div className="flex justify-between w-[90%] mx-auto items-center py-4 text-text-primary">
       <div>
         <p className="text-2xl font-bold">PKTracker</p>
       </div>

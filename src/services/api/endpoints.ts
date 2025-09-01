@@ -14,5 +14,9 @@ export const API_ENDPOINTS = {
   TOURNAMENTS: {
     GET_ALL: "/tournaments",
     CREATE: "/tournaments",
+    DELETE: (id: string) => `/tournaments/${id}`,
+  },
+  CURRENCIES: {
+    GET_ALL: "https://api.fxratesapi.com/latest",
   },
 } as const;

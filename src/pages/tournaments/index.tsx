@@ -11,13 +11,17 @@ import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { TournamentForm } from "./components/tournamentForm";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
+import { Edit, Trash } from "lucide-react";
+import { useState } from "react";
+import { DeleteTournamentModal } from "@/components/deleteTournamentModal";
 
 export const Tournaments = () => {
-  const { getAllTournaments } = useTournaments();
+  const [selectedTournamentId, setSelectedTournamentId] = useState<
+    string | null
+  >(null);
+  const { getAllTournaments, deleteTournament } = useTournaments();
 
   const { data: tournaments, isLoading } = getAllTournaments;
-
-  console.log("tournaments", tournaments);
 
   if (isLoading) {
     return <div>Carregando...</div>;
@@ -54,6 +58,9 @@ export const Tournaments = () => {
               </TableHead>
               <TableHead className="text-text-primary text-center">
                 Profit
+              </TableHead>
+              <TableHead className="text-text-primary text-center">
+                Ações
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -95,11 +102,35 @@ export const Tournaments = () => {
                   >
                     {tournament.profit}
                   </TableCell>
+                  <TableCell className="text-text-primary text-center flex gap-2 justify-around">
+                    <div className="cursor-pointer">
+                      <Edit className="size-4" />
+                    </div>
+                    <div className="cursor-pointer">
+                      <Trash
+                        className="size-4"
+                        color="red"
+                        onClick={() =>
+                          setSelectedTournamentId(tournament.id || null)
+                        }
+                      />
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
+
+        <DeleteTournamentModal
+          isOpen={selectedTournamentId !== null}
+          onRequestClose={() => setSelectedTournamentId(null)}
+          onDelete={() => {
+            if (selectedTournamentId) {
+              deleteTournament.mutate(selectedTournamentId);
+            }
+          }}
+        />
       </div>
     </div>
   );

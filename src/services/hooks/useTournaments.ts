@@ -24,8 +24,22 @@ export const useTournaments = () => {
     },
   });
 
+  const deleteTournament = useMutation({
+    mutationFn: (id: string) =>
+      apiClient.delete(API_ENDPOINTS.TOURNAMENTS.DELETE(id)),
+    onSuccess: () => {
+      getAllTournaments.refetch();
+      refetch();
+      toast.success("Torneio deletado com sucesso");
+    },
+    onError: () => {
+      toast.error("Erro ao deletar torneio");
+    },
+  });
+
   return {
     getAllTournaments,
     createTournament,
+    deleteTournament,
   };
 };

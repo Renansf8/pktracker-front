@@ -74,7 +74,6 @@ export const TournamentForm = () => {
 
   return (
     <div className="flex flex-col gap-4 mt-4">
-      <p className="text-text-primary text-xl font-bold">Adicionar Torneio</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex gap-4 text-text-primary">
@@ -240,12 +239,14 @@ export const TournamentForm = () => {
                 </div>
               )}
             />
-            <Button
-              type="submit"
-              className="p-0 bg-success/90 hover:bg-success/80 mt-3.5"
-            >
-              Adicionar
-            </Button>
+            <div className="flex items-center h-[80px]">
+              <Button
+                type="submit"
+                className="p-0 bg-success/90 hover:bg-success/80 mb-2"
+              >
+                Adicionar
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

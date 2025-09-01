@@ -1,4 +1,6 @@
+import { convertUsdToBrl } from "@/utils/currencyConvert";
 import { ActivityCard } from "./ActivityCard";
+import { useCurrency } from "@/services/hooks/useCurrency";
 
 interface SummarizeCardsProps {
   totalTournaments: number;
@@ -15,6 +17,7 @@ export const SummarizeCards = ({
   abi,
   totalBuyIn,
 }: SummarizeCardsProps) => {
+  const { currencies } = useCurrency();
   return (
     <div className="flex gap-4 mt-4 w-full justify-between">
       <ActivityCard title="Torneios jogados" value={totalTournaments} />
@@ -33,6 +36,11 @@ export const SummarizeCards = ({
         title="Lucro total"
         value={Number(totalWinnings?.toFixed(2))}
         isValuePositiveOrNegative
+        convertedValue={
+          currencies?.data?.rates?.BRL !== undefined
+            ? convertUsdToBrl(currencies.data.rates.BRL * totalWinnings)
+            : "0.00"
+        }
       />
     </div>
   );
