@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
     ME: "/users/me",
   },
   TOURNAMENTS: {
-    GET_ALL: "/tournaments",
+    GET_ALL: (platform: string) => `/tournaments?platform=${platform}`,
     CREATE: "/tournaments",
     DELETE: (id: string) => `/tournaments/${id}`,
   },

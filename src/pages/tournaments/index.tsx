@@ -11,17 +11,28 @@ import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { TournamentForm } from "./components/tournamentForm";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
-import { Edit, Trash } from "lucide-react";
+import { Edit, Trash, FilterIcon } from "lucide-react";
 import { useState } from "react";
-import { DeleteTournamentModal } from "@/components/deleteTournamentModal";
+import { DeleteTournamentModal } from "./components/deleteTournamentModal";
+import { FilterTournaments } from "./components/filterTournaments";
+import { Button } from "@/components/ui/button";
 
 export const Tournaments = () => {
   const [selectedTournamentId, setSelectedTournamentId] = useState<
     string | null
   >(null);
-  const { getAllTournaments, deleteTournament } = useTournaments();
+  const [platform, setPlatform] = useState("");
+  const [isOpenFilter, setIsOpenFilter] = useState(false);
+  const { getAllTournaments, deleteTournament } = useTournaments(platform);
 
   const { data: tournaments, isLoading } = getAllTournaments;
+
+  const clearFilter = async () => {
+    await setPlatform("");
+    setTimeout(() => {
+      getAllTournaments.refetch();
+    }, 0);
+  };
 
   if (isLoading) {
     return <div>Carregando...</div>;
@@ -33,7 +44,25 @@ export const Tournaments = () => {
       <div className="flex flex-col justify-center w-[80%] mx-auto mt-8">
         <h2 className="text-text-primary text-2xl font-bold">Torneios</h2>
 
-        <TournamentForm />
+        <TournamentForm platform={platform} />
+
+        <div className="flex justify-end mb-4">
+          <Button
+            onClick={() => setIsOpenFilter(!isOpenFilter)}
+            className="flex w-[104px] items-center gap-2 text-text-primary bg-transparent border-[2px] !border-white "
+          >
+            Filtros
+            <FilterIcon className="size-4" color="white" />
+          </Button>
+        </div>
+
+        {isOpenFilter && (
+          <FilterTournaments
+            setPlatform={setPlatform}
+            clearFilter={clearFilter}
+            selectedPlatform={platform}
+          />
+        )}
 
         <Table className="mt-8">
           <TableHeader>
@@ -100,7 +129,7 @@ export const Tournaments = () => {
                       tournament.profit! > 0 ? "text-green-500" : "text-red-500"
                     }  text-center`}
                   >
-                    {tournament.profit}
+                    {tournament.profit?.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-text-primary text-center flex gap-2 justify-around">
                     <div className="cursor-pointer">

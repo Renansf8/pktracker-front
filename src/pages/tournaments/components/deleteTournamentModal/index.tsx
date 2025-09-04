@@ -1,5 +1,5 @@
+import { Button } from "@/components/ui/button";
 import ReactModal from "react-modal";
-import { Button } from "../ui/button";
 
 interface DeleteTournamentModalProps {
   isOpen: boolean;

@@ -31,7 +31,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 
-export const TournamentForm = () => {
+interface TournamentFormProps {
+  platform: string;
+}
+
+export const TournamentForm = ({ platform }: TournamentFormProps) => {
   const [open, setOpen] = useState(false);
   const schema = z.object({
     date: z.string().nonempty({ message: "Data é obrigatória" }),
@@ -58,7 +62,7 @@ export const TournamentForm = () => {
     },
   });
 
-  const { createTournament } = useTournaments();
+  const { createTournament } = useTournaments(platform);
 
   const onSubmit = (data: FormData) => {
     // A data já está no formato ISO, não precisa converter
@@ -242,7 +246,7 @@ export const TournamentForm = () => {
             <div className="flex items-center h-[80px]">
               <Button
                 type="submit"
-                className="p-0 bg-success/90 hover:bg-success/80 mb-2"
+                className="p-0 bg-success/90 hover:bg-success/80 mb-2 w-[104px]"
               >
                 Adicionar
               </Button>
