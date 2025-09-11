@@ -8,3 +8,13 @@ export interface Tournament {
   result: number | string;
   profit?: number;
 }
+
+export interface Deposit {
+  date: string;
+  amount: number;
+}
+
+export interface Withdrawal {
+  date: string;
+  amount: number;
+}

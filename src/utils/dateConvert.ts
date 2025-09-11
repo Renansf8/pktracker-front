@@ -34,7 +34,10 @@ export const convertIsoDateToBr = (isoDate: string): string => {
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // +1 because months are 0-based
     const year = date.getFullYear();
 
-    return `${day}/${month}/${year} - ${date.getHours()}:${date.getMinutes()}`;
+    return `${day}/${month}/${year} - ${date
+      .getHours()
+      .toString()
+      .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
   } catch (error) {
     console.error("Error converting ISO date:", error);
     return "";

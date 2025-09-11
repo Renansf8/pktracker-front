@@ -4,6 +4,18 @@ export interface User {
   bank: Bank;
 }
 
+export interface Deposit {
+  id: string;
+  date: string;
+  amount: number;
+}
+
+export interface Withdrawal {
+  id: string;
+  date: string;
+  amount: number;
+}
+
 interface Bank {
   id: string;
   userId: string;
@@ -11,6 +23,8 @@ interface Bank {
   totalDeposit: number;
   totalWithdrawal: number;
   profit: number;
+  deposits: Deposit[];
+  withdrawals: Withdrawal[];
 }
 
 export interface CreateUserRequest {

@@ -21,15 +21,15 @@ export const SummarizeCards = ({
   return (
     <div className="flex gap-4 mt-4 w-full justify-between">
       <ActivityCard title="Torneios jogados" value={totalTournaments} />
-      <ActivityCard title="ABI" value={Number(abi.toFixed(2))} />
+      <ActivityCard title="ABI" value={Number(abi?.toFixed(2))} />
       <ActivityCard
         title="Buy In total"
-        value={Number(totalBuyIn.toFixed(2))}
+        value={Number(totalBuyIn?.toFixed(2))}
         isCurrency
       />
       <ActivityCard
         title="Ganhos totais"
-        value={Number(totalProfit.toFixed(2))}
+        value={Number(totalProfit?.toFixed(2))}
         isCurrency
       />
       <ActivityCard

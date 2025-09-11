@@ -1,4 +1,3 @@
-import { NavBar } from "@/components/NavBar";
 import {
   Table,
   TableBody,
@@ -40,7 +39,6 @@ export const Tournaments = () => {
 
   return (
     <div>
-      <NavBar />
       <div className="flex flex-col justify-center w-[80%] mx-auto mt-8">
         <h2 className="text-text-primary text-2xl font-bold">Torneios</h2>
 
@@ -119,17 +117,17 @@ export const Tournaments = () => {
                     {tournament.currency}
                   </TableCell>
                   <TableCell className="text-text-primary text-center">
-                    {tournament.buyIn}
+                    $ {Number(tournament.buyIn).toFixed(2)}
                   </TableCell>
                   <TableCell className={`text-text-primary  text-center`}>
-                    {tournament.result}
+                    $ {Number(tournament.result).toFixed(2)}
                   </TableCell>
                   <TableCell
                     className={`${
                       tournament.profit! > 0 ? "text-green-500" : "text-red-500"
                     }  text-center`}
                   >
-                    {tournament.profit?.toFixed(2)}
+                    $ {tournament.profit?.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-text-primary text-center flex gap-2 justify-around">
                     <div className="cursor-pointer">

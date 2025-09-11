@@ -19,4 +19,8 @@ export const API_ENDPOINTS = {
   CURRENCIES: {
     GET_ALL: "https://api.fxratesapi.com/latest",
   },
+  BANK: {
+    CREATE_DEPOSIT: "/banks/deposits",
+    CREATE_WITHDRAWAL: "/banks/withdrawals",
+  },
 } as const;
