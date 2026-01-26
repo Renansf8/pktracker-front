@@ -12,7 +12,13 @@ export const API_ENDPOINTS = {
     ME: "/users/me",
   },
   TOURNAMENTS: {
-    GET_ALL: (platform: string) => `/tournaments?platform=${platform}`,
+    GET_ALL: (platform: string, page: number = 1, limit: number = 10) => {
+      const params = new URLSearchParams();
+      if (platform) params.append("platform", platform);
+      params.append("page", page.toString());
+      params.append("limit", limit.toString());
+      return `/tournaments?${params.toString()}`;
+    },
     CREATE: "/tournaments",
     DELETE: (id: string) => `/tournaments/${id}`,
   },

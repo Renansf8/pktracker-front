@@ -16,7 +16,7 @@ export const Home = () => {
   const { data: tournaments } = getAllTournaments;
 
   const totalTournaments = tournaments?.data?.length;
-  const totalBuyIn = tournaments?.data?.reduce(
+  const totalBuyIn = tournaments?.data?.data?.reduce(
     (acc: number, tournament: Tournament) => {
       return acc + Number(tournament.buyIn);
     },
@@ -25,7 +25,7 @@ export const Home = () => {
 
   const abi = totalBuyIn / totalTournaments || 0;
 
-  const totalProfit = tournaments?.data?.reduce(
+  const totalProfit = tournaments?.data?.data?.reduce(
     (acc: number, tournament: Tournament) => {
       const total = acc + Number(tournament.result);
       return total;
@@ -33,7 +33,7 @@ export const Home = () => {
     0
   );
 
-  const totalWinnings = tournaments?.data?.reduce(
+  const totalWinnings = tournaments?.data?.data?.reduce(
     (acc: number, tournament: Tournament) => {
       const total = acc + Number(tournament.profit);
       return total;

@@ -33,7 +33,7 @@ export const SummarizeResults = () => {
   ];
   const currentMonthName = monthNames[today.getMonth()];
 
-  const todayTournaments = tournaments?.data?.filter(
+  const todayTournaments = tournaments?.data?.data?.filter(
     (tournament: Tournament) => {
       const tournamentDate = convertIsoDateToBr(tournament.date).split(" ")[0]; // Get only the date part
       return tournamentDate === todayBr;
@@ -45,7 +45,7 @@ export const SummarizeResults = () => {
     .toString()
     .padStart(2, "0")}/${today.getFullYear()}`;
 
-  const monthTournaments = tournaments?.data?.filter(
+  const monthTournaments = tournaments?.data?.data?.filter(
     (tournament: Tournament) => {
       const tournamentDate = convertIsoDateToBr(tournament.date).split(" ")[0]; // Get only the date part
       const [, month, year] = tournamentDate.split("/");

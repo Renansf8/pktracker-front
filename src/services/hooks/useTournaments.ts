@@ -5,11 +5,15 @@ import type { Tournament } from "./types";
 import { toast } from "sonner";
 import { useGetUser } from "./useGetUser";
 
-export const useTournaments = (platform: string = "") => {
+export const useTournaments = (
+  platform: string = "",
+  page: number = 1,
+  limit: number = 20
+) => {
   const { refetch } = useGetUser();
   const getAllTournaments = useQuery({
-    queryKey: ["tournaments", platform],
-    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform)),
+    queryKey: ["tournaments", platform, page, limit],
+    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit)),
   });
 
   const createTournament = useMutation({

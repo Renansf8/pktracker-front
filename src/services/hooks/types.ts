@@ -9,6 +9,12 @@ export interface Tournament {
   profit?: number;
 }
 
+export interface PaginatedTournamentsResponse {
+  data: Tournament[];
+  totalPages: number;
+  total: number;
+}
+
 export interface Deposit {
   date: string;
   amount: number;
