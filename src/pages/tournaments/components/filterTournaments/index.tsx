@@ -20,7 +20,7 @@ export const FilterTournaments = ({
         <ButtonFilter
           platform="Poker Stars"
           setPlatform={setPlatform}
-          isSelected={selectedPlatform === "PokerStars"}
+          isSelected={selectedPlatform === "Poker Stars"}
         />
         <ButtonFilter
           platform="GG"

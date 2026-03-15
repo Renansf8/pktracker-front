@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
 import { API_ENDPOINTS } from "../api/endpoints";
 import type { Tournament } from "./types";
@@ -10,6 +10,7 @@ export const useTournaments = (
   page: number = 1,
   limit: number = 20
 ) => {
+  const queryClient = useQueryClient();
   const { refetch } = useGetUser();
   const getAllTournaments = useQuery({
     queryKey: ["tournaments", platform, page, limit],
@@ -19,8 +20,8 @@ export const useTournaments = (
   const createTournament = useMutation({
     mutationFn: (data: Tournament) =>
       apiClient.post(API_ENDPOINTS.TOURNAMENTS.CREATE, data),
-    onSuccess: () => {
-      getAllTournaments.refetch();
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
       refetch();
     },
     onError: () => {
@@ -31,8 +32,8 @@ export const useTournaments = (
   const deleteTournament = useMutation({
     mutationFn: (id: string) =>
       apiClient.delete(API_ENDPOINTS.TOURNAMENTS.DELETE(id)),
-    onSuccess: () => {
-      getAllTournaments.refetch();
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
       refetch();
       toast.success("Torneio deletado com sucesso");
     },
