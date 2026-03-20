@@ -30,7 +30,7 @@ export function ProfileView({
 
   return (
     <div className="flex justify-center items-center min-h-[60vh] px-4">
-      <Card className="w-full max-w-md bg-background text-text-primary border-input-border">
+      <Card className="glass-panel w-full max-w-md border-0 bg-transparent text-text-primary shadow-none rounded-3xl">
         <CardHeader>
           <CardTitle>Perfil</CardTitle>
           <CardDescription className="text-text-secondary">

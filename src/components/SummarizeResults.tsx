@@ -4,6 +4,12 @@ import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
 
+/** Layout for período (Dia / Semana / …); cores vêm do `tabs` base alinhado ao glass */
+const periodTabsListClass =
+  "h-auto w-full max-w-xl flex-wrap gap-1 rounded-xl p-1.5 sm:w-[50%]";
+
+const periodTabTriggerClass = "min-w-[4.25rem] flex-1 px-3 py-2.5";
+
 export const SummarizeResults = () => {
   const { getAllTournaments } = useTournaments();
 
@@ -37,7 +43,7 @@ export const SummarizeResults = () => {
     (tournament: Tournament) => {
       const tournamentDate = convertIsoDateToBr(tournament.date).split(" ")[0]; // Get only the date part
       return tournamentDate === todayBr;
-    }
+    },
   );
 
   // Format for comparison (MM/YYYY)
@@ -50,7 +56,7 @@ export const SummarizeResults = () => {
       const tournamentDate = convertIsoDateToBr(tournament.date).split(" ")[0]; // Get only the date part
       const [, month, year] = tournamentDate.split("/");
       return `${month}/${year}` === currentMonthFormat;
-    }
+    },
   );
 
   // Daily stats
@@ -101,32 +107,35 @@ export const SummarizeResults = () => {
     }, 0) || 0;
 
   return (
-    <div className="flex flex-col gap-4 mt-8">
-      <p className="text-text-primary text-3xl">Resultados</p>
+    <div className="glass-panel mt-8 flex flex-col gap-6 rounded-3xl p-6 sm:p-8">
+      <p className="text-text-primary text-2xl font-semibold tracking-tight">
+        Resultados
+      </p>
 
       <Tabs defaultValue="dia">
-        <TabsList className="bg-background-tertiary w-[50%]">
-          <TabsTrigger className="text-text-primary" value="dia">
+        <TabsList className={periodTabsListClass}>
+          <TabsTrigger className={periodTabTriggerClass} value="dia">
             Dia
           </TabsTrigger>
-          <TabsTrigger className="text-text-primary" value="semana">
+          <TabsTrigger className={periodTabTriggerClass} value="semana">
             Semana
           </TabsTrigger>
-          <TabsTrigger className="text-text-primary" value="mes">
+          <TabsTrigger className={periodTabTriggerClass} value="mes">
             Mês
           </TabsTrigger>
-          <TabsTrigger className="text-text-primary" value="ano">
+          <TabsTrigger className={periodTabTriggerClass} value="ano">
             Ano
           </TabsTrigger>
         </TabsList>
         <TabsContent value="dia">
-          <p className="text-text-primary text-xl">{todayBr}</p>
+          <p className="text-text-primary text-lg">{todayBr}</p>
           <SummarizeCards
             totalTournaments={totalTournaments}
             totalProfit={totalProfit}
             totalWinnings={totalWinnings}
             abi={abi}
             totalBuyIn={totalBuyIn}
+            cardVariant="nested"
           />
         </TabsContent>
         <TabsContent value="mes">
@@ -137,6 +146,7 @@ export const SummarizeResults = () => {
             totalWinnings={monthlyTotalWinnings}
             abi={monthlyAbi}
             totalBuyIn={monthlyTotalBuyIn}
+            cardVariant="nested"
           />
         </TabsContent>
       </Tabs>

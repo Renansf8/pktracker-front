@@ -61,7 +61,9 @@ export function TournamentsView({
           )}
         </div>
 
-        <TournamentForm platform={platform} />
+        <div className="glass-panel mb-6 rounded-3xl p-6">
+          <TournamentForm platform={platform} />
+        </div>
 
         <div className="flex justify-end mb-4">
           <Button
@@ -75,78 +77,84 @@ export function TournamentsView({
         </div>
 
         {isOpenFilter && (
-          <FilterTournaments
-            setPlatform={onPlatformChange}
-            clearFilter={onClearFilter}
-            selectedPlatform={platform}
-          />
+          <div className="glass-panel mb-6 rounded-3xl p-5">
+            <FilterTournaments
+              setPlatform={onPlatformChange}
+              clearFilter={onClearFilter}
+              selectedPlatform={platform}
+            />
+          </div>
         )}
 
-        <Table className="mt-8">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-text-primary text-center">Data</TableHead>
-              <TableHead className="text-text-primary text-center">Plataforma</TableHead>
-              <TableHead className="text-text-primary text-center">Torneio</TableHead>
-              <TableHead className="text-text-primary text-center">Moeda</TableHead>
-              <TableHead className="text-text-primary text-center">Buy-in</TableHead>
-              <TableHead className="text-text-primary text-center">Resultado</TableHead>
-              <TableHead className="text-text-primary text-center">Profit</TableHead>
-              <TableHead className="text-text-primary text-center">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentPageData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="text-text-primary text-center">
-                  Nenhum torneio encontrado
-                </TableCell>
-              </TableRow>
-            ) : (
-              currentPageData.map((tournament: Tournament) => (
-                <TableRow key={tournament.id}>
-                  <TableCell className="text-text-primary text-center">
-                    {convertIsoDateToBr(tournament.date)}
-                  </TableCell>
-                  <TableCell className="text-text-primary text-center">
-                    {tournament.platform}
-                  </TableCell>
-                  <TableCell className="text-text-primary text-center">
-                    {tournament.name}
-                  </TableCell>
-                  <TableCell className="text-text-primary text-center">
-                    {tournament.currency}
-                  </TableCell>
-                  <TableCell className="text-text-primary text-center">
-                    $ {Number(tournament.buyIn).toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-text-primary text-center">
-                    $ {Number(tournament.result).toFixed(2)}
-                  </TableCell>
-                  <TableCell
-                    className={`${
-                      tournament.profit! > 0 ? "text-green-500" : "text-red-500"
-                    } text-center`}
-                  >
-                    $ {tournament.profit?.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-text-primary text-center flex gap-2 justify-around">
-                    <div className="cursor-pointer">
-                      <Edit className="size-4" />
-                    </div>
-                    <div className="cursor-pointer">
-                      <Trash
-                        className="size-4"
-                        color="red"
-                        onClick={() => onSelectTournamentToDelete(tournament.id ?? null)}
-                      />
-                    </div>
-                  </TableCell>
+        <div className="glass-panel mt-8 overflow-hidden rounded-3xl p-1">
+          <div className="glass-inner rounded-2xl p-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-text-primary text-center">Data</TableHead>
+                  <TableHead className="text-text-primary text-center">Plataforma</TableHead>
+                  <TableHead className="text-text-primary text-center">Torneio</TableHead>
+                  <TableHead className="text-text-primary text-center">Moeda</TableHead>
+                  <TableHead className="text-text-primary text-center">Buy-in</TableHead>
+                  <TableHead className="text-text-primary text-center">Resultado</TableHead>
+                  <TableHead className="text-text-primary text-center">Profit</TableHead>
+                  <TableHead className="text-text-primary text-center">Ações</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {currentPageData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-text-primary text-center">
+                      Nenhum torneio encontrado
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  currentPageData.map((tournament: Tournament) => (
+                    <TableRow key={tournament.id}>
+                      <TableCell className="text-text-primary text-center">
+                        {convertIsoDateToBr(tournament.date)}
+                      </TableCell>
+                      <TableCell className="text-text-primary text-center">
+                        {tournament.platform}
+                      </TableCell>
+                      <TableCell className="text-text-primary text-center">
+                        {tournament.name}
+                      </TableCell>
+                      <TableCell className="text-text-primary text-center">
+                        {tournament.currency}
+                      </TableCell>
+                      <TableCell className="text-text-primary text-center">
+                        $ {Number(tournament.buyIn).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-text-primary text-center">
+                        $ {Number(tournament.result).toFixed(2)}
+                      </TableCell>
+                      <TableCell
+                        className={`${
+                          tournament.profit! > 0 ? "text-green-500" : "text-red-500"
+                        } text-center`}
+                      >
+                        $ {tournament.profit?.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-text-primary text-center flex gap-2 justify-around">
+                        <div className="cursor-pointer">
+                          <Edit className="size-4" />
+                        </div>
+                        <div className="cursor-pointer">
+                          <Trash
+                            className="size-4"
+                            color="red"
+                            onClick={() => onSelectTournamentToDelete(tournament.id ?? null)}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
 
         {totalPages > 1 && (
           <div className="mt-6 mb-6">

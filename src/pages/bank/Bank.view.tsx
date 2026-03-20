@@ -49,7 +49,7 @@ export function BankView({
           }
         />
       </div>
-      <div className="flex gap-16 w-[80%] items-center justify-center border rounded-md p-4">
+      <div className="glass-panel flex gap-16 w-[80%] items-center justify-center rounded-3xl p-8">
         <div className="flex flex-col gap-4 w-[30%]">
           <p>Registros de depósitos</p>
           <Table>

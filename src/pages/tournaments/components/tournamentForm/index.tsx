@@ -77,7 +77,7 @@ export const TournamentForm = ({ platform }: TournamentFormProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex gap-4 text-text-primary">

@@ -6,6 +6,8 @@ interface ActivityCardProps {
   isValuePositiveOrNegative?: boolean;
   isCurrency?: boolean;
   convertedValue?: string;
+  /** nested = inset glass inside an outer glass panel (e.g. abas Resultados) */
+  variant?: "elevated" | "nested";
 }
 
 export const ActivityCard = ({
@@ -14,9 +16,15 @@ export const ActivityCard = ({
   isValuePositiveOrNegative,
   isCurrency,
   convertedValue,
+  variant = "elevated",
 }: ActivityCardProps) => {
+  const surface =
+    variant === "nested"
+      ? "glass-inner w-full gap-3 border border-white/10 bg-transparent py-4 px-4 shadow-none rounded-2xl text-text-primary"
+      : "glass-panel w-full gap-3 border-0 bg-transparent py-5 px-5 shadow-none rounded-3xl text-text-primary";
+
   return (
-    <Card className="bg-background-tertiary border-input-border p-4 w-full">
+    <Card className={surface}>
       <p className="text-text-secondary">{title}</p>
       {isValuePositiveOrNegative ? (
         <p
