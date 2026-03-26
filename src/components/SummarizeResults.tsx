@@ -1,5 +1,10 @@
+import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SummarizeCards } from "./Summarize Cards";
+import {
+  DayProfitBarChart,
+  MonthProfitBarChart,
+} from "@/components/ResultsProfitCharts";
 import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
@@ -106,6 +111,51 @@ export const SummarizeResults = () => {
       return total;
     }, 0) || 0;
 
+  const dayProfitChartData = useMemo(() => {
+    if (!todayTournaments?.length) return [];
+    const sorted = [...todayTournaments].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+    const namesSeen = new Map<string, number>();
+    return sorted.map((t) => {
+      const occ = (namesSeen.get(t.name) ?? 0) + 1;
+      namesSeen.set(t.name, occ);
+      let label = t.name.length > 26 ? `${t.name.slice(0, 26)}…` : t.name;
+      if (occ > 1) {
+        label = `${label} (${occ})`;
+      }
+      return { torneio: label, Lucro: Number(t.profit) || 0 };
+    });
+  }, [todayTournaments]);
+
+  const monthProfitChartData = useMemo(() => {
+    const ref = new Date();
+    const y = ref.getFullYear();
+    const m = ref.getMonth();
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+    const byDayFull = new Map<string, number>();
+    if (monthTournaments?.length) {
+      for (const t of monthTournaments) {
+        const datePart = convertIsoDateToBr(t.date).split(" ")[0];
+        const p = Number(t.profit) || 0;
+        byDayFull.set(datePart, (byDayFull.get(datePart) || 0) + p);
+      }
+    }
+
+    const rows: { dia: string; Lucro: number }[] = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dd = String(d).padStart(2, "0");
+      const mm = String(m + 1).padStart(2, "0");
+      const fullKey = `${dd}/${mm}/${y}`;
+      rows.push({
+        dia: `${dd}/${mm}`,
+        Lucro: byDayFull.get(fullKey) ?? 0,
+      });
+    }
+    return rows;
+  }, [monthTournaments]);
+
   return (
     <div className="glass-panel mt-8 flex flex-col gap-6 rounded-3xl p-6 sm:p-8">
       <p className="text-text-primary text-2xl font-semibold tracking-tight">
@@ -137,6 +187,12 @@ export const SummarizeResults = () => {
             totalBuyIn={totalBuyIn}
             cardVariant="nested"
           />
+          <DayProfitBarChart data={dayProfitChartData} />
+        </TabsContent>
+        <TabsContent value="semana">
+          <p className="mt-2 text-sm text-zinc-500">
+            Visão semanal em breve.
+          </p>
         </TabsContent>
         <TabsContent value="mes">
           <p className="text-text-primary text-xl">{currentMonthName}</p>
@@ -148,6 +204,10 @@ export const SummarizeResults = () => {
             totalBuyIn={monthlyTotalBuyIn}
             cardVariant="nested"
           />
+          <MonthProfitBarChart data={monthProfitChartData} />
+        </TabsContent>
+        <TabsContent value="ano">
+          <p className="mt-2 text-sm text-zinc-500">Visão anual em breve.</p>
         </TabsContent>
       </Tabs>
     </div>
