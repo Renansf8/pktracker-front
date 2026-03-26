@@ -91,20 +91,39 @@ export function TournamentsView({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-text-primary text-center">Data</TableHead>
-                  <TableHead className="text-text-primary text-center">Plataforma</TableHead>
-                  <TableHead className="text-text-primary text-center">Torneio</TableHead>
-                  <TableHead className="text-text-primary text-center">Moeda</TableHead>
-                  <TableHead className="text-text-primary text-center">Buy-in</TableHead>
-                  <TableHead className="text-text-primary text-center">Resultado</TableHead>
-                  <TableHead className="text-text-primary text-center">Profit</TableHead>
-                  <TableHead className="text-text-primary text-center">Ações</TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Data
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Plataforma
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Torneio
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Moeda
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Buy-in
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Resultado
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Profit
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Ações
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentPageData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-text-primary text-center">
+                    <TableCell
+                      colSpan={8}
+                      className="text-text-primary text-center"
+                    >
                       Nenhum torneio encontrado
                     </TableCell>
                   </TableRow>
@@ -131,7 +150,9 @@ export function TournamentsView({
                       </TableCell>
                       <TableCell
                         className={`${
-                          tournament.profit! > 0 ? "text-green-500" : "text-red-500"
+                          tournament.profit! > 0
+                            ? "text-green-500"
+                            : "text-red-500"
                         } text-center`}
                       >
                         $ {tournament.profit?.toFixed(2)}
@@ -144,7 +165,9 @@ export function TournamentsView({
                           <Trash
                             className="size-4"
                             color="red"
-                            onClick={() => onSelectTournamentToDelete(tournament.id ?? null)}
+                            onClick={() =>
+                              onSelectTournamentToDelete(tournament.id ?? null)
+                            }
                           />
                         </div>
                       </TableCell>
@@ -205,7 +228,8 @@ export function TournamentsView({
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (currentPage < totalPages) onPageChange(currentPage + 1);
+                      if (currentPage < totalPages)
+                        onPageChange(currentPage + 1);
                     }}
                     className={
                       currentPage === totalPages

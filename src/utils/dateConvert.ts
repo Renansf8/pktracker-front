@@ -26,6 +26,50 @@ export const convertBrDateToUs = (brDate: string): string => {
   }
 };
 
+/**
+ * Interpreta a data do torneio no calendário local.
+ * Strings só com `YYYY-MM-DD` viram meia-noite **local** — evita o bug de
+ * `new Date("2025-03-15")` (UTC) cair no dia anterior no Brasil.
+ */
+export function parseTournamentDateLocal(dateInput: string | number): Date {
+  if (typeof dateInput === "number") {
+    return new Date(dateInput);
+  }
+  const s = String(dateInput).trim();
+  const onlyDate = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (onlyDate) {
+    const y = Number(onlyDate[1]);
+    const m = Number(onlyDate[2]);
+    const d = Number(onlyDate[3]);
+    return new Date(y, m - 1, d);
+  }
+  /** DD/MM/YYYY (sem hora) — alguns payloads usam só parte da data. */
+  const brOnly = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (brOnly) {
+    const d = Number(brOnly[1]);
+    const m = Number(brOnly[2]);
+    const y = Number(brOnly[3]);
+    return new Date(y, m - 1, d);
+  }
+  return new Date(s);
+}
+
+/** Mesmo dia civil que `ref` (padrão: hoje), no fuso local. */
+export function isSameCalendarDayLocal(
+  dateInput: string | number,
+  ref: Date = new Date(),
+): boolean {
+  const d = parseTournamentDateLocal(dateInput);
+  if (Number.isNaN(d.getTime())) {
+    return false;
+  }
+  return (
+    d.getFullYear() === ref.getFullYear() &&
+    d.getMonth() === ref.getMonth() &&
+    d.getDate() === ref.getDate()
+  );
+}
+
 export const convertIsoDateToBr = (isoDate: string): string => {
   try {
     const date = new Date(isoDate);

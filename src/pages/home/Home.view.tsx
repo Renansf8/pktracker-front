@@ -1,3 +1,4 @@
+import { PlayerSuggestions } from "@/components/PlayerSuggestions";
 import { SummarizeCards } from "@/components/Summarize Cards";
 import { SummarizeResults } from "@/components/SummarizeResults";
 import type { HomeViewProps } from "./home.types";
@@ -6,6 +7,7 @@ export function HomeView({
   isLoading,
   userName,
   bankDisplayText,
+  bankUsd,
   totalTournaments,
   totalBuyIn,
   abi,
@@ -30,6 +32,7 @@ export function HomeView({
           abi={abi}
           totalBuyIn={totalBuyIn}
         />
+        <PlayerSuggestions bankUsd={bankUsd} />
         <SummarizeResults />
       </div>
     </div>

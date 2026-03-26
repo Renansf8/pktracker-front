@@ -51,10 +51,13 @@ export function useHomeViewModel(): HomeViewProps {
     return `$ ${usdFormatted} (${brl})`;
   }, [user?.bank?.bank, currencies?.data?.rates?.BRL]);
 
+  const bankUsd = user?.bank?.bank ?? 0;
+
   return {
     isLoading,
     userName: user?.name ?? "",
     bankDisplayText,
+    bankUsd,
     totalTournaments: stats.totalTournaments,
     totalBuyIn: stats.totalBuyIn,
     abi: stats.abi,

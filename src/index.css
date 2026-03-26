@@ -38,8 +38,6 @@
   --popover-foreground: oklch(0.141 0.005 285.823);
   --primary: oklch(0.21 0.006 285.885);
   --color-brand-primary: #367ed0;
-  /* Barras Tremor/Recharts — alinha ao azul da marca */
-  --chart-bar-fill: #367ed0;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -263,11 +261,5 @@ button {
 
   .glass-chart-surface .recharts-tooltip-cursor {
     fill: rgb(186 230 253 / 0.12) !important;
-  }
-
-  /* Barras: Tremor às vezes não aplica a cor da categoria no tema escuro */
-  .glass-chart-surface .recharts-bar .recharts-rectangle,
-  .glass-chart-surface .recharts-bar rect {
-    fill: var(--chart-bar-fill, #367ed0) !important;
   }
 }

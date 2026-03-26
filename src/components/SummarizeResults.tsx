@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SummarizeCards } from "./Summarize Cards";
 import {
@@ -7,7 +7,11 @@ import {
 } from "@/components/ResultsProfitCharts";
 import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
-import { convertIsoDateToBr } from "@/utils/dateConvert";
+import {
+  convertIsoDateToBr,
+  isSameCalendarDayLocal,
+} from "@/utils/dateConvert";
+import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 
 /** Layout for período (Dia / Semana / …); cores vêm do `tabs` base alinhado ao glass */
 const periodTabsListClass =
@@ -16,7 +20,9 @@ const periodTabsListClass =
 const periodTabTriggerClass = "min-w-[4.25rem] flex-1 px-3 py-2.5";
 
 export const SummarizeResults = () => {
-  const { getAllTournaments } = useTournaments();
+  /** Limite alto: a visão "Dia" precisa dos torneios de hoje; página 1 com 20 pode não incluí-los. */
+  const { getAllTournaments } = useTournaments("", 1, 500);
+  const [periodTab, setPeriodTab] = useState("dia");
 
   const { data: tournaments } = getAllTournaments;
 
@@ -44,12 +50,21 @@ export const SummarizeResults = () => {
   ];
   const currentMonthName = monthNames[today.getMonth()];
 
-  const todayTournaments = tournaments?.data?.data?.filter(
-    (tournament: Tournament) => {
-      const tournamentDate = convertIsoDateToBr(tournament.date).split(" ")[0]; // Get only the date part
-      return tournamentDate === todayBr;
-    },
-  );
+  const todayTournaments = useMemo(() => {
+    const list = tournaments?.data?.data;
+    if (!list?.length) {
+      return [];
+    }
+    const ref = new Date();
+    return list.filter((tournament: Tournament) => {
+      const byCalendar = isSameCalendarDayLocal(tournament.date, ref);
+      const datePart = convertIsoDateToBr(String(tournament.date)).split(
+        " ",
+      )[0];
+      const byLegacyString = datePart === todayBr;
+      return byCalendar || byLegacyString;
+    });
+  }, [tournaments?.data?.data, todayBr]);
 
   // Format for comparison (MM/YYYY)
   const currentMonthFormat = `${(today.getMonth() + 1)
@@ -124,7 +139,10 @@ export const SummarizeResults = () => {
       if (occ > 1) {
         label = `${label} (${occ})`;
       }
-      return { torneio: label, Lucro: Number(t.profit) || 0 };
+      return {
+        torneio: label,
+        Lucro: getTournamentLucroUsd(t),
+      };
     });
   }, [todayTournaments]);
 
@@ -138,7 +156,7 @@ export const SummarizeResults = () => {
     if (monthTournaments?.length) {
       for (const t of monthTournaments) {
         const datePart = convertIsoDateToBr(t.date).split(" ")[0];
-        const p = Number(t.profit) || 0;
+        const p = getTournamentLucroUsd(t);
         byDayFull.set(datePart, (byDayFull.get(datePart) || 0) + p);
       }
     }
@@ -162,7 +180,7 @@ export const SummarizeResults = () => {
         Resultados
       </p>
 
-      <Tabs defaultValue="dia">
+      <Tabs value={periodTab} onValueChange={setPeriodTab}>
         <TabsList className={periodTabsListClass}>
           <TabsTrigger className={periodTabTriggerClass} value="dia">
             Dia
@@ -177,7 +195,7 @@ export const SummarizeResults = () => {
             Ano
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="dia">
+        <TabsContent value="dia" className="mt-2 w-full space-y-4">
           <p className="text-text-primary text-lg">{todayBr}</p>
           <SummarizeCards
             totalTournaments={totalTournaments}
@@ -194,7 +212,7 @@ export const SummarizeResults = () => {
             Visão semanal em breve.
           </p>
         </TabsContent>
-        <TabsContent value="mes">
+        <TabsContent value="mes" className="mt-2 w-full space-y-4">
           <p className="text-text-primary text-xl">{currentMonthName}</p>
           <SummarizeCards
             totalTournaments={monthlyTotalTournaments}
@@ -204,7 +222,10 @@ export const SummarizeResults = () => {
             totalBuyIn={monthlyTotalBuyIn}
             cardVariant="nested"
           />
-          <MonthProfitBarChart data={monthProfitChartData} />
+          <MonthProfitBarChart
+            key={`month-chart-${periodTab}`}
+            data={monthProfitChartData}
+          />
         </TabsContent>
         <TabsContent value="ano">
           <p className="mt-2 text-sm text-zinc-500">Visão anual em breve.</p>
