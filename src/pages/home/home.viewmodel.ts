@@ -3,16 +3,46 @@ import { useCurrency } from "@/services/hooks/useCurrency";
 import { useGetUser } from "@/services/hooks/useGetUser";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { convertUsdToBrl } from "@/utils/currencyConvert";
+import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert";
 import { useMemo } from "react";
 import type { HomeViewProps } from "./home.types";
 
 export function useHomeViewModel(): HomeViewProps {
   const { data: user, isLoading } = useGetUser();
   const { currencies } = useCurrency();
-  const { getAllTournaments } = useTournaments();
+  const { getAllTournaments } = useTournaments("", 1, 500);
   const { data: tournamentsResponse } = getAllTournaments;
 
   const tournaments: Tournament[] = tournamentsResponse?.data?.data ?? [];
+
+  const todayBr = useMemo(() => {
+    const today = new Date();
+    return `${today.getDate().toString().padStart(2, "0")}/${(
+      today.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}/${today.getFullYear()}`;
+  }, []);
+
+  const todayTournaments = useMemo(() => {
+    if (!tournaments.length) return [];
+    const ref = new Date();
+    return tournaments.filter((t) => {
+      const byCalendar = isSameCalendarDayLocal(t.date, ref);
+      const datePart = convertIsoDateToBr(String(t.date)).split(" ")[0];
+      const byLegacyString = datePart === todayBr;
+      return byCalendar || byLegacyString;
+    });
+  }, [tournaments, todayBr]);
+
+  const todayTotalBuyIn = useMemo(
+    () =>
+      todayTournaments.reduce(
+        (acc, t) => acc + Number(t.buyIn),
+        0,
+      ),
+    [todayTournaments],
+  );
 
   const stats = useMemo(() => {
     type StatsAcc = {
@@ -58,6 +88,7 @@ export function useHomeViewModel(): HomeViewProps {
     userName: user?.name ?? "",
     bankDisplayText,
     bankUsd,
+    todayTotalBuyIn,
     totalTournaments: stats.totalTournaments,
     totalBuyIn: stats.totalBuyIn,
     abi: stats.abi,

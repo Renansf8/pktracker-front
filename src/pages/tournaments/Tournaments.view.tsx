@@ -9,10 +9,19 @@ import {
 import type { Tournament } from "@/services/hooks/types";
 import { TournamentForm } from "./components/tournamentForm";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
-import { Edit, Trash, FilterIcon, X } from "lucide-react";
+import { Check, ChevronDownIcon, Edit, FilterIcon, Trash, X } from "lucide-react";
 import { DeleteTournamentModal } from "./components/deleteTournamentModal";
+import { ImportScheduleModal } from "./components/importScheduleModal";
 import { FilterTournaments } from "./components/filterTournaments";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -37,6 +46,11 @@ export function TournamentsView({
   platform,
   isOpenFilter,
   selectedTournamentId,
+  editingTournamentId,
+  editDraftById,
+  savingTournamentId,
+  isImportScheduleModalOpen,
+  isImportingSchedule,
   onFilterToggle,
   onPlatformChange,
   onClearFilter,
@@ -44,10 +58,19 @@ export function TournamentsView({
   onSelectTournamentToDelete,
   onConfirmDelete,
   onCloseDeleteModal,
+  onOpenImportScheduleModal,
+  onCloseImportScheduleModal,
+  onConfirmImportSchedule,
+  onStartEditTournament,
+  onChangeEditDraft,
+  onCancelEditTournament,
+  onSaveEditTournament,
 }: TournamentsViewProps) {
   if (isLoading) {
     return <div>Carregando...</div>;
   }
+
+  const [openDatePickerId, setOpenDatePickerId] = useState<string | null>(null);
 
   return (
     <div>
@@ -65,7 +88,13 @@ export function TournamentsView({
           <TournamentForm platform={platform} />
         </div>
 
-        <div className="flex justify-end mb-4">
+        <div className="mb-4 flex items-center justify-between">
+          <Button
+            onClick={onOpenImportScheduleModal}
+            className="flex items-center gap-2 text-text-primary bg-transparent border-[2px] !border-white"
+          >
+            Adicionar grade
+          </Button>
           <Button
             onClick={onFilterToggle}
             className="flex w-[104px] items-center gap-2 text-text-primary bg-transparent border-[2px] !border-white "
@@ -130,23 +159,142 @@ export function TournamentsView({
                 ) : (
                   currentPageData.map((tournament: Tournament) => (
                     <TableRow key={tournament.id}>
+                      {(() => {
+                        const id = tournament.id ?? "";
+                        const isEditing = Boolean(id) && editingTournamentId === id;
+                        const draft = id ? editDraftById[id] : undefined;
+                        const isSaving = Boolean(id) && savingTournamentId === id;
+                        const disabled = isSaving;
+
+                        return (
+                          <>
                       <TableCell className="text-text-primary text-center">
-                        {convertIsoDateToBr(tournament.date)}
+                        {isEditing && draft ? (
+                          <Popover
+                            open={openDatePickerId === id}
+                            onOpenChange={(open) =>
+                              setOpenDatePickerId(open ? id : null)
+                            }
+                          >
+                            <PopoverTrigger asChild disabled={disabled}>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="h-9 w-full justify-between font-normal"
+                              >
+                                {draft.date
+                                  ? new Date(draft.date).toLocaleDateString(
+                                      "pt-BR",
+                                    )
+                                  : "Selecione uma data"}
+                                <ChevronDownIcon className="size-4" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto overflow-hidden p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={
+                                  draft.date ? new Date(draft.date) : undefined
+                                }
+                                captionLayout="dropdown"
+                                onSelect={(date) => {
+                                  if (date) {
+                                    const now = new Date();
+                                    date.setHours(now.getHours());
+                                    date.setMinutes(now.getMinutes());
+                                    date.setSeconds(now.getSeconds());
+                                    date.setMilliseconds(now.getMilliseconds());
+                                    onChangeEditDraft(id, {
+                                      date: date.toISOString(),
+                                    });
+                                  } else {
+                                    onChangeEditDraft(id, { date: "" });
+                                  }
+                                  setOpenDatePickerId(null);
+                                }}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        ) : (
+                          convertIsoDateToBr(tournament.date)
+                        )}
                       </TableCell>
                       <TableCell className="text-text-primary text-center">
-                        {tournament.platform}
+                        {isEditing && draft ? (
+                          <Input
+                            value={draft.platform}
+                            onChange={(e) =>
+                              onChangeEditDraft(id, { platform: e.target.value })
+                            }
+                            disabled={disabled}
+                            className="h-9 text-text-primary"
+                          />
+                        ) : (
+                          tournament.platform
+                        )}
                       </TableCell>
                       <TableCell className="text-text-primary text-center">
-                        {tournament.name}
+                        {isEditing && draft ? (
+                          <Input
+                            value={draft.name}
+                            onChange={(e) =>
+                              onChangeEditDraft(id, { name: e.target.value })
+                            }
+                            disabled={disabled}
+                            className="h-9 text-text-primary"
+                          />
+                        ) : (
+                          tournament.name
+                        )}
                       </TableCell>
                       <TableCell className="text-text-primary text-center">
-                        {tournament.currency}
+                        {isEditing && draft ? (
+                          <Input
+                            value={draft.currency}
+                            onChange={(e) =>
+                              onChangeEditDraft(id, { currency: e.target.value })
+                            }
+                            disabled={disabled}
+                            className="h-9 text-text-primary"
+                          />
+                        ) : (
+                          tournament.currency
+                        )}
                       </TableCell>
                       <TableCell className="text-text-primary text-center">
-                        $ {Number(tournament.buyIn).toFixed(2)}
+                        {isEditing && draft ? (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={String(draft.buyIn)}
+                            onChange={(e) =>
+                              onChangeEditDraft(id, { buyIn: e.target.value })
+                            }
+                            disabled={disabled}
+                            className="h-9 text-text-primary"
+                          />
+                        ) : (
+                          <>$ {Number(tournament.buyIn).toFixed(2)}</>
+                        )}
                       </TableCell>
                       <TableCell className="text-text-primary text-center">
-                        $ {Number(tournament.result).toFixed(2)}
+                        {isEditing && draft ? (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={String(draft.result)}
+                            onChange={(e) =>
+                              onChangeEditDraft(id, { result: e.target.value })
+                            }
+                            disabled={disabled}
+                            className="h-9 text-text-primary"
+                          />
+                        ) : (
+                          <>$ {Number(tournament.result).toFixed(2)}</>
+                        )}
                       </TableCell>
                       <TableCell
                         className={`${
@@ -158,9 +306,37 @@ export function TournamentsView({
                         $ {tournament.profit?.toFixed(2)}
                       </TableCell>
                       <TableCell className="text-text-primary text-center flex gap-2 justify-around">
-                        <div className="cursor-pointer">
-                          <Edit className="size-4" />
-                        </div>
+                        {isEditing ? (
+                          <>
+                            <button
+                              type="button"
+                              className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                              disabled={disabled}
+                              onClick={() => onSaveEditTournament(tournament)}
+                              aria-label="Salvar edição do torneio"
+                            >
+                              <Check className="size-4" />
+                            </button>
+                            <button
+                              type="button"
+                              className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                              disabled={disabled}
+                              onClick={() => onCancelEditTournament(id)}
+                              aria-label="Cancelar edição do torneio"
+                            >
+                              <X className="size-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            className="cursor-pointer"
+                            onClick={() => onStartEditTournament(tournament)}
+                            aria-label="Editar torneio"
+                          >
+                            <Edit className="size-4" />
+                          </button>
+                        )}
                         <div className="cursor-pointer">
                           <Trash
                             className="size-4"
@@ -171,6 +347,9 @@ export function TournamentsView({
                           />
                         </div>
                       </TableCell>
+                          </>
+                        );
+                      })()}
                     </TableRow>
                   ))
                 )}
@@ -247,6 +426,12 @@ export function TournamentsView({
           isOpen={selectedTournamentId !== null}
           onRequestClose={onCloseDeleteModal}
           onDelete={onConfirmDelete}
+        />
+        <ImportScheduleModal
+          isOpen={isImportScheduleModalOpen}
+          isLoading={isImportingSchedule}
+          onRequestClose={onCloseImportScheduleModal}
+          onConfirm={onConfirmImportSchedule}
         />
       </div>
     </div>

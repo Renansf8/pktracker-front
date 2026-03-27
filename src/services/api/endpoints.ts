@@ -20,7 +20,15 @@ export const API_ENDPOINTS = {
       return `/tournaments?${params.toString()}`;
     },
     CREATE: "/tournaments",
+    BULK: "/tournaments/bulk",
     DELETE: (id: string) => `/tournaments/${id}`,
+    UPDATE: (id: string) => `/tournaments/${id}`,
+  },
+  SCHEDULE: {
+    GET_ALL: "/tournaments/schedule",
+    CREATE: "/tournaments/schedule",
+    UPDATE: (id: string) => `/tournaments/schedule/${id}`,
+    DELETE: (id: string) => `/tournaments/schedule/${id}`,
   },
   CURRENCIES: {
     GET_ALL: "https://api.fxratesapi.com/latest",

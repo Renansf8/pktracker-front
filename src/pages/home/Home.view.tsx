@@ -8,6 +8,7 @@ export function HomeView({
   userName,
   bankDisplayText,
   bankUsd,
+  todayTotalBuyIn,
   totalTournaments,
   totalBuyIn,
   abi,
@@ -32,7 +33,10 @@ export function HomeView({
           abi={abi}
           totalBuyIn={totalBuyIn}
         />
-        <PlayerSuggestions bankUsd={bankUsd} />
+        <PlayerSuggestions
+          bankUsd={bankUsd}
+          todayTotalBuyIn={todayTotalBuyIn}
+        />
         <SummarizeResults />
       </div>
     </div>

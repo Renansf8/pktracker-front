@@ -5,6 +5,13 @@ import type { Tournament } from "./types";
 import { toast } from "sonner";
 import { useGetUser } from "./useGetUser";
 
+type UpdateTournamentInput = {
+  id: string;
+  data: Partial<Omit<Tournament, "id">>;
+};
+
+type BulkTournamentItem = Omit<Tournament, "id">;
+
 export const useTournaments = (
   platform: string = "",
   page: number = 1,
@@ -29,6 +36,23 @@ export const useTournaments = (
     },
   });
 
+  const createManyTournaments = useMutation({
+    mutationFn: async (tournaments: BulkTournamentItem[]) => {
+      if (!tournaments.length) return;
+      await apiClient.post(API_ENDPOINTS.TOURNAMENTS.BULK, {
+        tournaments,
+      });
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
+      refetch();
+      toast.success("Grade adicionada com sucesso");
+    },
+    onError: () => {
+      toast.error("Erro ao adicionar grade");
+    },
+  });
+
   const deleteTournament = useMutation({
     mutationFn: (id: string) =>
       apiClient.delete(API_ENDPOINTS.TOURNAMENTS.DELETE(id)),
@@ -42,9 +66,24 @@ export const useTournaments = (
     },
   });
 
+  const updateTournament = useMutation({
+    mutationFn: ({ id, data }: UpdateTournamentInput) =>
+      apiClient.patch(API_ENDPOINTS.TOURNAMENTS.UPDATE(id), data),
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
+      refetch();
+      toast.success("Torneio atualizado com sucesso");
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar torneio");
+    },
+  });
+
   return {
     getAllTournaments,
     createTournament,
+    createManyTournaments,
     deleteTournament,
+    updateTournament,
   };
 };

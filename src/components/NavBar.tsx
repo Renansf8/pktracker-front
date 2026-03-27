@@ -37,6 +37,14 @@ export const NavBar = () => {
           Torneios
         </Link>
         <Link
+          to="/schedule"
+          className={`pb-1 ${
+            isActive("/schedule") ? "border-b-2 border-purple-500" : ""
+          }`}
+        >
+          Grade
+        </Link>
+        <Link
           to="/bank"
           className={`pb-1 ${
             isActive("/bank") ? "border-b-2 border-purple-500" : ""

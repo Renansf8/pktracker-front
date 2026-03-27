@@ -9,6 +9,7 @@ import { Bank } from "@/pages/bank";
 import { NavBar } from "@/components/NavBar";
 import { Stats } from "@/pages/stats";
 import { Profile } from "@/pages/profile";
+import { Schedule } from "@/pages/schedule";
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -62,6 +63,14 @@ export const Router = () => {
           element={
             <ProtectedRoute>
               <Tournaments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/schedule"
+          element={
+            <ProtectedRoute>
+              <Schedule />
             </ProtectedRoute>
           }
         />

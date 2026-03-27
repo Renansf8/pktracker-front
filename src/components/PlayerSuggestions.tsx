@@ -2,6 +2,12 @@ import {
   getAbiSuggestedRange,
   getSuggestedStakeLevels,
 } from "@/utils/abiSuggestion";
+import {
+  DAILY_BUYIN_REFERENCE_RATIO,
+  getDailyBuyInToBankRatio,
+  shouldWarnDailyBuyInExposure,
+} from "@/utils/dailyBuyInExposure";
+import { AlertTriangle } from "lucide-react";
 
 const money = (n: number) =>
   `$ ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -77,14 +83,73 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
   );
 }
 
+type DailyBuyInExposureCardProps = {
+  bankUsd: number;
+  todayTotalBuyIn: number;
+};
+
+function DailyBuyInExposureCard({
+  bankUsd,
+  todayTotalBuyIn,
+}: DailyBuyInExposureCardProps) {
+  const ratio = getDailyBuyInToBankRatio(bankUsd, todayTotalBuyIn);
+  const show = ratio !== null && shouldWarnDailyBuyInExposure(bankUsd, todayTotalBuyIn);
+
+  if (!show || ratio === null) {
+    return null;
+  }
+
+  const pct = (ratio * 100).toFixed(1);
+  const refPct = (DAILY_BUYIN_REFERENCE_RATIO * 100).toFixed(0);
+  const sevenPercentOfBankUsd = bankUsd * DAILY_BUYIN_REFERENCE_RATIO;
+
+  return (
+    <article className="glass-panel flex flex-col gap-4 rounded-3xl border border-red-500/40 p-5">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-medium uppercase tracking-wide text-red-300/90">
+          Buy-ins do dia
+        </span>
+        <div className="flex items-start gap-2.5">
+          <AlertTriangle
+            className="mt-0.5 size-5 shrink-0 text-red-400/90"
+            aria-hidden
+            strokeWidth={2}
+          />
+          <h3 className="text-lg font-semibold tracking-tight text-red-100">
+            Atenção à exposição na banca
+          </h3>
+        </div>
+      </div>
+      <p className="text-sm leading-relaxed text-slate-300">
+        Hoje você já acumulou{" "}
+        <span className="font-semibold text-slate-100">
+          {money(todayTotalBuyIn)}
+        </span>{" "}
+        em buy-ins (~{pct}% da sua banca). Você está se aproximando de{" "}
+        <span className="font-semibold text-red-200">{refPct}%</span>{" "}
+        <span className="text-slate-400">({money(sevenPercentOfBankUsd)})</span>{" "}
+        do valor total da banca em relação aos buy-ins do dia. Vale considerar{" "}
+        <span className="font-medium text-slate-100">
+          não passar de 7% em buy ins
+        </span>
+        , a menos que faça sentido para o seu plano.
+      </p>
+    </article>
+  );
+}
+
 type PlayerSuggestionsProps = {
   bankUsd: number;
+  todayTotalBuyIn: number;
 };
 
 /**
  * Bloco de sugestões na Home — preparado para novos cards lado a lado (grid responsivo).
  */
-export function PlayerSuggestions({ bankUsd }: PlayerSuggestionsProps) {
+export function PlayerSuggestions({
+  bankUsd,
+  todayTotalBuyIn,
+}: PlayerSuggestionsProps) {
   return (
     <section className="mt-8 flex flex-col gap-4">
       <h2 className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
@@ -92,6 +157,10 @@ export function PlayerSuggestions({ bankUsd }: PlayerSuggestionsProps) {
       </h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <AbiSuggestionCard bankUsd={bankUsd} />
+        <DailyBuyInExposureCard
+          bankUsd={bankUsd}
+          todayTotalBuyIn={todayTotalBuyIn}
+        />
       </div>
     </section>
   );

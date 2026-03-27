@@ -2,6 +2,14 @@ import { useTournaments } from "@/services/hooks/useTournaments";
 import { useEffect, useMemo, useState } from "react";
 import { ITEMS_PER_PAGE } from "./tournaments.types";
 import type { TournamentsViewProps } from "./tournaments.types";
+import type { Tournament } from "@/services/hooks/types";
+import {
+  buildTournamentPatch,
+  type TournamentEditDraft,
+} from "@/utils/tournamentPatch";
+import { useSchedule } from "@/services/hooks/useSchedule";
+import type { ScheduleTournament } from "@/services/hooks/schedule.types";
+import { toast } from "sonner";
 
 function getPaginationPages(
   currentPage: number,
@@ -30,13 +38,31 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const [platform, setPlatform] = useState("");
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
-  const { getAllTournaments, deleteTournament } = useTournaments(
-    platform,
-    currentPage,
-    ITEMS_PER_PAGE,
+  const [editingTournamentId, setEditingTournamentId] = useState<string | null>(
+    null,
   );
+  const [savingTournamentId, setSavingTournamentId] = useState<string | null>(
+    null,
+  );
+  const [editDraftById, setEditDraftById] = useState<
+    Record<string, TournamentEditDraft | undefined>
+  >({});
+  const [isImportScheduleModalOpen, setIsImportScheduleModalOpen] =
+    useState(false);
+  const [isImportingSchedule, setIsImportingSchedule] = useState(false);
+
+  const {
+    getAllTournaments,
+    createManyTournaments,
+    deleteTournament,
+    updateTournament,
+  } = useTournaments(platform, currentPage, ITEMS_PER_PAGE);
+  const { getAllSchedule } = useSchedule();
   const { data: tournaments, isLoading } = getAllTournaments;
+  const scheduleResponse = getAllSchedule.data?.data;
+  const scheduleRows: ScheduleTournament[] = (scheduleResponse?.data ??
+    scheduleResponse ??
+    []) as ScheduleTournament[];
 
   useEffect(() => {
     setCurrentPage(1);
@@ -76,6 +102,111 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     }
   };
 
+  const onStartEditTournament = (tournament: Tournament) => {
+    if (!tournament.id) return;
+    setEditingTournamentId(tournament.id);
+    setEditDraftById((prev) => ({
+      ...prev,
+      [tournament.id as string]: {
+        date: String(tournament.date ?? ""),
+        platform: String(tournament.platform ?? ""),
+        name: String(tournament.name ?? ""),
+        currency: String(tournament.currency ?? ""),
+        buyIn: tournament.buyIn ?? 0,
+        result: tournament.result ?? 0,
+      },
+    }));
+  };
+
+  const onChangeEditDraft = (id: string, patch: Partial<TournamentEditDraft>) => {
+    setEditDraftById((prev) => ({
+      ...prev,
+      [id]: {
+        ...(prev[id] ?? {
+          date: "",
+          platform: "",
+          name: "",
+          currency: "USD",
+          buyIn: 0,
+          result: 0,
+        }),
+        ...patch,
+      },
+    }));
+  };
+
+  const onCancelEditTournament = (id: string) => {
+    setEditingTournamentId((cur) => (cur === id ? null : cur));
+    setSavingTournamentId((cur) => (cur === id ? null : cur));
+    setEditDraftById((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const onSaveEditTournament = (tournament: Tournament) => {
+    const id = tournament.id;
+    if (!id) return;
+    const draft = editDraftById[id];
+    if (!draft) return;
+
+    const patch = buildTournamentPatch(tournament, draft);
+    if (Object.keys(patch).length === 0) {
+      onCancelEditTournament(id);
+      return;
+    }
+
+    updateTournament.mutate(
+      { id, data: patch },
+      {
+        onMutate: () => setSavingTournamentId(id),
+        onSettled: () =>
+          setSavingTournamentId((cur) => (cur === id ? null : cur)),
+        onSuccess: () => onCancelEditTournament(id),
+      },
+    );
+  };
+
+  const onConfirmImportSchedule = () => {
+    if (!scheduleRows.length) {
+      toast.error("Nao ha torneios na grade para importar");
+      setIsImportScheduleModalOpen(false);
+      return;
+    }
+
+    const now = new Date();
+    const rows = scheduleRows.map((row) => {
+      const [hoursRaw, minutesRaw] = String(row.time ?? "").split(":");
+      const hours = Number(hoursRaw);
+      const minutes = Number(minutesRaw);
+      const date = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        Number.isFinite(hours) ? hours : 0,
+        Number.isFinite(minutes) ? minutes : 0,
+        0,
+        0,
+      );
+
+      return {
+        date: date.toISOString(),
+        platform: String(row.platform ?? ""),
+        name: String(row.name ?? ""),
+        currency: String(row.currency ?? "USD"),
+        buyIn: Number(row.buyIn) || 0,
+        result: 0,
+      };
+    });
+
+    createManyTournaments.mutate(rows, {
+      onMutate: () => setIsImportingSchedule(true),
+      onSettled: () => setIsImportingSchedule(false),
+      onSuccess: () => setIsImportScheduleModalOpen(false),
+    });
+  };
+
   return {
     isLoading,
     total,
@@ -86,6 +217,11 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     platform,
     isOpenFilter,
     selectedTournamentId,
+    editingTournamentId,
+    editDraftById,
+    savingTournamentId,
+    isImportScheduleModalOpen,
+    isImportingSchedule,
     onFilterToggle: () => setIsOpenFilter((prev) => !prev),
     onPlatformChange,
     onClearFilter: clearFilter,
@@ -93,5 +229,12 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     onSelectTournamentToDelete: setSelectedTournamentId,
     onConfirmDelete,
     onCloseDeleteModal: () => setSelectedTournamentId(null),
+    onOpenImportScheduleModal: () => setIsImportScheduleModalOpen(true),
+    onCloseImportScheduleModal: () => setIsImportScheduleModalOpen(false),
+    onConfirmImportSchedule,
+    onStartEditTournament,
+    onChangeEditDraft,
+    onCancelEditTournament,
+    onSaveEditTournament,
   };
 }
