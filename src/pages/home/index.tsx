@@ -3,5 +3,6 @@ import { useHomeViewModel } from "./home.viewmodel";
 
 export const Home = () => {
   const viewModel = useHomeViewModel();
+
   return <HomeView {...viewModel} />;
 };
