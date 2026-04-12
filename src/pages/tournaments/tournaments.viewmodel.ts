@@ -157,10 +157,10 @@ export function useTournamentsViewModel(): TournamentsViewProps {
       return;
     }
 
+    setSavingTournamentId(id);
     updateTournament.mutate(
       { id, data: patch },
       {
-        onMutate: () => setSavingTournamentId(id),
         onSettled: () =>
           setSavingTournamentId((cur) => (cur === id ? null : cur)),
         onSuccess: () => onCancelEditTournament(id),
@@ -200,8 +200,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
       };
     });
 
+    setIsImportingSchedule(true);
     createManyTournaments.mutate(rows, {
-      onMutate: () => setIsImportingSchedule(true),
       onSettled: () => setIsImportingSchedule(false),
       onSuccess: () => setIsImportScheduleModalOpen(false),
     });

@@ -129,10 +129,10 @@ export function useScheduleViewModel(): ScheduleViewProps {
       return;
     }
 
+    setSavingScheduleId(id);
     updateSchedule.mutate(
       { id, data: patch },
       {
-        onMutate: () => setSavingScheduleId(id),
         onSettled: () =>
           setSavingScheduleId((cur) => (cur === id ? null : cur)),
         onSuccess: () => onCancelEditSchedule(id),
