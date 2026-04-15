@@ -20,24 +20,24 @@ export const ActivityCard = ({
 }: ActivityCardProps) => {
   const surface =
     variant === "nested"
-      ? "glass-inner w-full gap-3 border border-white/10 bg-transparent py-4 px-4 shadow-none rounded-2xl text-text-primary"
-      : "glass-panel w-full gap-3 border-0 bg-transparent py-5 px-5 shadow-none rounded-3xl text-text-primary";
+      ? "glass-inner w-full border-0 bg-transparent py-4 px-4 shadow-none text-text-primary"
+      : "glass-panel w-full border-0 bg-transparent py-5 px-5 shadow-none text-text-primary";
 
   return (
     <Card className={surface}>
-      <p className="text-text-secondary">{title}</p>
+      <p className="activity-card-title">{title}</p>
+
       {isValuePositiveOrNegative ? (
-        <p
-          className={`text-[16px] ${
-            value > 0 ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          $ {value} ({convertedValue})
+        <p className={value > 0 ? "activity-card-value-positive" : "activity-card-value-negative"}>
+          $ {value}
+          {convertedValue && (
+            <span className="activity-card-converted">({convertedValue})</span>
+          )}
         </p>
       ) : isCurrency ? (
-        <p className="text-[16px] text-text-primary">$ {value}</p>
+        <p className="activity-card-value">$ {value}</p>
       ) : (
-        <p className="text-[16px] text-text-primary">{value}</p>
+        <p className="activity-card-value">{value}</p>
       )}
     </Card>
   );
