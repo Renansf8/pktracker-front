@@ -6,6 +6,7 @@ export const SCHEDULE_ITEMS_PER_PAGE = 12;
 export interface ScheduleViewProps {
   isLoading: boolean;
   total: number;
+  totalBuyIns: number;
   totalPages: number;
   currentPage: number;
   currentPageData: ScheduleTournament[];

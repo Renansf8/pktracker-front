@@ -53,6 +53,10 @@ export function useScheduleViewModel(): ScheduleViewProps {
   }, [list.length]);
 
   const total = list.length;
+  const totalBuyIns = list.reduce(
+    (acc, item) => acc + Number(item.buyIn ?? 0),
+    0,
+  );
   const totalPages = Math.max(1, Math.ceil(total / SCHEDULE_ITEMS_PER_PAGE));
   const currentPageSafe = Math.min(currentPage, totalPages);
 
@@ -143,6 +147,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
   return {
     isLoading,
     total,
+    totalBuyIns,
     totalPages,
     currentPage: currentPageSafe,
     currentPageData,

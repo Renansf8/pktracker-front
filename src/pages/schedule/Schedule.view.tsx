@@ -17,6 +17,7 @@ import { DeleteScheduleModal } from "./components/deleteScheduleModal";
 export function ScheduleView({
   isLoading,
   total,
+  totalBuyIns,
   totalPages,
   currentPage,
   currentPageData,
@@ -44,9 +45,14 @@ export function ScheduleView({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-text-primary text-2xl font-bold">Grade</h2>
           {total > 0 && (
-            <p className="text-text-secondary text-sm">
-              Total: {total} torneio{total !== 1 ? "s" : ""}
-            </p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-text-secondary text-sm">
+                Total: {total} torneio{total !== 1 ? "s" : ""}
+              </p>
+              <p className="text-text-secondary text-sm">
+                Total Buy-ins: $ {totalBuyIns.toFixed(2)}
+              </p>
+            </div>
           )}
         </div>
 
