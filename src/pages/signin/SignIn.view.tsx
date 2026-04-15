@@ -68,7 +68,10 @@ export function SignInView({ form, onSubmit }: SignInViewProps) {
                   )}
                 />
                 <div className="flex flex-col gap-3">
-                  <Button type="submit" className="w-full p-0 bg-black">
+                  <Button
+                    type="submit"
+                    className="w-full btn-gold font-display uppercase tracking-[0.12em] text-sm font-bold"
+                  >
                     Login
                   </Button>
                 </div>
