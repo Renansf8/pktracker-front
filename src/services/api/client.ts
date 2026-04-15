@@ -10,7 +10,8 @@ interface ApiResponse<T = unknown> {
 const createApiClient = (): AxiosInstance => {
   const client = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000",
-    timeout: 10000,
+    // 60s para aguentar o cold start do Render no plano free
+    timeout: 60000,
     headers: {
       "Content-Type": "application/json",
     },
