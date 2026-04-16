@@ -4,12 +4,15 @@ import { SummarizeCards } from "./Summarize Cards";
 import {
   DayProfitBarChart,
   MonthProfitBarChart,
+  WeekProfitBarChart,
+  YearProfitBarChart,
 } from "@/components/ResultsProfitCharts";
 import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import {
   convertIsoDateToBr,
   isSameCalendarDayLocal,
+  parseTournamentDateLocal,
 } from "@/utils/dateConvert";
 import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 
@@ -79,6 +82,50 @@ export const SummarizeResults = () => {
     },
   );
 
+  // Week boundaries (domingo a sábado)
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay());
+  weekStart.setHours(0, 0, 0, 0);
+
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+
+  const formatDateShort = (d: Date) =>
+    `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}`;
+
+  const weekRangeLabel = `${formatDateShort(weekStart)} – ${formatDateShort(weekEnd)}`;
+
+  const weekStartTime = weekStart.getTime();
+
+  const weekTournaments = useMemo(() => {
+    const list = tournaments?.data?.data;
+    if (!list?.length) return [];
+    const wStart = new Date(weekStartTime);
+    wStart.setHours(0, 0, 0, 0);
+    const wEnd = new Date(weekStartTime);
+    wEnd.setDate(wStart.getDate() + 6);
+    wEnd.setHours(23, 59, 59, 999);
+    return list.filter((tournament: Tournament) => {
+      const d = parseTournamentDateLocal(tournament.date);
+      return d >= wStart && d <= wEnd;
+    });
+  }, [tournaments?.data?.data, weekStartTime]);
+
+  // Year filter
+  const currentYear = today.getFullYear();
+
+  const yearTournaments = useMemo(() => {
+    const list = tournaments?.data?.data;
+    if (!list?.length) return [];
+    return list.filter((tournament: Tournament) => {
+      const d = parseTournamentDateLocal(tournament.date);
+      return d.getFullYear() === currentYear;
+    });
+  }, [tournaments?.data?.data, currentYear]);
+
   // Daily stats
   const totalTournaments = todayTournaments?.length || 0;
 
@@ -126,6 +173,52 @@ export const SummarizeResults = () => {
       return total;
     }, 0) || 0;
 
+  // Weekly stats
+  const weeklyTotalTournaments = weekTournaments?.length || 0;
+
+  const weeklyTotalBuyIn =
+    weekTournaments?.reduce((acc: number, tournament: Tournament) => {
+      return acc + Number(tournament.buyIn);
+    }, 0) || 0;
+
+  const weeklyAbi =
+    weeklyTotalTournaments > 0
+      ? weeklyTotalBuyIn / weeklyTotalTournaments
+      : 0;
+
+  const weeklyTotalProfit =
+    weekTournaments?.reduce((acc: number, tournament: Tournament) => {
+      return acc + Number(tournament.result);
+    }, 0) || 0;
+
+  const weeklyTotalWinnings =
+    weekTournaments?.reduce((acc: number, tournament: Tournament) => {
+      return acc + Number(tournament.profit);
+    }, 0) || 0;
+
+  // Yearly stats
+  const yearlyTotalTournaments = yearTournaments?.length || 0;
+
+  const yearlyTotalBuyIn =
+    yearTournaments?.reduce((acc: number, tournament: Tournament) => {
+      return acc + Number(tournament.buyIn);
+    }, 0) || 0;
+
+  const yearlyAbi =
+    yearlyTotalTournaments > 0
+      ? yearlyTotalBuyIn / yearlyTotalTournaments
+      : 0;
+
+  const yearlyTotalProfit =
+    yearTournaments?.reduce((acc: number, tournament: Tournament) => {
+      return acc + Number(tournament.result);
+    }, 0) || 0;
+
+  const yearlyTotalWinnings =
+    yearTournaments?.reduce((acc: number, tournament: Tournament) => {
+      return acc + Number(tournament.profit);
+    }, 0) || 0;
+
   const dayProfitChartData = useMemo(() => {
     if (!todayTournaments?.length) return [];
     const sorted = [...todayTournaments].sort(
@@ -145,6 +238,54 @@ export const SummarizeResults = () => {
       };
     });
   }, [todayTournaments]);
+
+  const weekProfitChartData = useMemo(() => {
+    const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const byDate = new Map<string, number>();
+
+    if (weekTournaments?.length) {
+      for (const t of weekTournaments) {
+        const d = parseTournamentDateLocal(t.date);
+        const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        const p = getTournamentLucroUsd(t);
+        byDate.set(key, (byDate.get(key) || 0) + p);
+      }
+    }
+
+    const rows: { dia: string; Lucro: number }[] = [];
+    const wStart = new Date(weekStartTime);
+    wStart.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 7; i++) {
+      const dayDate = new Date(wStart);
+      dayDate.setDate(wStart.getDate() + i);
+      const key = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+      const dd = String(dayDate.getDate()).padStart(2, "0");
+      const mm = String(dayDate.getMonth() + 1).padStart(2, "0");
+      rows.push({
+        dia: `${dayNames[dayDate.getDay()]} ${dd}/${mm}`,
+        Lucro: byDate.get(key) ?? 0,
+      });
+    }
+    return rows;
+  }, [weekTournaments, weekStartTime]);
+
+  const yearProfitChartData = useMemo(() => {
+    const byMonth = new Map<number, number>();
+
+    if (yearTournaments?.length) {
+      for (const t of yearTournaments) {
+        const d = parseTournamentDateLocal(t.date);
+        const m = d.getMonth();
+        const p = getTournamentLucroUsd(t);
+        byMonth.set(m, (byMonth.get(m) || 0) + p);
+      }
+    }
+
+    return monthNames.map((name, idx) => ({
+      mes: name.slice(0, 3),
+      Lucro: byMonth.get(idx) ?? 0,
+    }));
+  }, [yearTournaments]);
 
   const monthProfitChartData = useMemo(() => {
     const ref = new Date();
@@ -207,10 +348,20 @@ export const SummarizeResults = () => {
           />
           <DayProfitBarChart data={dayProfitChartData} />
         </TabsContent>
-        <TabsContent value="semana">
-          <p className="mt-2 text-sm text-zinc-500">
-            Visão semanal em breve.
-          </p>
+        <TabsContent value="semana" className="mt-2 w-full space-y-4">
+          <p className="text-text-primary text-lg">{weekRangeLabel}</p>
+          <SummarizeCards
+            totalTournaments={weeklyTotalTournaments}
+            totalProfit={weeklyTotalProfit}
+            totalWinnings={weeklyTotalWinnings}
+            abi={weeklyAbi}
+            totalBuyIn={weeklyTotalBuyIn}
+            cardVariant="nested"
+          />
+          <WeekProfitBarChart
+            key={`week-chart-${periodTab}`}
+            data={weekProfitChartData}
+          />
         </TabsContent>
         <TabsContent value="mes" className="mt-2 w-full space-y-4">
           <p className="text-text-primary text-xl">{currentMonthName}</p>
@@ -227,8 +378,20 @@ export const SummarizeResults = () => {
             data={monthProfitChartData}
           />
         </TabsContent>
-        <TabsContent value="ano">
-          <p className="mt-2 text-sm text-zinc-500">Visão anual em breve.</p>
+        <TabsContent value="ano" className="mt-2 w-full space-y-4">
+          <p className="text-text-primary text-xl">{currentYear}</p>
+          <SummarizeCards
+            totalTournaments={yearlyTotalTournaments}
+            totalProfit={yearlyTotalProfit}
+            totalWinnings={yearlyTotalWinnings}
+            abi={yearlyAbi}
+            totalBuyIn={yearlyTotalBuyIn}
+            cardVariant="nested"
+          />
+          <YearProfitBarChart
+            key={`year-chart-${periodTab}`}
+            data={yearProfitChartData}
+          />
         </TabsContent>
       </Tabs>
     </div>
