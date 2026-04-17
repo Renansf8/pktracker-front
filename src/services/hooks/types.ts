@@ -24,3 +24,45 @@ export interface Withdrawal {
   date: string;
   amount: number;
 }
+
+export interface StatsTournamentRef {
+  id: string;
+  name: string;
+  platform: string;
+  date: string;
+}
+
+export interface StatsBiggestBuyIn {
+  value: number;
+  tournament: StatsTournamentRef;
+}
+
+export interface StatsBucketRecord {
+  bucketStart: string;
+  amount: number;
+}
+
+export type StatsBucketRange = "day" | "week" | "month" | "year";
+
+export type StatsBucketRecords = {
+  [K in StatsBucketRange]: StatsBucketRecord | null;
+};
+
+export interface StatsMostTournamentsInADay {
+  date: string;
+  count: number;
+}
+
+export interface StatsHighestAbiDay {
+  date: string;
+  abi: number;
+  tournaments: number;
+}
+
+export interface StatsSummary {
+  biggestBuyIn: StatsBiggestBuyIn | null;
+  profitRecords: StatsBucketRecords;
+  lossRecords: StatsBucketRecords;
+  mostTournamentsInADay: StatsMostTournamentsInADay | null;
+  highestAbiDay: StatsHighestAbiDay | null;
+}

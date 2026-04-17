@@ -37,4 +37,7 @@ export const API_ENDPOINTS = {
     CREATE_DEPOSIT: "/banks/deposits",
     CREATE_WITHDRAWAL: "/banks/withdrawals",
   },
+  STATS: {
+    SUMMARY: "/stats/summary",
+  },
 } as const;

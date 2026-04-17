@@ -1,7 +1,7 @@
+import { StatsView } from "./Stats.view";
+import { useStatsViewModel } from "./stats.viewmodel";
+
 export const Stats = () => {
-  return (
-    <div className=" text-text-primary flex justify-center items-center h-[90vh]">
-      A página está em construção...
-    </div>
-  );
+  const viewModel = useStatsViewModel();
+  return <StatsView {...viewModel} />;
 };
