@@ -1,3 +1,5 @@
+"use client";
+
 import { Text, Title } from "@tremor/react";
 import {
   Bar,
