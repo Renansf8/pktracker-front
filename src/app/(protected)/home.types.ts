@@ -16,4 +16,6 @@ export interface HomeViewProps {
   abi: number;
   totalProfit: number;
   totalWinnings: number;
+  itmPercentage: number;
+  itmCount: number;
 }

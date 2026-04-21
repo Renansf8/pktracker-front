@@ -7,6 +7,8 @@ export type TournamentEditDraft = {
   currency: string;
   buyIn: number | string;
   result: number | string;
+  itm: boolean;
+  position: string;
 };
 
 function normStr(v: unknown): string {
@@ -57,6 +59,17 @@ export function buildTournamentPatch(
   const nextResult = normNum(draft.result);
   if (nextResult !== normNum(original.result)) {
     patch.result = nextResult;
+  }
+
+  const nextItm = draft.itm;
+  if (nextItm !== (original.itm ?? false)) {
+    patch.itm = nextItm;
+  }
+
+  const nextPosition = draft.position !== "" ? normNum(draft.position) : null;
+  const originalPosition = original.position ?? null;
+  if (nextPosition !== originalPosition) {
+    patch.position = nextPosition;
   }
 
   return patch;

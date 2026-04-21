@@ -7,6 +7,8 @@ export interface Tournament {
   buyIn: number | string;
   result: number | string;
   profit?: number;
+  itm?: boolean;
+  position?: number | null;
 }
 
 export interface PaginatedTournamentsResponse {

@@ -116,6 +116,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
         currency: String(tournament.currency ?? ""),
         buyIn: tournament.buyIn ?? 0,
         result: tournament.result ?? 0,
+        itm: tournament.itm ?? false,
+        position: tournament.position != null ? String(tournament.position) : "",
       },
     }));
   };
@@ -134,6 +136,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
           currency: "USD",
           buyIn: 0,
           result: 0,
+          itm: false,
+          position: "",
         }),
         ...patch,
       },

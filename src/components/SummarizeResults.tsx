@@ -24,6 +24,12 @@ const periodTabsListClass =
 
 const periodTabTriggerClass = "min-w-[4.25rem] flex-1 px-3 py-2.5";
 
+const calcItm = (list: Tournament[]) => {
+  const count = list.filter((t) => t.itm === true).length;
+  const pct = list.length > 0 ? (count / list.length) * 100 : 0;
+  return { itmCount: count, itmPercentage: pct };
+};
+
 export const SummarizeResults = () => {
   /** Limite alto: a visão "Dia" precisa dos torneios de hoje; página 1 com 20 pode não incluí-los. */
   const { getAllTournaments } = useTournaments("", 1, 500);
@@ -130,96 +136,35 @@ export const SummarizeResults = () => {
 
   // Daily stats
   const totalTournaments = todayTournaments?.length || 0;
-
-  const totalBuyIn =
-    todayTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.buyIn);
-    }, 0) || 0;
-
+  const totalBuyIn = todayTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.buyIn), 0) || 0;
   const abi = totalTournaments > 0 ? totalBuyIn / totalTournaments : 0;
-
-  const totalProfit =
-    todayTournaments?.reduce((acc: number, tournament: Tournament) => {
-      const total = acc + Number(tournament.result);
-      return total;
-    }, 0) || 0;
-
-  const totalWinnings =
-    todayTournaments?.reduce((acc: number, tournament: Tournament) => {
-      const total = acc + Number(tournament.profit);
-      return total;
-    }, 0) || 0;
+  const totalProfit = todayTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
+  const totalWinnings = todayTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
+  const { itmCount, itmPercentage } = calcItm(todayTournaments);
 
   // Monthly stats
   const monthlyTotalTournaments = monthTournaments?.length || 0;
-
-  const monthlyTotalBuyIn =
-    monthTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.buyIn);
-    }, 0) || 0;
-
-  const monthlyAbi =
-    monthlyTotalTournaments > 0
-      ? monthlyTotalBuyIn / monthlyTotalTournaments
-      : 0;
-
-  const monthlyTotalProfit =
-    monthTournaments?.reduce((acc: number, tournament: Tournament) => {
-      const total = acc + Number(tournament.result);
-      return total;
-    }, 0) || 0;
-
-  const monthlyTotalWinnings =
-    monthTournaments?.reduce((acc: number, tournament: Tournament) => {
-      const total = acc + Number(tournament.profit);
-      return total;
-    }, 0) || 0;
+  const monthlyTotalBuyIn = monthTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.buyIn), 0) || 0;
+  const monthlyAbi = monthlyTotalTournaments > 0 ? monthlyTotalBuyIn / monthlyTotalTournaments : 0;
+  const monthlyTotalProfit = monthTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
+  const monthlyTotalWinnings = monthTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
+  const { itmCount: monthlyItmCount, itmPercentage: monthlyItmPercentage } = calcItm(monthTournaments ?? []);
 
   // Weekly stats
   const weeklyTotalTournaments = weekTournaments?.length || 0;
-
-  const weeklyTotalBuyIn =
-    weekTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.buyIn);
-    }, 0) || 0;
-
-  const weeklyAbi =
-    weeklyTotalTournaments > 0
-      ? weeklyTotalBuyIn / weeklyTotalTournaments
-      : 0;
-
-  const weeklyTotalProfit =
-    weekTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.result);
-    }, 0) || 0;
-
-  const weeklyTotalWinnings =
-    weekTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.profit);
-    }, 0) || 0;
+  const weeklyTotalBuyIn = weekTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.buyIn), 0) || 0;
+  const weeklyAbi = weeklyTotalTournaments > 0 ? weeklyTotalBuyIn / weeklyTotalTournaments : 0;
+  const weeklyTotalProfit = weekTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
+  const weeklyTotalWinnings = weekTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
+  const { itmCount: weeklyItmCount, itmPercentage: weeklyItmPercentage } = calcItm(weekTournaments);
 
   // Yearly stats
   const yearlyTotalTournaments = yearTournaments?.length || 0;
-
-  const yearlyTotalBuyIn =
-    yearTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.buyIn);
-    }, 0) || 0;
-
-  const yearlyAbi =
-    yearlyTotalTournaments > 0
-      ? yearlyTotalBuyIn / yearlyTotalTournaments
-      : 0;
-
-  const yearlyTotalProfit =
-    yearTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.result);
-    }, 0) || 0;
-
-  const yearlyTotalWinnings =
-    yearTournaments?.reduce((acc: number, tournament: Tournament) => {
-      return acc + Number(tournament.profit);
-    }, 0) || 0;
+  const yearlyTotalBuyIn = yearTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.buyIn), 0) || 0;
+  const yearlyAbi = yearlyTotalTournaments > 0 ? yearlyTotalBuyIn / yearlyTotalTournaments : 0;
+  const yearlyTotalProfit = yearTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
+  const yearlyTotalWinnings = yearTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
+  const { itmCount: yearlyItmCount, itmPercentage: yearlyItmPercentage } = calcItm(yearTournaments);
 
   const dayProfitChartData = useMemo(() => {
     if (!todayTournaments?.length) return [];
@@ -346,7 +291,10 @@ export const SummarizeResults = () => {
             totalWinnings={totalWinnings}
             abi={abi}
             totalBuyIn={totalBuyIn}
+            itmPercentage={itmPercentage}
+            itmCount={itmCount}
             cardVariant="nested"
+            twoRows
           />
           <DayProfitBarChart data={dayProfitChartData} />
         </TabsContent>
@@ -358,7 +306,10 @@ export const SummarizeResults = () => {
             totalWinnings={weeklyTotalWinnings}
             abi={weeklyAbi}
             totalBuyIn={weeklyTotalBuyIn}
+            itmPercentage={weeklyItmPercentage}
+            itmCount={weeklyItmCount}
             cardVariant="nested"
+            twoRows
           />
           <WeekProfitBarChart
             key={`week-chart-${periodTab}`}
@@ -373,7 +324,10 @@ export const SummarizeResults = () => {
             totalWinnings={monthlyTotalWinnings}
             abi={monthlyAbi}
             totalBuyIn={monthlyTotalBuyIn}
+            itmPercentage={monthlyItmPercentage}
+            itmCount={monthlyItmCount}
             cardVariant="nested"
+            twoRows
           />
           <MonthProfitBarChart
             key={`month-chart-${periodTab}`}
@@ -388,7 +342,10 @@ export const SummarizeResults = () => {
             totalWinnings={yearlyTotalWinnings}
             abi={yearlyAbi}
             totalBuyIn={yearlyTotalBuyIn}
+            itmPercentage={yearlyItmPercentage}
+            itmCount={yearlyItmCount}
             cardVariant="nested"
+            twoRows
           />
           <YearProfitBarChart
             key={`year-chart-${periodTab}`}

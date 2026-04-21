@@ -72,10 +72,13 @@ export function useHomeViewModel(): HomeViewProps {
       initial,
     );
     const totalTournaments = tournaments.length;
+    const itmCount = tournaments.filter((t) => t.itm === true).length;
     return {
       ...reduced,
       totalTournaments,
       abi: totalTournaments > 0 ? reduced.totalBuyIn / totalTournaments : 0,
+      itmPercentage: totalTournaments > 0 ? (itmCount / totalTournaments) * 100 : 0,
+      itmCount,
     };
   }, [tournaments]);
 
@@ -102,5 +105,7 @@ export function useHomeViewModel(): HomeViewProps {
     abi: stats.abi,
     totalProfit: stats.totalProfit,
     totalWinnings: stats.totalWinnings,
+    itmPercentage: stats.itmPercentage,
+    itmCount: stats.itmCount,
   };
 }

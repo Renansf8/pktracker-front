@@ -28,7 +28,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { ChevronDownIcon } from "lucide-react";
+import { Check, ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 
 interface TournamentFormProps {
@@ -46,6 +46,8 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     currency: z.string().nonempty({ message: "Moeda é obrigatória" }),
     buyIn: z.string().nonempty({ message: "Buy-in é obrigatório" }),
     result: z.string().nonempty({ message: "obrigatório" }),
+    itm: z.boolean(),
+    position: z.string().optional(),
   });
 
   type FormData = z.infer<typeof schema>;
@@ -59,10 +61,14 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       currency: "USD",
       buyIn: "",
       result: "",
+      itm: false,
+      position: "",
     },
   });
 
   const { createTournament } = useTournaments(platform);
+
+  const itm = form.watch("itm");
 
   const onSubmit = (data: FormData) => {
     const tournamentData = {
@@ -70,6 +76,8 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       date: data.date,
       buyIn: Number(data.buyIn),
       result: Number(data.result),
+      itm: data.itm,
+      position: data.itm && data.position ? Number(data.position) : null,
     };
     createTournament.mutate(tournamentData);
     form.reset();
@@ -79,7 +87,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     <div className="flex flex-col gap-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex gap-4 text-text-primary">
+          <div className="flex gap-3 text-text-primary items-start">
             <FormField
               control={form.control}
               name="date"
@@ -93,7 +101,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                           <Button
                             variant="outline"
                             id="date"
-                            className="w-48 justify-between font-normal"
+                            className="w-40 justify-between font-normal"
                           >
                             {field.value
                               ? new Date(field.value).toLocaleDateString(
@@ -147,7 +155,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                         onValueChange={field.onChange}
                         value={field.value || ""}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-36">
                           <SelectValue placeholder="Selecione uma plataforma" />
                         </SelectTrigger>
                         <SelectContent>
@@ -168,7 +176,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
               control={form.control}
               name="name"
               render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
+                <div className="flex flex-col justify-between h-[80px] flex-1 min-w-[100px]">
                   <div className="gap-1 flex flex-col">
                     <FormLabel>Torneio</FormLabel>
                     <FormControl>
@@ -187,12 +195,12 @@ export function TournamentForm({ platform }: TournamentFormProps) {
               control={form.control}
               name="currency"
               render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
+                <div className="flex flex-col justify-between h-[80px] w-16">
                   <div className="gap-1 flex flex-col">
                     <FormLabel>Moeda</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-input-border"
+                        className="border-input-border w-16"
                         placeholder="USD"
                         {...field}
                         value={"USD"}
@@ -207,12 +215,12 @@ export function TournamentForm({ platform }: TournamentFormProps) {
               control={form.control}
               name="buyIn"
               render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
+                <div className="flex flex-col justify-between h-[80px] w-20">
                   <div className="gap-1 flex flex-col">
                     <FormLabel>Buy-in</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-input-border"
+                        className="border-input-border w-20"
                         placeholder="3"
                         {...field}
                       />
@@ -226,13 +234,64 @@ export function TournamentForm({ platform }: TournamentFormProps) {
               control={form.control}
               name="result"
               render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
+                <div className="flex flex-col justify-between h-[80px] w-24">
                   <div className="gap-1 flex flex-col">
                     <FormLabel>Resultado</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-input-border"
+                        className="border-input-border w-24"
                         placeholder="10"
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="text-[10px] min-h-[14px]" />
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="itm"
+              render={({ field }) => (
+                <div className="flex flex-col justify-between h-[80px]">
+                  <div className="gap-1 flex flex-col">
+                    <FormLabel>ITM</FormLabel>
+                    <FormControl>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          field.onChange(!field.value);
+                          if (field.value) form.setValue("position", "");
+                        }}
+                        className={`h-9 w-16 rounded-md border text-sm font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer ${
+                          field.value
+                            ? "border-success bg-success/20 text-success"
+                            : "border-input bg-transparent text-muted-foreground"
+                        }`}
+                      >
+                        {field.value && <Check className="size-3" />}
+                        {field.value ? "Sim" : "Não"}
+                      </button>
+                    </FormControl>
+                  </div>
+                  <FormMessage className="text-[10px] min-h-[14px]" />
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <div className="flex flex-col justify-between h-[80px]">
+                  <div className="gap-1 flex flex-col">
+                    <FormLabel>Posição</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        className="border-input-border w-20"
+                        placeholder="1"
+                        disabled={!itm}
                         {...field}
                       />
                     </FormControl>

@@ -11,8 +11,8 @@
  *     font-sans) funcionando, mas com fontes self-hospedadas pelo Next.
  */
 
-@import "tailwindcss";
 @config "../../tailwind.config.js";
+@import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));

@@ -23,6 +23,8 @@ export function HomeView() {
     abi,
     totalProfit,
     totalWinnings,
+    itmPercentage,
+    itmCount,
   } = useHomeViewModel();
 
   if (isLoading) {
@@ -97,6 +99,9 @@ export function HomeView() {
           totalWinnings={totalWinnings}
           abi={abi}
           totalBuyIn={totalBuyIn}
+          itmPercentage={itmPercentage}
+          itmCount={itmCount}
+          twoRows
         />
       </section>
 

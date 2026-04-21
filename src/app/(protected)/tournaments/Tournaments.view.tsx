@@ -161,6 +161,12 @@ export function TournamentsView() {
                     Profit
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
+                    ITM
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Posição
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
                     Ações
                   </TableHead>
                 </TableRow>
@@ -169,7 +175,7 @@ export function TournamentsView() {
                 {currentPageData.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={8}
+                      colSpan={10}
                       className="text-text-primary text-center"
                     >
                       Nenhum torneio encontrado
@@ -335,6 +341,52 @@ export function TournamentsView() {
                           } text-center`}
                         >
                           $ {tournament.profit?.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-text-primary text-center">
+                          {isEditing && draft ? (
+                            <div className="flex justify-center">
+                              <button
+                                type="button"
+                                disabled={disabled}
+                                onClick={() =>
+                                  onChangeEditDraft(id, {
+                                    itm: !draft.itm,
+                                    position: draft.itm ? "" : draft.position,
+                                  })
+                                }
+                                className={`h-8 w-14 rounded-md border text-xs font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${
+                                  draft.itm
+                                    ? "border-success bg-success/20 text-success"
+                                    : "border-input bg-transparent text-muted-foreground"
+                                }`}
+                              >
+                                {draft.itm && <Check className="size-3" />}
+                                {draft.itm ? "Sim" : "Não"}
+                              </button>
+                            </div>
+                          ) : tournament.itm ? (
+                            <Check className="size-4 text-green-500 mx-auto" />
+                          ) : (
+                            <X className="size-4 text-red-500 mx-auto" />
+                          )}
+                        </TableCell>
+                        <TableCell className="text-text-primary text-center">
+                          {isEditing && draft ? (
+                            <Input
+                              type="number"
+                              min={1}
+                              value={draft.position}
+                              onChange={(e) =>
+                                onChangeEditDraft(id, {
+                                  position: e.target.value,
+                                })
+                              }
+                              disabled={disabled || !draft.itm}
+                              className="h-9 text-text-primary w-20 mx-auto"
+                            />
+                          ) : (
+                            tournament.position ?? "-"
+                          )}
                         </TableCell>
                         <TableCell className="text-text-primary text-center flex gap-2 justify-around">
                           {isEditing ? (
