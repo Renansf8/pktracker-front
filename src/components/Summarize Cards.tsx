@@ -1,3 +1,5 @@
+"use client";
+
 import { convertUsdToBrl } from "@/utils/currencyConvert";
 import { ActivityCard } from "./ActivityCard";
 import { useCurrency } from "@/services/hooks/useCurrency";

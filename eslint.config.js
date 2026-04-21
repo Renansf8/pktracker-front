@@ -1,28 +1,17 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+import { FlatCompat } from "@eslint/eslintrc";
 
-export default tseslint.config(
-  { ignores: ['dist'] },
+/**
+ * ESLint flat config usando o eslint-config-next via FlatCompat.
+ * Substitui a config anterior que dependia de eslint-plugin-react-refresh
+ * (específico do Vite).
+ */
+const compat = new FlatCompat({
+  baseDirectory: import.meta.dirname,
+});
+
+export default [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-    },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-    },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-    },
+    ignores: [".next/**", "node_modules/**"],
   },
-)
+];
