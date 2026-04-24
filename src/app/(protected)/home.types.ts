@@ -18,4 +18,6 @@ export interface HomeViewProps {
   totalWinnings: number;
   itmPercentage: number;
   itmCount: number;
+  ftCount: number;
+  avgDailyBuyIn: number;
 }

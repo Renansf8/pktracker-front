@@ -47,6 +47,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     buyIn: z.string().nonempty({ message: "Buy-in é obrigatório" }),
     result: z.string().nonempty({ message: "obrigatório" }),
     itm: z.boolean(),
+    hasFt: z.boolean(),
     position: z.string().optional(),
   });
 
@@ -62,6 +63,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       buyIn: "",
       result: "",
       itm: false,
+      hasFt: false,
       position: "",
     },
   });
@@ -77,6 +79,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       buyIn: Number(data.buyIn),
       result: Number(data.result),
       itm: data.itm,
+      hasFt: data.hasFt,
       position: data.itm && data.position ? Number(data.position) : null,
     };
     createTournament.mutate(tournamentData);
@@ -87,226 +90,260 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     <div className="flex flex-col gap-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex gap-3 text-text-primary items-start">
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Data</FormLabel>
-                    <FormControl>
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            id="date"
-                            className="w-40 justify-between font-normal"
+          <div className="flex flex-col gap-3 text-text-primary">
+            {/* Linha 1: dados do torneio */}
+            <div className="flex gap-3 items-start">
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] w-36">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Data</FormLabel>
+                      <FormControl>
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              id="date"
+                              className="w-36 justify-between font-normal"
+                            >
+                              {field.value
+                                ? new Date(field.value).toLocaleDateString(
+                                    "pt-BR",
+                                  )
+                                : "DD/MM/AAAA"}
+                              <ChevronDownIcon />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
                           >
-                            {field.value
-                              ? new Date(field.value).toLocaleDateString(
-                                  "pt-BR",
-                                )
-                              : "Selecione uma data"}
-                            <ChevronDownIcon />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto overflow-hidden p-0"
-                          align="start"
-                        >
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            captionLayout="dropdown"
-                            onSelect={(date) => {
-                              if (date) {
-                                const now = new Date();
-                                date.setHours(now.getHours());
-                                date.setMinutes(now.getMinutes());
-                                date.setSeconds(now.getSeconds());
-                                date.setMilliseconds(now.getMilliseconds());
-                                field.onChange(date.toISOString());
-                              } else {
-                                field.onChange("");
+                            <Calendar
+                              mode="single"
+                              selected={
+                                field.value ? new Date(field.value) : undefined
                               }
-                              setOpen(false);
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
+                              captionLayout="dropdown"
+                              onSelect={(date) => {
+                                if (date) {
+                                  const now = new Date();
+                                  date.setHours(now.getHours());
+                                  date.setMinutes(now.getMinutes());
+                                  date.setSeconds(now.getSeconds());
+                                  date.setMilliseconds(now.getMilliseconds());
+                                  field.onChange(date.toISOString());
+                                } else {
+                                  field.onChange("");
+                                }
+                                setOpen(false);
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="platform"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Plataforma</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value || ""}
-                      >
-                        <SelectTrigger className="w-36">
-                          <SelectValue placeholder="Selecione uma plataforma" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {platforms.map((platform) => (
-                            <SelectItem key={platform.id} value={platform.name}>
-                              {platform.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="platform"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] w-36">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Plataforma</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value || ""}
+                        >
+                          <SelectTrigger className="w-36">
+                            <SelectValue placeholder="Plataforma" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {platforms.map((platform) => (
+                              <SelectItem key={platform.id} value={platform.name}>
+                                {platform.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px] flex-1 min-w-[100px]">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Torneio</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="border-input-border"
-                        placeholder="Daily big"
-                        {...field}
-                      />
-                    </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] flex-1 min-w-[160px]">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Torneio</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="border-input-border"
+                          placeholder="Daily big"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px] w-16">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Moeda</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="border-input-border w-16"
-                        placeholder="USD"
-                        {...field}
-                        value={"USD"}
-                      />
-                    </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] w-20">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Moeda</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="border-input-border w-20"
+                          placeholder="USD"
+                          {...field}
+                          value={"USD"}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="buyIn"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px] w-20">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Buy-in</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="border-input-border w-20"
-                        placeholder="3"
-                        {...field}
-                      />
-                    </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="buyIn"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] w-28">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Buy-in</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="border-input-border w-28"
+                          placeholder="3.00"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="result"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px] w-24">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Resultado</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="border-input-border w-24"
-                        placeholder="10"
-                        {...field}
-                      />
-                    </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="result"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] w-28">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Resultado</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="border-input-border w-28"
+                          placeholder="0.00"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="itm"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>ITM</FormLabel>
-                    <FormControl>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          field.onChange(!field.value);
-                          if (field.value) form.setValue("position", "");
-                        }}
-                        className={`h-9 w-16 rounded-md border text-sm font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer ${
-                          field.value
-                            ? "border-success bg-success/20 text-success"
-                            : "border-input bg-transparent text-muted-foreground"
-                        }`}
-                      >
-                        {field.value && <Check className="size-3" />}
-                        {field.value ? "Sim" : "Não"}
-                      </button>
-                    </FormControl>
+                )}
+              />
+            </div>
+
+            {/* Linha 2: booleans + posição + botão */}
+            <div className="flex gap-3 items-start">
+              <FormField
+                control={form.control}
+                name="itm"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px]">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>ITM</FormLabel>
+                      <FormControl>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            field.onChange(!field.value);
+                            if (field.value) form.setValue("position", "");
+                          }}
+                          className={`h-9 w-20 rounded-md border text-sm font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer ${
+                            field.value
+                              ? "border-success bg-success/20 text-success"
+                              : "border-input bg-transparent text-muted-foreground"
+                          }`}
+                        >
+                          {field.value && <Check className="size-3" />}
+                          {field.value ? "Sim" : "Não"}
+                        </button>
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="position"
-              render={({ field }) => (
-                <div className="flex flex-col justify-between h-[80px]">
-                  <div className="gap-1 flex flex-col">
-                    <FormLabel>Posição</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={1}
-                        className="border-input-border w-20"
-                        placeholder="1"
-                        disabled={!itm}
-                        {...field}
-                      />
-                    </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hasFt"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px]">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>FT</FormLabel>
+                      <FormControl>
+                        <button
+                          type="button"
+                          onClick={() => field.onChange(!field.value)}
+                          className={`h-9 w-20 rounded-md border text-sm font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer ${
+                            field.value
+                              ? "border-success bg-success/20 text-success"
+                              : "border-input bg-transparent text-muted-foreground"
+                          }`}
+                        >
+                          {field.value && <Check className="size-3" />}
+                          {field.value ? "Sim" : "Não"}
+                        </button>
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
                   </div>
-                  <FormMessage className="text-[10px] min-h-[14px]" />
-                </div>
-              )}
-            />
-            <div className="flex items-center h-[80px]">
-              <Button
-                type="submit"
-                className="p-0 bg-success/90 hover:bg-success/80 mb-2 w-[104px]"
-              >
-                Adicionar
-              </Button>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="position"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px] w-28">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Posição</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          className="border-input-border w-28"
+                          placeholder="1"
+                          disabled={!itm}
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
+                  </div>
+                )}
+              />
+              <div className="flex-1" />
+              <div className="flex items-center h-[80px]">
+                <Button
+                  type="submit"
+                  className="p-0 bg-success/90 hover:bg-success/80 mb-2 w-[104px]"
+                >
+                  Adicionar
+                </Button>
+              </div>
             </div>
           </div>
         </form>

@@ -30,6 +30,7 @@ export const useTournaments = (
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: ["tournaments"] });
       refetch();
+      toast.success("Torneio registrado com sucesso");
     },
     onError: () => {
       toast.error("Erro ao criar torneio");

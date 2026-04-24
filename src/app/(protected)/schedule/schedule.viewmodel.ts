@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { ScheduleViewProps } from "./schedule.types";
-import { SCHEDULE_ITEMS_PER_PAGE } from "./schedule.types";
 import { useSchedule } from "@/services/hooks/useSchedule";
 import type { ScheduleTournament } from "@/services/hooks/schedule.types";
 import {
@@ -10,28 +9,7 @@ import {
   type ScheduleEditDraft,
 } from "@/utils/schedulePatch";
 
-function getPaginationPages(
-  currentPage: number,
-  totalPages: number,
-): (number | "ellipsis")[] {
-  if (totalPages <= 1) return [];
-  const pages: (number | "ellipsis")[] = [];
-  pages.push(1);
-  if (currentPage > 3) pages.push("ellipsis");
-  const startPage = Math.max(2, currentPage - 1);
-  const endPage = Math.min(totalPages - 1, currentPage + 1);
-  for (let i = startPage; i <= endPage; i++) {
-    if (i !== 1 && i !== totalPages) pages.push(i);
-  }
-  if (currentPage < totalPages - 2) pages.push("ellipsis");
-  if (totalPages > 1) pages.push(totalPages);
-  return pages.filter(
-    (page, index, self) => index === self.findIndex((p) => p === page),
-  );
-}
-
 export function useScheduleViewModel(): ScheduleViewProps {
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
     null,
   );
@@ -46,36 +24,17 @@ export function useScheduleViewModel(): ScheduleViewProps {
   const { getAllSchedule, deleteSchedule, updateSchedule } = useSchedule();
   const { data, isLoading } = getAllSchedule;
 
-  const list: ScheduleTournament[] = (data?.data?.data ??
-    data?.data ??
-    []) as ScheduleTournament[];
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [list.length]);
+  const list: ScheduleTournament[] = useMemo(
+    () =>
+      (data?.data?.data ?? data?.data ?? []) as ScheduleTournament[],
+    [data],
+  );
 
   const total = list.length;
   const totalBuyIns = list.reduce(
     (acc, item) => acc + Number(item.buyIn ?? 0),
     0,
   );
-  const totalPages = Math.max(1, Math.ceil(total / SCHEDULE_ITEMS_PER_PAGE));
-  const currentPageSafe = Math.min(currentPage, totalPages);
-
-  const currentPageData = useMemo(() => {
-    const start = (currentPageSafe - 1) * SCHEDULE_ITEMS_PER_PAGE;
-    return list.slice(start, start + SCHEDULE_ITEMS_PER_PAGE);
-  }, [currentPageSafe, list]);
-
-  const paginationPages = useMemo(
-    () => getPaginationPages(currentPageSafe, totalPages),
-    [currentPageSafe, totalPages],
-  );
-
-  const onPageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   const onConfirmDelete = () => {
     if (selectedScheduleId) {
@@ -150,17 +109,13 @@ export function useScheduleViewModel(): ScheduleViewProps {
     isLoading,
     total,
     totalBuyIns,
-    totalPages,
-    currentPage: currentPageSafe,
-    currentPageData,
-    paginationPages,
+    list,
 
     selectedScheduleId,
     editingScheduleId,
     savingScheduleId,
     editDraftById,
 
-    onPageChange,
     onSelectScheduleToDelete: setSelectedScheduleId,
     onConfirmDelete,
     onCloseDeleteModal: () => setSelectedScheduleId(null),

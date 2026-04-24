@@ -164,6 +164,9 @@ export function TournamentsView() {
                     ITM
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
+                    FT
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
                     Posição
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
@@ -175,7 +178,7 @@ export function TournamentsView() {
                 {currentPageData.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={10}
+                      colSpan={11}
                       className="text-text-primary text-center"
                     >
                       Nenhum torneio encontrado
@@ -365,6 +368,33 @@ export function TournamentsView() {
                               </button>
                             </div>
                           ) : tournament.itm ? (
+                            <Check className="size-4 text-green-500 mx-auto" />
+                          ) : (
+                            <X className="size-4 text-red-500 mx-auto" />
+                          )}
+                        </TableCell>
+                        <TableCell className="text-text-primary text-center">
+                          {isEditing && draft ? (
+                            <div className="flex justify-center">
+                              <button
+                                type="button"
+                                disabled={disabled}
+                                onClick={() =>
+                                  onChangeEditDraft(id, {
+                                    hasFt: !draft.hasFt,
+                                  })
+                                }
+                                className={`h-8 w-14 rounded-md border text-xs font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${
+                                  draft.hasFt
+                                    ? "border-success bg-success/20 text-success"
+                                    : "border-input bg-transparent text-muted-foreground"
+                                }`}
+                              >
+                                {draft.hasFt && <Check className="size-3" />}
+                                {draft.hasFt ? "Sim" : "Não"}
+                              </button>
+                            </div>
+                          ) : tournament.hasFt ? (
                             <Check className="size-4 text-green-500 mx-auto" />
                           ) : (
                             <X className="size-4 text-red-500 mx-auto" />

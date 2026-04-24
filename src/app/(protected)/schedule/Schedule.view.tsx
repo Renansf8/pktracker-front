@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ScheduleTournament } from "@/services/hooks/schedule.types";
 import { Check, Edit, Trash, X } from "lucide-react";
@@ -21,15 +20,11 @@ export function ScheduleView() {
     isLoading,
     total,
     totalBuyIns,
-    totalPages,
-    currentPage,
-    currentPageData,
-    paginationPages,
+    list,
     selectedScheduleId,
     editingScheduleId,
     savingScheduleId,
     editDraftById,
-    onPageChange,
     onSelectScheduleToDelete,
     onConfirmDelete,
     onCloseDeleteModal,
@@ -65,7 +60,7 @@ export function ScheduleView() {
         </div>
 
         <div className="glass-panel mt-8 overflow-hidden rounded-3xl p-1">
-          <div className="glass-inner rounded-2xl p-4">
+          <div className="glass-inner rounded-2xl p-4 overflow-y-auto max-h-[60vh]">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -90,7 +85,7 @@ export function ScheduleView() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentPageData.length === 0 ? (
+                {list.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={6}
@@ -100,7 +95,7 @@ export function ScheduleView() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  currentPageData.map((row: ScheduleTournament) => {
+                  list.map((row: ScheduleTournament) => {
                     const id = row.id ?? "";
                     const isEditing = Boolean(id) && editingScheduleId === id;
                     const draft = id ? editDraftById[id] : undefined;
@@ -240,46 +235,6 @@ export function ScheduleView() {
             </Table>
           </div>
         </div>
-
-        {totalPages > 1 && (
-          <div className="mt-6 mb-6">
-            <div className="flex items-center justify-center gap-3">
-              <Button
-                variant="outline"
-                onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Anterior
-              </Button>
-              <div className="flex gap-2">
-                {paginationPages.map((p, idx) =>
-                  p === "ellipsis" ? (
-                    <span key={`e-${idx}`} className="text-text-secondary">
-                      …
-                    </span>
-                  ) : (
-                    <Button
-                      key={p}
-                      variant={p === currentPage ? "secondary" : "outline"}
-                      onClick={() => onPageChange(p)}
-                    >
-                      {p}
-                    </Button>
-                  ),
-                )}
-              </div>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  currentPage < totalPages && onPageChange(currentPage + 1)
-                }
-                disabled={currentPage === totalPages}
-              >
-                Próxima
-              </Button>
-            </div>
-          </div>
-        )}
 
         <DeleteScheduleModal
           isOpen={selectedScheduleId !== null}

@@ -8,6 +8,7 @@ export type TournamentEditDraft = {
   buyIn: number | string;
   result: number | string;
   itm: boolean;
+  hasFt: boolean;
   position: string;
 };
 
@@ -64,6 +65,11 @@ export function buildTournamentPatch(
   const nextItm = draft.itm;
   if (nextItm !== (original.itm ?? false)) {
     patch.itm = nextItm;
+  }
+
+  const nextHasFt = draft.hasFt;
+  if (nextHasFt !== (original.hasFt ?? false)) {
+    patch.hasFt = nextHasFt;
   }
 
   const nextPosition = draft.position !== "" ? normNum(draft.position) : null;

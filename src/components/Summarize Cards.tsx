@@ -12,6 +12,8 @@ interface SummarizeCardsProps {
   totalBuyIn: number;
   itmPercentage?: number;
   itmCount?: number;
+  ftCount?: number;
+  avgDailyBuyIn?: number;
   cardVariant?: "elevated" | "nested";
   twoRows?: boolean;
 }
@@ -24,6 +26,8 @@ export const SummarizeCards = ({
   totalBuyIn,
   itmPercentage,
   itmCount,
+  ftCount,
+  avgDailyBuyIn,
   cardVariant = "elevated",
   twoRows = false,
 }: SummarizeCardsProps) => {
@@ -80,6 +84,19 @@ export const SummarizeCards = ({
             variant={cardVariant}
           />
           {lucroTotalCard}
+        </div>
+        <div className="flex gap-4 w-full">
+          <ActivityCard
+            title="Média de Buy-ins/dia"
+            value={Number((avgDailyBuyIn ?? 0).toFixed(2))}
+            isCurrency
+            variant={cardVariant}
+          />
+          <ActivityCard
+            title="Final Tables"
+            value={ftCount ?? 0}
+            variant={cardVariant}
+          />
         </div>
       </div>
     );

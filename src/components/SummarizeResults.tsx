@@ -30,6 +30,16 @@ const calcItm = (list: Tournament[]) => {
   return { itmCount: count, itmPercentage: pct };
 };
 
+const calcFt = (list: Tournament[]) =>
+  list.filter((t) => t.hasFt === true).length;
+
+const calcAvgDailyBuyIn = (list: Tournament[]) => {
+  if (!list.length) return 0;
+  const distinctDays = new Set(list.map((t) => String(t.date).split("T")[0])).size;
+  const totalBuyIn = list.reduce((acc, t) => acc + Number(t.buyIn), 0);
+  return distinctDays > 0 ? totalBuyIn / distinctDays : 0;
+};
+
 export const SummarizeResults = () => {
   /** Limite alto: a visão "Dia" precisa dos torneios de hoje; página 1 com 20 pode não incluí-los. */
   const { getAllTournaments } = useTournaments("", 1, 500);
@@ -141,6 +151,8 @@ export const SummarizeResults = () => {
   const totalProfit = todayTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
   const totalWinnings = todayTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
   const { itmCount, itmPercentage } = calcItm(todayTournaments);
+  const ftCount = calcFt(todayTournaments);
+  const avgDailyBuyIn = calcAvgDailyBuyIn(todayTournaments);
 
   // Monthly stats
   const monthlyTotalTournaments = monthTournaments?.length || 0;
@@ -149,6 +161,8 @@ export const SummarizeResults = () => {
   const monthlyTotalProfit = monthTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
   const monthlyTotalWinnings = monthTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
   const { itmCount: monthlyItmCount, itmPercentage: monthlyItmPercentage } = calcItm(monthTournaments ?? []);
+  const monthlyFtCount = calcFt(monthTournaments ?? []);
+  const monthlyAvgDailyBuyIn = calcAvgDailyBuyIn(monthTournaments ?? []);
 
   // Weekly stats
   const weeklyTotalTournaments = weekTournaments?.length || 0;
@@ -157,6 +171,8 @@ export const SummarizeResults = () => {
   const weeklyTotalProfit = weekTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
   const weeklyTotalWinnings = weekTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
   const { itmCount: weeklyItmCount, itmPercentage: weeklyItmPercentage } = calcItm(weekTournaments);
+  const weeklyFtCount = calcFt(weekTournaments);
+  const weeklyAvgDailyBuyIn = calcAvgDailyBuyIn(weekTournaments);
 
   // Yearly stats
   const yearlyTotalTournaments = yearTournaments?.length || 0;
@@ -165,6 +181,8 @@ export const SummarizeResults = () => {
   const yearlyTotalProfit = yearTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.result), 0) || 0;
   const yearlyTotalWinnings = yearTournaments?.reduce((acc: number, t: Tournament) => acc + Number(t.profit), 0) || 0;
   const { itmCount: yearlyItmCount, itmPercentage: yearlyItmPercentage } = calcItm(yearTournaments);
+  const yearlyFtCount = calcFt(yearTournaments);
+  const yearlyAvgDailyBuyIn = calcAvgDailyBuyIn(yearTournaments);
 
   const dayProfitChartData = useMemo(() => {
     if (!todayTournaments?.length) return [];
@@ -293,6 +311,8 @@ export const SummarizeResults = () => {
             totalBuyIn={totalBuyIn}
             itmPercentage={itmPercentage}
             itmCount={itmCount}
+            ftCount={ftCount}
+            avgDailyBuyIn={avgDailyBuyIn}
             cardVariant="nested"
             twoRows
           />
@@ -308,6 +328,8 @@ export const SummarizeResults = () => {
             totalBuyIn={weeklyTotalBuyIn}
             itmPercentage={weeklyItmPercentage}
             itmCount={weeklyItmCount}
+            ftCount={weeklyFtCount}
+            avgDailyBuyIn={weeklyAvgDailyBuyIn}
             cardVariant="nested"
             twoRows
           />
@@ -326,6 +348,8 @@ export const SummarizeResults = () => {
             totalBuyIn={monthlyTotalBuyIn}
             itmPercentage={monthlyItmPercentage}
             itmCount={monthlyItmCount}
+            ftCount={monthlyFtCount}
+            avgDailyBuyIn={monthlyAvgDailyBuyIn}
             cardVariant="nested"
             twoRows
           />
@@ -344,6 +368,8 @@ export const SummarizeResults = () => {
             totalBuyIn={yearlyTotalBuyIn}
             itmPercentage={yearlyItmPercentage}
             itmCount={yearlyItmCount}
+            ftCount={yearlyFtCount}
+            avgDailyBuyIn={yearlyAvgDailyBuyIn}
             cardVariant="nested"
             twoRows
           />

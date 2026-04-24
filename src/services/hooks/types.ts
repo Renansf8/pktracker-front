@@ -8,6 +8,7 @@ export interface Tournament {
   result: number | string;
   profit?: number;
   itm?: boolean;
+  hasFt?: boolean;
   position?: number | null;
 }
 

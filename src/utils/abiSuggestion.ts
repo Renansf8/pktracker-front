@@ -19,6 +19,19 @@ export function getAbiSuggestedRange(bankUsd: number): AbiSuggestedRange | null 
   };
 }
 
+/**
+ * Calcula o ABI exato para uma quantidade customizada de buy-ins.
+ * Retorna null se os parâmetros forem inválidos.
+ */
+export function getAbiForCustomBuyIns(
+  bankUsd: number,
+  buyIns: number,
+): number | null {
+  if (!Number.isFinite(bankUsd) || bankUsd <= 0) return null;
+  if (!Number.isFinite(buyIns) || buyIns <= 0) return null;
+  return bankUsd / buyIns;
+}
+
 export type StakePair = { low: number; high: number };
 
 /**

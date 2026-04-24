@@ -73,12 +73,18 @@ export function useHomeViewModel(): HomeViewProps {
     );
     const totalTournaments = tournaments.length;
     const itmCount = tournaments.filter((t) => t.itm === true).length;
+    const ftCount = tournaments.filter((t) => t.hasFt === true).length;
+    const distinctDays = new Set(
+      tournaments.map((t) => String(t.date).split("T")[0])
+    ).size;
     return {
       ...reduced,
       totalTournaments,
       abi: totalTournaments > 0 ? reduced.totalBuyIn / totalTournaments : 0,
       itmPercentage: totalTournaments > 0 ? (itmCount / totalTournaments) * 100 : 0,
       itmCount,
+      ftCount,
+      avgDailyBuyIn: distinctDays > 0 ? reduced.totalBuyIn / distinctDays : 0,
     };
   }, [tournaments]);
 
@@ -107,5 +113,7 @@ export function useHomeViewModel(): HomeViewProps {
     totalWinnings: stats.totalWinnings,
     itmPercentage: stats.itmPercentage,
     itmCount: stats.itmCount,
+    ftCount: stats.ftCount,
+    avgDailyBuyIn: stats.avgDailyBuyIn,
   };
 }

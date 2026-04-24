@@ -117,6 +117,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
         buyIn: tournament.buyIn ?? 0,
         result: tournament.result ?? 0,
         itm: tournament.itm ?? false,
+        hasFt: tournament.hasFt ?? false,
         position: tournament.position != null ? String(tournament.position) : "",
       },
     }));
@@ -137,6 +138,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
           buyIn: 0,
           result: 0,
           itm: false,
+          hasFt: false,
           position: "",
         }),
         ...patch,
@@ -206,6 +208,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
         currency: String(row.currency ?? "USD"),
         buyIn: Number(row.buyIn) || 0,
         result: 0,
+        itm: false,
       };
     });
 

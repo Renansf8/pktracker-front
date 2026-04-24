@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import {
   getAbiSuggestedRange,
+  getAbiForCustomBuyIns,
   getSuggestedStakeLevels,
 } from "@/utils/abiSuggestion";
 import {
@@ -7,6 +11,7 @@ import {
   getDailyBuyInToBankRatio,
   shouldWarnDailyBuyInExposure,
 } from "@/utils/dailyBuyInExposure";
+import { Input } from "@/components/ui/input";
 import { AlertTriangle } from "lucide-react";
 
 const money = (n: number) =>
@@ -16,69 +21,143 @@ type AbiSuggestionCardProps = {
   bankUsd: number;
 };
 
-function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
-  const range = getAbiSuggestedRange(bankUsd);
-  const stakes =
-    range !== null ? getSuggestedStakeLevels(range.min, range.max) : null;
+const ABI_STORAGE_KEY = "pktracker:abi-buy-ins";
 
-  if (range === null || stakes === null) {
-    return (
-      <article className="glass-panel flex flex-col gap-3 rounded-3xl p-5">
-        <h3 className="text-base font-semibold tracking-tight text-slate-100">
-          ABI ideal para sua banca
-        </h3>
+function readStoredBuyIns(): number | null {
+  try {
+    const raw = localStorage.getItem(ABI_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = parseFloat(raw);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
+  const [customBuyInsInput, setCustomBuyInsInput] = useState<string>("");
+  const [appliedBuyIns, setAppliedBuyIns] = useState<number | null>(
+    () => readStoredBuyIns(),
+  );
+
+  const parsedInput = parseFloat(customBuyInsInput);
+  const isValidInput = Number.isFinite(parsedInput) && parsedInput > 0;
+
+  function handleApply() {
+    if (!isValidInput) return;
+    setAppliedBuyIns(parsedInput);
+    localStorage.setItem(ABI_STORAGE_KEY, String(parsedInput));
+    setCustomBuyInsInput("");
+  }
+
+  const isCustom = appliedBuyIns !== null;
+  const abiCustom = isCustom ? getAbiForCustomBuyIns(bankUsd, appliedBuyIns!) : null;
+  const abiRange = isCustom ? null : getAbiSuggestedRange(bankUsd);
+
+  const displayMin = abiCustom ?? abiRange?.min ?? null;
+  const displayMax = abiCustom ?? abiRange?.max ?? null;
+
+  const stakes =
+    displayMin !== null && displayMax !== null
+      ? getSuggestedStakeLevels(displayMin, displayMax)
+      : null;
+
+  const hasValidBank = displayMin !== null;
+
+  return (
+    <article className="glass-panel flex flex-col gap-4 rounded-3xl p-5">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium uppercase tracking-wide text-cyan-300/90">
+            Gestão de banca
+          </span>
+          <h3 className="text-lg font-semibold tracking-tight text-slate-100">
+            ABI ideal para sua banca
+          </h3>
+        </div>
+
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <label
+            htmlFor="custom-buy-ins"
+            className="text-xs text-slate-500 whitespace-nowrap"
+          >
+            Qtd. de buy-ins
+          </label>
+          <div className="flex items-center gap-1.5">
+            <Input
+              id="custom-buy-ins"
+              type="number"
+              min={1}
+              step={1}
+              placeholder="500"
+              value={customBuyInsInput}
+              onChange={(e) => setCustomBuyInsInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleApply()}
+              className="h-8 w-20 rounded-lg border-white/10 bg-white/5 px-2 text-right text-sm text-slate-100 placeholder:text-slate-600 focus-visible:ring-cyan-400/50"
+            />
+            <button
+              onClick={handleApply}
+              disabled={!isValidInput}
+              className="h-8 rounded-lg bg-cyan-500/20 px-3 text-xs font-medium text-cyan-300 transition-colors hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Aplicar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      {hasValidBank ? (
+        <>
+          <ul className="flex flex-col gap-2.5 text-sm text-slate-200">
+            <li className="flex flex-wrap gap-x-2 border-b border-white/5 pb-2">
+              <span className="text-slate-500">Banca</span>
+              <span className="font-medium text-slate-100">{money(bankUsd)}</span>
+            </li>
+            <li className="flex flex-wrap gap-x-2 border-b border-white/5 pb-2">
+              <span className="text-slate-500">Regra</span>
+              <span>
+                {isCustom && appliedBuyIns !== null
+                  ? `${Math.round(appliedBuyIns)} buy-ins`
+                  : "100 a 150 buy-ins"}
+              </span>
+            </li>
+            <li className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
+              <span className="text-slate-500">Seu ABI ideal</span>
+              <span className="font-semibold text-cyan-200">
+                {isCustom && abiCustom !== null
+                  ? money(abiCustom)
+                  : `${money(displayMin!)} a ${money(displayMax!)}`}
+              </span>
+            </li>
+          </ul>
+
+          {stakes && (
+            <div className="glass-inner rounded-xl border border-white/10 px-4 py-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Foco de stakes
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-slate-300">
+                Torneios de{" "}
+                <span className="font-semibold text-slate-100">
+                  {money(stakes.low)}
+                </span>{" "}
+                e alguns de{" "}
+                <span className="font-semibold text-slate-100">
+                  {money(stakes.high)}
+                </span>{" "}
+                intercalados.
+              </p>
+            </div>
+          )}
+        </>
+      ) : (
         <p className="text-sm leading-relaxed text-slate-400">
           Quando sua banca em USD estiver disponível, mostramos aqui uma faixa
           de ABI e stakes sugeridos com base na regra de 100 a 150 buy-ins.
         </p>
-      </article>
-    );
-  }
-
-  return (
-    <article className="glass-panel flex flex-col gap-4 rounded-3xl p-5">
-      <div className="flex flex-col gap-1">
-        <span className="text-xs font-medium uppercase tracking-wide text-cyan-300/90">
-          Gestão de banca
-        </span>
-        <h3 className="text-lg font-semibold tracking-tight text-slate-100">
-          ABI ideal para sua banca
-        </h3>
-      </div>
-
-      <ul className="flex flex-col gap-2.5 text-sm text-slate-200">
-        <li className="flex flex-wrap gap-x-2 border-b border-white/5 pb-2">
-          <span className="text-slate-500">Banca</span>
-          <span className="font-medium text-slate-100">{money(bankUsd)}</span>
-        </li>
-        <li className="flex flex-wrap gap-x-2 border-b border-white/5 pb-2">
-          <span className="text-slate-500">Regra</span>
-          <span>100 a 150 buy-ins</span>
-        </li>
-        <li className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
-          <span className="text-slate-500">Seu ABI ideal</span>
-          <span className="font-semibold text-cyan-200">
-            {money(range.min)} a {money(range.max)}
-          </span>
-        </li>
-      </ul>
-
-      <div className="glass-inner rounded-xl border border-white/10 px-4 py-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-          Foco de stakes
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-slate-300">
-          Torneios de{" "}
-          <span className="font-semibold text-slate-100">
-            {money(stakes.low)}
-          </span>{" "}
-          e alguns de{" "}
-          <span className="font-semibold text-slate-100">
-            {money(stakes.high)}
-          </span>{" "}
-          intercalados.
-        </p>
-      </div>
+      )}
     </article>
   );
 }
