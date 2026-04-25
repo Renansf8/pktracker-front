@@ -19,6 +19,13 @@ import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert"
 import { useMemo } from "react";
 import type { HomeViewProps } from "./home.types";
 
+/** Converte buyIn/result para número, ignorando "ticket" (retorna 0). */
+function toNum(v: unknown): number {
+  if (typeof v === "string" && v.toLowerCase() === "ticket") return 0;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export function useHomeViewModel(): HomeViewProps {
   const { data: user, isLoading } = useGetUser();
   const { currencies } = useCurrency();
@@ -48,7 +55,7 @@ export function useHomeViewModel(): HomeViewProps {
   }, [tournaments, todayBr]);
 
   const todayTotalBuyIn = useMemo(
-    () => todayTournaments.reduce((acc, t) => acc + Number(t.buyIn), 0),
+    () => todayTournaments.reduce((acc, t) => acc + toNum(t.buyIn), 0),
     [todayTournaments],
   );
 
@@ -65,9 +72,9 @@ export function useHomeViewModel(): HomeViewProps {
     };
     const reduced = tournaments.reduce<StatsAcc>(
       (acc, t) => ({
-        totalBuyIn: acc.totalBuyIn + Number(t.buyIn),
-        totalProfit: acc.totalProfit + Number(t.result),
-        totalWinnings: acc.totalWinnings + Number(t.profit ?? 0),
+        totalBuyIn: acc.totalBuyIn + toNum(t.buyIn),
+        totalProfit: acc.totalProfit + toNum(t.result),
+        totalWinnings: acc.totalWinnings + toNum(t.profit ?? 0),
       }),
       initial,
     );

@@ -21,6 +21,12 @@ function normNum(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function normTicketOrNum(v: unknown): number | "ticket" {
+  if (typeof v === "string" && v.toLowerCase() === "ticket") return "ticket";
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 /**
  * Gera um PATCH parcial com apenas os campos alterados.
  * - Normaliza `buyIn` e `result` como número.
@@ -52,13 +58,13 @@ export function buildTournamentPatch(
     patch.currency = nextCurrency;
   }
 
-  const nextBuyIn = normNum(draft.buyIn);
-  if (nextBuyIn !== normNum(original.buyIn)) {
+  const nextBuyIn = normTicketOrNum(draft.buyIn);
+  if (nextBuyIn !== normTicketOrNum(original.buyIn)) {
     patch.buyIn = nextBuyIn;
   }
 
-  const nextResult = normNum(draft.result);
-  if (nextResult !== normNum(original.result)) {
+  const nextResult = normTicketOrNum(draft.result);
+  if (nextResult !== normTicketOrNum(original.result)) {
     patch.result = nextResult;
   }
 

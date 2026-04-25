@@ -303,8 +303,7 @@ export function TournamentsView() {
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (
                             <Input
-                              type="number"
-                              step="0.01"
+                              type="text"
                               value={String(draft.buyIn)}
                               onChange={(e) =>
                                 onChangeEditDraft(id, {
@@ -314,6 +313,8 @@ export function TournamentsView() {
                               disabled={disabled}
                               className="h-9 text-text-primary"
                             />
+                          ) : String(tournament.buyIn).toLowerCase() === "ticket" ? (
+                            <>ticket</>
                           ) : (
                             <>$ {Number(tournament.buyIn).toFixed(2)}</>
                           )}
@@ -321,8 +322,7 @@ export function TournamentsView() {
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (
                             <Input
-                              type="number"
-                              step="0.01"
+                              type="text"
                               value={String(draft.result)}
                               onChange={(e) =>
                                 onChangeEditDraft(id, {
@@ -332,6 +332,8 @@ export function TournamentsView() {
                               disabled={disabled}
                               className="h-9 text-text-primary"
                             />
+                          ) : String(tournament.result).toLowerCase() === "ticket" ? (
+                            <>ticket</>
                           ) : (
                             <>$ {Number(tournament.result).toFixed(2)}</>
                           )}

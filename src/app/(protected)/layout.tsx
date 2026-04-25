@@ -32,13 +32,10 @@ export default async function ProtectedLayout({
   try {
     user = await serverFetch<User>("/users/me");
   } catch (err) {
-    // Token expirado ou inválido — limpa cookie e manda pro login.
     if (err instanceof ServerFetchError && err.status === 401) {
       await clearSession();
       redirect("/signin");
     }
-    // Outros erros (backend offline, 500) — propaga para `error.tsx`
-    // desta rota ou do root.
     throw err;
   }
 

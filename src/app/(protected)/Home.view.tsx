@@ -75,7 +75,10 @@ export function HomeView() {
             {bankDisplayText}
           </p>
           {bankUsd > 0 && (
-            <p className="font-data text-xs mt-1.5" style={{ color: "#7a7068" }}>
+            <p
+              className="font-data text-xs mt-1.5"
+              style={{ color: "#7a7068" }}
+            >
               ${" "}
               {bankUsd.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -87,7 +90,6 @@ export function HomeView() {
         </div>
       </header>
 
-      {/* ── KPI cards ────────────────────────────────────────────────────── */}
       <section>
         <p
           className="text-[10px] uppercase tracking-[0.18em] font-medium mb-4"
@@ -109,10 +111,8 @@ export function HomeView() {
         />
       </section>
 
-      {/* ── Suggestions ──────────────────────────────────────────────────── */}
       <PlayerSuggestions bankUsd={bankUsd} todayTotalBuyIn={todayTotalBuyIn} />
 
-      {/* ── Results / Charts ─────────────────────────────────────────────── */}
       <SummarizeResults />
     </div>
   );

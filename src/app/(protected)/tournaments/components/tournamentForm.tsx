@@ -37,6 +37,15 @@ interface TournamentFormProps {
 
 export function TournamentForm({ platform }: TournamentFormProps) {
   const [open, setOpen] = useState(false);
+  const ticketOrNumber = (msg: string) =>
+    z
+      .string()
+      .nonempty({ message: msg })
+      .refine(
+        (v) => v.toLowerCase() === "ticket" || !isNaN(Number(v)),
+        { message: "Informe um valor numérico ou 'ticket'" },
+      );
+
   const schema = z.object({
     date: z.string().nonempty({ message: "Data é obrigatória" }),
     platform: z
@@ -44,8 +53,8 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       .min(1, { message: "Plataforma é obrigatória" }),
     name: z.string().nonempty({ message: "Nome é obrigatório" }),
     currency: z.string().nonempty({ message: "Moeda é obrigatória" }),
-    buyIn: z.string().nonempty({ message: "Buy-in é obrigatório" }),
-    result: z.string().nonempty({ message: "obrigatório" }),
+    buyIn: ticketOrNumber("Buy-in é obrigatório"),
+    result: ticketOrNumber("obrigatório"),
     itm: z.boolean(),
     hasFt: z.boolean(),
     position: z.string().optional(),
@@ -72,12 +81,15 @@ export function TournamentForm({ platform }: TournamentFormProps) {
 
   const itm = form.watch("itm");
 
+  const normalizeTicketField = (v: string): number | "ticket" =>
+    v.toLowerCase() === "ticket" ? "ticket" : Number(v);
+
   const onSubmit = (data: FormData) => {
     const tournamentData = {
       ...data,
       date: data.date,
-      buyIn: Number(data.buyIn),
-      result: Number(data.result),
+      buyIn: normalizeTicketField(data.buyIn),
+      result: normalizeTicketField(data.result),
       itm: data.itm,
       hasFt: data.hasFt,
       position: data.itm && data.position ? Number(data.position) : null,
