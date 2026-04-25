@@ -12,11 +12,12 @@ export const API_ENDPOINTS = {
     ME: "/users/me",
   },
   TOURNAMENTS: {
-    GET_ALL: (platform: string, page: number = 1, limit: number = 10) => {
+    GET_ALL: (platform: string, page: number = 1, limit: number = 10, hasSecondDay?: boolean) => {
       const params = new URLSearchParams();
       if (platform) params.append("platform", platform);
       params.append("page", page.toString());
       params.append("limit", limit.toString());
+      if (hasSecondDay !== undefined) params.append("hasSecondDay", String(hasSecondDay));
       return `/tournaments?${params.toString()}`;
     },
     CREATE: "/tournaments",
@@ -36,6 +37,7 @@ export const API_ENDPOINTS = {
   BANK: {
     CREATE_DEPOSIT: "/banks/deposits",
     CREATE_WITHDRAWAL: "/banks/withdrawals",
+    CREATE_RAKE: "/banks/rakes",
   },
   STATS: {
     SUMMARY: "/stats/summary",

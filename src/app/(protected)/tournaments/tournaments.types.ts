@@ -18,6 +18,18 @@ export interface TournamentsViewProps {
   savingTournamentId: string | null;
   isImportScheduleModalOpen: boolean;
   isImportingSchedule: boolean;
+  // Dia 2
+  day2Tournaments: Tournament[];
+  isLoadingDay2: boolean;
+  tournamentToFinalize: Tournament | null;
+  isFinalizingDay2: boolean;
+  onOpenFinalizeDay2Modal: (tournament: Tournament) => void;
+  onCloseFinalizeDay2Modal: () => void;
+  onConfirmFinalizeDay2: (
+    tournament: Tournament,
+    finalizationDate: string,
+    data: { result: number | "ticket"; itm: boolean; hasFt: boolean; position: number | null },
+  ) => void;
   onFilterToggle: () => void;
   onPlatformChange: (platform: string) => void;
   onClearFilter: () => void;

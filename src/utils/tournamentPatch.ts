@@ -9,6 +9,7 @@ export type TournamentEditDraft = {
   result: number | string;
   itm: boolean;
   hasFt: boolean;
+  hasSecondDay: boolean;
   position: string;
 };
 
@@ -76,6 +77,11 @@ export function buildTournamentPatch(
   const nextHasFt = draft.hasFt;
   if (nextHasFt !== (original.hasFt ?? false)) {
     patch.hasFt = nextHasFt;
+  }
+
+  const nextHasSecondDay = draft.hasSecondDay;
+  if (nextHasSecondDay !== (original.hasSecondDay ?? false)) {
+    patch.hasSecondDay = nextHasSecondDay;
   }
 
   const nextPosition = draft.position !== "" ? normNum(draft.position) : null;

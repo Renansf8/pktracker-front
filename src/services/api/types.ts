@@ -16,15 +16,23 @@ export interface Withdrawal {
   amount: number;
 }
 
+export interface Rake {
+  id: string;
+  date: string;
+  amount: number;
+}
+
 interface Bank {
   id: string;
   userId: string;
   bank: number;
   totalDeposit: number;
   totalWithdrawal: number;
+  totalRake: number;
   profit: number;
   deposits: Deposit[];
   withdrawals: Withdrawal[];
+  rakes: Rake[];
 }
 
 export interface CreateUserRequest {

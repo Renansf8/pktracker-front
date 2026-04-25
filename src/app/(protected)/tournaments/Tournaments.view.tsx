@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { DeleteTournamentModal } from "./components/deleteTournamentModal";
 import { ImportScheduleModal } from "./components/importScheduleModal";
+import { FinalizeTournamentDay2Modal } from "./components/finalizeTournamentDay2Modal";
 import { FilterTournaments } from "./components/filterTournaments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +67,13 @@ export function TournamentsView() {
     savingTournamentId,
     isImportScheduleModalOpen,
     isImportingSchedule,
+    day2Tournaments,
+    isLoadingDay2,
+    tournamentToFinalize,
+    isFinalizingDay2,
+    onOpenFinalizeDay2Modal,
+    onCloseFinalizeDay2Modal,
+    onConfirmFinalizeDay2,
     onFilterToggle,
     onPlatformChange,
     onClearFilter,
@@ -88,7 +96,13 @@ export function TournamentsView() {
   const [openDatePickerId, setOpenDatePickerId] = useState<string | null>(null);
 
   if (isLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <p className="font-data text-sm tracking-[0.1em] uppercase text-text-secondary animate-pulse">
+          Carregando...
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -106,6 +120,81 @@ export function TournamentsView() {
         <div className="glass-panel mb-6 rounded-3xl p-6">
           <TournamentForm platform={platform} />
         </div>
+
+        {/* Seção: Torneios com Dia 2 pendente */}
+        {(isLoadingDay2 || day2Tournaments.length > 0) && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-3">
+              <h3 className="text-text-primary text-lg font-semibold">
+                Aguardando Dia 2
+              </h3>
+              <span className="text-xs text-text-secondary bg-white/10 rounded-full px-2 py-0.5">
+                {day2Tournaments.length}
+              </span>
+            </div>
+
+            <div className="glass-panel overflow-hidden rounded-3xl p-1">
+              <div className="glass-inner rounded-2xl p-4">
+                {isLoadingDay2 ? (
+                  <p className="text-text-secondary text-sm text-center py-4 animate-pulse">
+                    Carregando...
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-text-primary text-center">
+                          Data de Início
+                        </TableHead>
+                        <TableHead className="text-text-primary text-center">
+                          Plataforma
+                        </TableHead>
+                        <TableHead className="text-text-primary text-center">
+                          Torneio
+                        </TableHead>
+                        <TableHead className="text-text-primary text-center">
+                          Buy-in
+                        </TableHead>
+                        <TableHead className="text-text-primary text-center">
+                          Ações
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {day2Tournaments.map((tournament) => (
+                        <TableRow key={tournament.id}>
+                          <TableCell className="text-text-primary text-center">
+                            {convertIsoDateToBr(tournament.date)}
+                          </TableCell>
+                          <TableCell className="text-text-primary text-center">
+                            {tournament.platform}
+                          </TableCell>
+                          <TableCell className="text-text-primary text-center">
+                            {tournament.name}
+                          </TableCell>
+                          <TableCell className="text-text-primary text-center">
+                            {String(tournament.buyIn).toLowerCase() === "ticket"
+                              ? "ticket"
+                              : `$ ${Number(tournament.buyIn).toFixed(2)}`}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button
+                              size="sm"
+                              onClick={() => onOpenFinalizeDay2Modal(tournament)}
+                              className="bg-success/90 hover:bg-success/80 text-white h-8 px-4 text-xs"
+                            >
+                              Finalizar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mb-4 flex items-center justify-between">
           <Button
@@ -549,6 +638,14 @@ export function TournamentsView() {
           isLoading={isImportingSchedule}
           onRequestClose={onCloseImportScheduleModal}
           onConfirm={onConfirmImportSchedule}
+        />
+        <FinalizeTournamentDay2Modal
+          tournament={tournamentToFinalize}
+          isLoading={isFinalizingDay2}
+          onRequestClose={onCloseFinalizeDay2Modal}
+          onConfirm={(tournament, date, data) =>
+            onConfirmFinalizeDay2(tournament, date, data)
+          }
         />
       </div>
     </div>

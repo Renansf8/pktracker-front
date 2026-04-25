@@ -24,6 +24,11 @@ export const useTournaments = (
     queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit)),
   });
 
+  const getDay2Tournaments = useQuery({
+    queryKey: ["tournaments", "day2"],
+    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL("", 1, 100, true)),
+  });
+
   const createTournament = useMutation({
     mutationFn: (data: Tournament) =>
       apiClient.post(API_ENDPOINTS.TOURNAMENTS.CREATE, data),
@@ -82,6 +87,7 @@ export const useTournaments = (
 
   return {
     getAllTournaments,
+    getDay2Tournaments,
     createTournament,
     createManyTournaments,
     deleteTournament,

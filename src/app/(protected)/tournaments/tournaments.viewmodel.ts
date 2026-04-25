@@ -52,9 +52,13 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const [isImportScheduleModalOpen, setIsImportScheduleModalOpen] =
     useState(false);
   const [isImportingSchedule, setIsImportingSchedule] = useState(false);
+  const [tournamentToFinalize, setTournamentToFinalize] =
+    useState<Tournament | null>(null);
+  const [isFinalizingDay2, setIsFinalizingDay2] = useState(false);
 
   const {
     getAllTournaments,
+    getDay2Tournaments,
     createManyTournaments,
     deleteTournament,
     updateTournament,
@@ -73,7 +77,15 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const responseData = tournaments?.data;
   const totalPages = responseData?.totalPages ?? 1;
   const total = responseData?.total ?? 0;
-  const currentPageData = responseData?.data ?? [];
+  const currentPageData = (responseData?.data ?? []).filter(
+    (t: Tournament) => !t.hasSecondDay,
+  );
+
+  const day2Response = getDay2Tournaments.data?.data;
+  const day2Tournaments: Tournament[] = (day2Response?.data ?? []).filter(
+    (t: Tournament) => t.hasSecondDay,
+  );
+  const isLoadingDay2 = getDay2Tournaments.isLoading;
 
   const paginationPages = useMemo(
     () => getPaginationPages(currentPage, totalPages),
@@ -118,6 +130,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
         result: tournament.result ?? 0,
         itm: tournament.itm ?? false,
         hasFt: tournament.hasFt ?? false,
+        hasSecondDay: tournament.hasSecondDay ?? false,
         position: tournament.position != null ? String(tournament.position) : "",
       },
     }));
@@ -139,6 +152,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
           result: 0,
           itm: false,
           hasFt: false,
+          hasSecondDay: false,
           position: "",
         }),
         ...patch,
@@ -175,6 +189,34 @@ export function useTournamentsViewModel(): TournamentsViewProps {
         onSettled: () =>
           setSavingTournamentId((cur) => (cur === id ? null : cur)),
         onSuccess: () => onCancelEditTournament(id),
+      },
+    );
+  };
+
+  const onConfirmFinalizeDay2 = (
+    tournament: Tournament,
+    finalizationDate: string,
+    finalizationData: { result: number | "ticket"; itm: boolean; hasFt: boolean; position: number | null },
+  ) => {
+    const id = tournament.id;
+    if (!id) return;
+
+    setIsFinalizingDay2(true);
+    updateTournament.mutate(
+      {
+        id,
+        data: {
+          hasSecondDay: false,
+          date: finalizationDate,
+          result: finalizationData.result,
+          itm: finalizationData.itm,
+          hasFt: finalizationData.hasFt,
+          position: finalizationData.position,
+        },
+      },
+      {
+        onSettled: () => setIsFinalizingDay2(false),
+        onSuccess: () => setTournamentToFinalize(null),
       },
     );
   };
@@ -234,6 +276,13 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     savingTournamentId,
     isImportScheduleModalOpen,
     isImportingSchedule,
+    day2Tournaments,
+    isLoadingDay2,
+    tournamentToFinalize,
+    isFinalizingDay2,
+    onOpenFinalizeDay2Modal: setTournamentToFinalize,
+    onCloseFinalizeDay2Modal: () => setTournamentToFinalize(null),
+    onConfirmFinalizeDay2,
     onFilterToggle: () => setIsOpenFilter((prev) => !prev),
     onPlatformChange,
     onClearFilter: clearFilter,

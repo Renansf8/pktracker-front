@@ -22,8 +22,9 @@ import type { BankViewProps } from "./bank.types";
 
 export function useBankViewModel(): BankViewProps {
   const [amount, setAmount] = useState<number | undefined>(undefined);
+  const [rakeAmount, setRakeAmount] = useState<number | undefined>(undefined);
   const { data: user, isLoading } = useGetUser();
-  const { createDeposit, createWithdrawal } = useBank();
+  const { createDeposit, createWithdrawal, createRake } = useBank();
 
   const handleDeposit = () => {
     createDeposit.mutate({
@@ -41,13 +42,25 @@ export function useBankViewModel(): BankViewProps {
     setAmount(undefined);
   };
 
+  const handleRake = () => {
+    createRake.mutate({
+      date: new Date().toISOString(),
+      amount: rakeAmount ?? 0,
+    });
+    setRakeAmount(undefined);
+  };
+
   return {
     isLoading,
     amount,
+    rakeAmount,
     deposits: user?.bank?.deposits ?? [],
     withdrawals: user?.bank?.withdrawals ?? [],
+    rakes: user?.bank?.rakes ?? [],
     onAmountChange: setAmount,
+    onRakeAmountChange: setRakeAmount,
     onDeposit: handleDeposit,
     onWithdrawal: handleWithdrawal,
+    onRake: handleRake,
   };
 }

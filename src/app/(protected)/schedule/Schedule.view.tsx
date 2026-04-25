@@ -35,7 +35,13 @@ export function ScheduleView() {
   } = useScheduleViewModel();
 
   if (isLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <p className="font-data text-sm tracking-[0.1em] uppercase text-text-secondary animate-pulse">
+          Carregando...
+        </p>
+      </div>
+    );
   }
 
   return (

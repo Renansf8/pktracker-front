@@ -9,6 +9,7 @@ export interface Tournament {
   profit?: number;
   itm?: boolean;
   hasFt?: boolean;
+  hasSecondDay?: boolean;
   position?: number | null;
 }
 
@@ -24,6 +25,11 @@ export interface Deposit {
 }
 
 export interface Withdrawal {
+  date: string;
+  amount: number;
+}
+
+export interface Rake {
   date: string;
   amount: number;
 }

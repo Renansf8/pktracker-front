@@ -57,6 +57,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     result: ticketOrNumber("obrigatório"),
     itm: z.boolean(),
     hasFt: z.boolean(),
+    hasSecondDay: z.boolean(),
     position: z.string().optional(),
   });
 
@@ -73,6 +74,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       result: "",
       itm: false,
       hasFt: false,
+      hasSecondDay: false,
       position: "",
     },
   });
@@ -92,6 +94,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       result: normalizeTicketField(data.result),
       itm: data.itm,
       hasFt: data.hasFt,
+      hasSecondDay: data.hasSecondDay,
       position: data.itm && data.position ? Number(data.position) : null,
     };
     createTournament.mutate(tournamentData);
@@ -306,6 +309,32 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                   <div className="flex flex-col justify-between h-[80px]">
                     <div className="gap-1 flex flex-col">
                       <FormLabel>FT</FormLabel>
+                      <FormControl>
+                        <button
+                          type="button"
+                          onClick={() => field.onChange(!field.value)}
+                          className={`h-9 w-20 rounded-md border text-sm font-medium transition-colors flex items-center justify-center gap-1 cursor-pointer ${
+                            field.value
+                              ? "border-success bg-success/20 text-success"
+                              : "border-input bg-transparent text-muted-foreground"
+                          }`}
+                        >
+                          {field.value && <Check className="size-3" />}
+                          {field.value ? "Sim" : "Não"}
+                        </button>
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-[10px] min-h-[14px]" />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hasSecondDay"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-between h-[80px]">
+                    <div className="gap-1 flex flex-col">
+                      <FormLabel>Dia 2</FormLabel>
                       <FormControl>
                         <button
                           type="button"

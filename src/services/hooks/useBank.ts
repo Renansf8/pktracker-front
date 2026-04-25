@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { API_ENDPOINTS } from "../api/endpoints";
-import type { Deposit, Withdrawal } from "./types";
+import type { Deposit, Rake, Withdrawal } from "./types";
 import { apiClient } from "../api/client";
 import { toast } from "sonner";
 import { useGetUser } from "./useGetUser";
@@ -31,8 +31,21 @@ export const useBank = () => {
     },
   });
 
+  const createRake = useMutation({
+    mutationFn: (data: Rake) =>
+      apiClient.post(API_ENDPOINTS.BANK.CREATE_RAKE, data),
+    onSuccess: () => {
+      toast.success("Rake registrado com sucesso");
+      refetch();
+    },
+    onError: () => {
+      toast.error("Erro ao registrar rake");
+    },
+  });
+
   return {
     createDeposit,
     createWithdrawal,
+    createRake,
   };
 };
