@@ -43,7 +43,7 @@ export interface TournamentsViewProps {
   onCloseDeleteModal: () => void;
   onOpenImportScheduleModal: () => void;
   onCloseImportScheduleModal: () => void;
-  onConfirmImportSchedule: () => void;
+  onConfirmImportSchedule: (scheduleId: string) => void;
   onStartEditTournament: (tournament: Tournament) => void;
   onChangeEditDraft: (id: string, patch: Partial<TournamentEditDraft>) => void;
   onCancelEditTournament: (id: string) => void;

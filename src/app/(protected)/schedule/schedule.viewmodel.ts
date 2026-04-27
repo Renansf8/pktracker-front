@@ -2,60 +2,92 @@
 
 import { useMemo, useState } from "react";
 import type { ScheduleViewProps } from "./schedule.types";
-import { useSchedule } from "@/services/hooks/useSchedule";
-import type { ScheduleTournament } from "@/services/hooks/schedule.types";
+import type {
+  ScheduleType,
+  TournamentSchedule,
+  TournamentScheduleItem,
+} from "@/services/hooks/schedule.types";
+import { useSchedules } from "@/services/hooks/useSchedules";
+import { useScheduleItems } from "@/services/hooks/useScheduleItems";
 import {
   buildSchedulePatch,
   type ScheduleEditDraft,
 } from "@/utils/schedulePatch";
 
 export function useScheduleViewModel(): ScheduleViewProps {
-  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
-    null,
-  );
-  const [editingScheduleId, setEditingScheduleId] = useState<string | null>(
-    null,
-  );
-  const [savingScheduleId, setSavingScheduleId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ScheduleType>("WEEKLY");
+  const [activeScheduleId, setActiveScheduleId] = useState<string | null>(null);
+
+  // Schedule CRUD
+  const [isCreatingScheduleForm, setIsCreatingScheduleForm] = useState(false);
+  const [newScheduleName, setNewScheduleName] = useState("");
+  const [scheduleToDelete, setScheduleToDelete] =
+    useState<TournamentSchedule | null>(null);
+
+  // Item editing / deleting
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [savingItemId, setSavingItemId] = useState<string | null>(null);
   const [editDraftById, setEditDraftById] = useState<
     Record<string, ScheduleEditDraft | undefined>
   >({});
 
-  const { getAllSchedule, deleteSchedule, updateSchedule } = useSchedule();
-  const { data, isLoading } = getAllSchedule;
+  const { getSchedules, schedules, createSchedule, deleteSchedule } =
+    useSchedules(activeTab);
+  const { getItems, items, updateItem, deleteItem } =
+    useScheduleItems(activeScheduleId);
 
-  const list: ScheduleTournament[] = useMemo(
-    () =>
-      (data?.data?.data ?? data?.data ?? []) as ScheduleTournament[],
-    [data],
-  );
-
-  const total = list.length;
-  const totalBuyIns = list.reduce(
-    (acc, item) => acc + Number(item.buyIn ?? 0),
-    0,
-  );
-
-  const buyInSummary = useMemo(() => {
-    const map = new Map<number, number>();
-    for (const item of list) {
-      const val = Number(item.buyIn ?? 0);
-      map.set(val, (map.get(val) ?? 0) + 1);
-    }
-    return Array.from(map.entries())
-      .map(([buyIn, count]) => ({ buyIn, count }))
-      .sort((a, b) => a.buyIn - b.buyIn);
-  }, [list]);
-
-  const onConfirmDelete = () => {
-    if (selectedScheduleId) {
-      deleteSchedule.mutate(selectedScheduleId);
-    }
+  const onTabChange = (tab: ScheduleType) => {
+    setActiveTab(tab);
+    setActiveScheduleId(null);
+    setIsCreatingScheduleForm(false);
+    setNewScheduleName("");
+    setEditingItemId(null);
+    setSavingItemId(null);
+    setEditDraftById({});
+    setSelectedItemId(null);
   };
 
-  const onStartEditSchedule = (row: ScheduleTournament) => {
+  const onSelectSchedule = (id: string) => {
+    setActiveScheduleId(id);
+    setEditingItemId(null);
+    setSavingItemId(null);
+    setEditDraftById({});
+    setSelectedItemId(null);
+  };
+
+  // Create schedule
+  const onConfirmCreateSchedule = () => {
+    const name = newScheduleName.trim();
+    if (!name) return;
+    createSchedule.mutate(
+      { name, type: activeTab },
+      {
+        onSuccess: () => {
+          setIsCreatingScheduleForm(false);
+          setNewScheduleName("");
+        },
+      },
+    );
+  };
+
+  // Delete schedule
+  const onConfirmDeleteSchedule = () => {
+    if (!scheduleToDelete) return;
+    deleteSchedule.mutate(scheduleToDelete.id, {
+      onSuccess: () => {
+        setScheduleToDelete(null);
+        if (activeScheduleId === scheduleToDelete.id) {
+          setActiveScheduleId(null);
+        }
+      },
+    });
+  };
+
+  // Item editing
+  const onStartEditItem = (row: TournamentScheduleItem) => {
     if (!row.id) return;
-    setEditingScheduleId(row.id);
+    setEditingItemId(row.id);
     setEditDraftById((prev) => ({
       ...prev,
       [row.id as string]: {
@@ -68,7 +100,10 @@ export function useScheduleViewModel(): ScheduleViewProps {
     }));
   };
 
-  const onChangeEditDraft = (id: string, patch: Partial<ScheduleEditDraft>) => {
+  const onChangeEditDraft = (
+    id: string,
+    patch: Partial<ScheduleEditDraft>,
+  ) => {
     setEditDraftById((prev) => ({
       ...prev,
       [id]: {
@@ -84,9 +119,9 @@ export function useScheduleViewModel(): ScheduleViewProps {
     }));
   };
 
-  const onCancelEditSchedule = (id: string) => {
-    setEditingScheduleId((cur) => (cur === id ? null : cur));
-    setSavingScheduleId((cur) => (cur === id ? null : cur));
+  const onCancelEditItem = (id: string) => {
+    setEditingItemId((cur) => (cur === id ? null : cur));
+    setSavingItemId((cur) => (cur === id ? null : cur));
     setEditDraftById((prev) => {
       const next = { ...prev };
       delete next[id];
@@ -94,47 +129,94 @@ export function useScheduleViewModel(): ScheduleViewProps {
     });
   };
 
-  const onSaveEditSchedule = (row: ScheduleTournament) => {
+  const onSaveEditItem = (row: TournamentScheduleItem) => {
     const id = row.id;
     if (!id) return;
     const draft = editDraftById[id];
     if (!draft) return;
     const patch = buildSchedulePatch(row, draft);
     if (Object.keys(patch).length === 0) {
-      onCancelEditSchedule(id);
+      onCancelEditItem(id);
       return;
     }
-
-    setSavingScheduleId(id);
-    updateSchedule.mutate(
+    setSavingItemId(id);
+    updateItem.mutate(
       { id, data: patch },
       {
         onSettled: () =>
-          setSavingScheduleId((cur) => (cur === id ? null : cur)),
-        onSuccess: () => onCancelEditSchedule(id),
+          setSavingItemId((cur) => (cur === id ? null : cur)),
+        onSuccess: () => onCancelEditItem(id),
       },
     );
   };
 
+  // Item delete
+  const onConfirmDeleteItem = () => {
+    if (selectedItemId) {
+      deleteItem.mutate(selectedItemId);
+    }
+  };
+
+  // Derived
+  const total = items.length;
+  const totalBuyIns = items.reduce(
+    (acc, item) => acc + Number(item.buyIn ?? 0),
+    0,
+  );
+
+  const buyInSummary = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const item of items) {
+      const val = Number(item.buyIn ?? 0);
+      map.set(val, (map.get(val) ?? 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([buyIn, count]) => ({ buyIn, count }))
+      .sort((a, b) => a.buyIn - b.buyIn);
+  }, [items]);
+
   return {
-    isLoading,
+    activeTab,
+    onTabChange,
+
+    isLoadingSchedules: getSchedules.isLoading,
+    schedules,
+    activeScheduleId,
+    onSelectSchedule,
+
+    newScheduleName,
+    isCreatingScheduleForm,
+    isCreatingSchedule: createSchedule.isPending,
+    onNewScheduleNameChange: setNewScheduleName,
+    onStartCreateSchedule: () => setIsCreatingScheduleForm(true),
+    onCancelCreateSchedule: () => {
+      setIsCreatingScheduleForm(false);
+      setNewScheduleName("");
+    },
+    onConfirmCreateSchedule,
+
+    scheduleToDelete,
+    onSelectScheduleToDelete: setScheduleToDelete,
+    onConfirmDeleteSchedule,
+
+    isLoadingItems: getItems.isLoading,
     total,
     totalBuyIns,
-    list,
+    list: items,
     buyInSummary,
 
-    selectedScheduleId,
-    editingScheduleId,
-    savingScheduleId,
+    selectedItemId,
+    editingItemId,
+    savingItemId,
     editDraftById,
 
-    onSelectScheduleToDelete: setSelectedScheduleId,
-    onConfirmDelete,
-    onCloseDeleteModal: () => setSelectedScheduleId(null),
+    onSelectItemToDelete: setSelectedItemId,
+    onConfirmDeleteItem,
+    onCloseDeleteItemModal: () => setSelectedItemId(null),
 
-    onStartEditSchedule,
+    onStartEditItem,
     onChangeEditDraft,
-    onCancelEditSchedule,
-    onSaveEditSchedule,
+    onCancelEditItem,
+    onSaveEditItem,
   };
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,12 +10,66 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import type { ScheduleType, TournamentSchedule } from "@/services/hooks/schedule.types";
+import { useSchedules } from "@/services/hooks/useSchedules";
+
+const TABS: { value: ScheduleType; label: string }[] = [
+  { value: "WEEKLY", label: "Semanal" },
+  { value: "SUNDAY", label: "Domingo" },
+];
 
 interface ImportScheduleModalProps {
   isOpen: boolean;
   isLoading?: boolean;
   onRequestClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (scheduleId: string) => void;
+}
+
+function ScheduleList({
+  type,
+  selectedId,
+  onSelect,
+}: {
+  type: ScheduleType;
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  const { schedules, getSchedules } = useSchedules(type);
+
+  if (getSchedules.isLoading) {
+    return (
+      <p className="text-text-secondary text-sm text-center animate-pulse py-4">
+        Carregando grades...
+      </p>
+    );
+  }
+
+  if (schedules.length === 0) {
+    return (
+      <p className="text-text-secondary text-sm text-center py-4">
+        Nenhuma grade cadastrada.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {schedules.map((s: TournamentSchedule) => (
+        <button
+          key={s.id}
+          type="button"
+          onClick={() => onSelect(s.id)}
+          className={`w-full text-left px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors cursor-pointer ${
+            selectedId === s.id
+              ? "border-white/30 bg-white/10 text-text-primary"
+              : "border-white/10 bg-white/5 text-text-secondary hover:border-white/20 hover:text-text-primary"
+          }`}
+        >
+          {s.name}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export function ImportScheduleModal({
@@ -23,11 +78,28 @@ export function ImportScheduleModal({
   onRequestClose,
   onConfirm,
 }: ImportScheduleModalProps) {
+  const [selectedType, setSelectedType] = useState<ScheduleType>("WEEKLY");
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
+    null,
+  );
+
+  const handleClose = () => {
+    if (isLoading) return;
+    setSelectedType("WEEKLY");
+    setSelectedScheduleId(null);
+    onRequestClose();
+  };
+
+  const handleTabChange = (tab: ScheduleType) => {
+    setSelectedType(tab);
+    setSelectedScheduleId(null);
+  };
+
   return (
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
-        if (!open && !isLoading) onRequestClose();
+        if (!open) handleClose();
       }}
     >
       <DialogContent className="sm:max-w-md">
@@ -36,19 +108,49 @@ export function ImportScheduleModal({
             Importar grade
           </DialogTitle>
           <DialogDescription className="text-center">
-            Deseja adicionar toda a grade de torneios de hoje? Isso vai criar
-            todos os torneios da grade usando a data atual e o horário
-            configurado em cada item.
+            Escolha qual grade importar. Os torneios serão criados com a data
+            atual e o horário configurado em cada item.
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex gap-1 p-1 rounded-xl bg-white/5 w-fit mx-auto">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              disabled={isLoading}
+              onClick={() => handleTabChange(tab.value)}
+              className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:cursor-not-allowed ${
+                selectedType === tab.value
+                  ? "bg-white/15 text-text-primary"
+                  : "text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-1">
+          <ScheduleList
+            type={selectedType}
+            selectedId={selectedScheduleId}
+            onSelect={setSelectedScheduleId}
+          />
+        </div>
+
         <DialogFooter className="flex justify-around gap-2 mt-2">
-          <Button className="font-bold" onClick={onConfirm} disabled={isLoading}>
+          <Button
+            className="font-bold"
+            onClick={() => selectedScheduleId && onConfirm(selectedScheduleId)}
+            disabled={isLoading || !selectedScheduleId}
+          >
             {isLoading ? "Adicionando..." : "Sim, adicionar"}
           </Button>
           <Button
             className="font-bold"
             variant="secondary"
-            onClick={onRequestClose}
+            onClick={handleClose}
             disabled={isLoading}
           >
             Cancelar

@@ -1,15 +1,20 @@
-export interface ScheduleTournament {
+export type ScheduleType = "WEEKLY" | "SUNDAY";
+
+export interface TournamentSchedule {
+  id: string;
+  name: string;
+  type: ScheduleType;
+}
+
+export interface TournamentScheduleItem {
   id?: string;
-  time: string; // "HH:mm"
+  scheduleId?: string;
+  time: string;
   platform: string;
   name: string;
   currency: string;
   buyIn: number | string;
 }
 
-export interface PaginatedScheduleResponse {
-  data: ScheduleTournament[];
-  totalPages: number;
-  total: number;
-}
-
+// backward compat alias
+export type ScheduleTournament = TournamentScheduleItem;

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { useSchedule } from "@/services/hooks/useSchedule";
+import { useScheduleItems } from "@/services/hooks/useScheduleItems";
 
 import {
   Select,
@@ -35,7 +35,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function ScheduleForm() {
+export function ScheduleForm({ scheduleId }: { scheduleId: string }) {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -47,10 +47,10 @@ export function ScheduleForm() {
     },
   });
 
-  const { createSchedule } = useSchedule();
+  const { createItem } = useScheduleItems(scheduleId);
 
   const onSubmit = (data: FormData) => {
-    createSchedule.mutate({
+    createItem.mutate({
       time: data.time,
       platform: data.platform,
       name: data.name,
@@ -165,7 +165,9 @@ export function ScheduleForm() {
             />
 
             <div className="flex items-end h-[80px]">
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit" disabled={createItem.isPending}>
+                {createItem.isPending ? "Adicionando..." : "Adicionar"}
+              </Button>
             </div>
           </div>
         </form>

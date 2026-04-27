@@ -21,12 +21,14 @@ import { Button } from "@/components/ui/button";
 
 interface DeleteScheduleModalProps {
   isOpen: boolean;
+  description?: string;
   onRequestClose: () => void;
   onDelete: () => void;
 }
 
 export function DeleteScheduleModal({
   isOpen,
+  description = "Tem certeza que deseja remover o torneio da grade?",
   onRequestClose,
   onDelete,
 }: DeleteScheduleModalProps) {
@@ -48,7 +50,7 @@ export function DeleteScheduleModal({
             Remover da grade
           </DialogTitle>
           <DialogDescription className="text-center">
-            Tem certeza que deseja remover o torneio da grade?
+            {description}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex gap-2 justify-around mt-2">

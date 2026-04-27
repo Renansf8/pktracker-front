@@ -86,6 +86,19 @@ export const useTournaments = (
     },
   });
 
+  const applySchedule = useMutation({
+    mutationFn: (scheduleId: string) =>
+      apiClient.post(API_ENDPOINTS.SCHEDULES.APPLY(scheduleId)),
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
+      refetch();
+      toast.success("Grade aplicada com sucesso");
+    },
+    onError: () => {
+      toast.error("Erro ao aplicar grade");
+    },
+  });
+
   return {
     getAllTournaments,
     getDay2Tournaments,
@@ -93,5 +106,6 @@ export const useTournaments = (
     createManyTournaments,
     deleteTournament,
     updateTournament,
+    applySchedule,
   };
 };

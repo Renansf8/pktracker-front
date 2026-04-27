@@ -26,11 +26,24 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/tournaments/${id}`,
     UPDATE: (id: string) => `/tournaments/${id}`,
   },
-  SCHEDULE: {
-    GET_ALL: "/tournaments/schedule",
-    CREATE: "/tournaments/schedule",
-    UPDATE: (id: string) => `/tournaments/schedule/${id}`,
-    DELETE: (id: string) => `/tournaments/schedule/${id}`,
+  SCHEDULES: {
+    GET_ALL: (type?: string) =>
+      type ? `/tournaments/schedules?type=${type}` : "/tournaments/schedules",
+    CREATE: "/tournaments/schedules",
+    UPDATE: (id: string) => `/tournaments/schedules/${id}`,
+    DELETE: (id: string) => `/tournaments/schedules/${id}`,
+    APPLY: (scheduleId: string) =>
+      `/tournaments/apply-schedule?scheduleId=${scheduleId}`,
+    ITEMS: {
+      GET_ALL: (scheduleId: string) =>
+        `/tournaments/schedules/${scheduleId}/items`,
+      CREATE: (scheduleId: string) =>
+        `/tournaments/schedules/${scheduleId}/items`,
+      UPDATE: (scheduleId: string, id: string) =>
+        `/tournaments/schedules/${scheduleId}/items/${id}`,
+      DELETE: (scheduleId: string, id: string) =>
+        `/tournaments/schedules/${scheduleId}/items/${id}`,
+    },
   },
   CURRENCIES: {
     GET_ALL: "https://api.fxratesapi.com/latest",

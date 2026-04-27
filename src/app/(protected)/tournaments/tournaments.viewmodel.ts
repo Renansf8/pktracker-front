@@ -9,9 +9,7 @@ import {
   buildTournamentPatch,
   type TournamentEditDraft,
 } from "@/utils/tournamentPatch";
-import { useSchedule } from "@/services/hooks/useSchedule";
-import type { ScheduleTournament } from "@/services/hooks/schedule.types";
-import { toast } from "sonner";
+
 
 function getPaginationPages(
   currentPage: number,
@@ -61,16 +59,11 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const {
     getAllTournaments,
     getDay2Tournaments,
-    createManyTournaments,
     deleteTournament,
     updateTournament,
+    applySchedule,
   } = useTournaments(platform, currentPage, ITEMS_PER_PAGE, name);
-  const { getAllSchedule } = useSchedule();
   const { data: tournaments, isLoading } = getAllTournaments;
-  const scheduleResponse = getAllSchedule.data?.data;
-  const scheduleRows: ScheduleTournament[] = (scheduleResponse?.data ??
-    scheduleResponse ??
-    []) as ScheduleTournament[];
 
   useEffect(() => {
     setCurrentPage(1);
@@ -246,41 +239,9 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     );
   };
 
-  const onConfirmImportSchedule = () => {
-    if (!scheduleRows.length) {
-      toast.error("Nao ha torneios na grade para importar");
-      setIsImportScheduleModalOpen(false);
-      return;
-    }
-
-    const now = new Date();
-    const rows = scheduleRows.map((row) => {
-      const [hoursRaw, minutesRaw] = String(row.time ?? "").split(":");
-      const hours = Number(hoursRaw);
-      const minutes = Number(minutesRaw);
-      const date = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        Number.isFinite(hours) ? hours : 0,
-        Number.isFinite(minutes) ? minutes : 0,
-        0,
-        0,
-      );
-
-      return {
-        date: date.toISOString(),
-        platform: String(row.platform ?? ""),
-        name: String(row.name ?? ""),
-        currency: String(row.currency ?? "USD"),
-        buyIn: Number(row.buyIn) || 0,
-        result: 0,
-        itm: false,
-      };
-    });
-
+  const onConfirmImportSchedule = (scheduleId: string) => {
     setIsImportingSchedule(true);
-    createManyTournaments.mutate(rows, {
+    applySchedule.mutate(scheduleId, {
       onSettled: () => setIsImportingSchedule(false),
       onSuccess: () => setIsImportScheduleModalOpen(false),
     });
