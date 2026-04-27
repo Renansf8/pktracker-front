@@ -60,6 +60,8 @@ export function TournamentsView() {
     currentPageData,
     paginationPages,
     platform,
+    hasActiveFilter,
+    filteredProfit,
     isOpenFilter,
     selectedTournamentId,
     editingTournamentId,
@@ -75,6 +77,8 @@ export function TournamentsView() {
     onCloseFinalizeDay2Modal,
     onConfirmFinalizeDay2,
     onFilterToggle,
+    nameInput,
+    onNameChange,
     onPlatformChange,
     onClearFilter,
     onPageChange,
@@ -219,11 +223,31 @@ export function TournamentsView() {
               setPlatform={onPlatformChange}
               clearFilter={onClearFilter}
               selectedPlatform={platform}
+              nameInput={nameInput}
+              onNameChange={onNameChange}
             />
           </div>
         )}
 
-        <div className="glass-panel mt-8 overflow-hidden rounded-3xl p-1">
+        {hasActiveFilter && filteredProfit !== null && (
+          <div className="flex justify-end mt-6 mb-2 px-1">
+            <div className="flex items-center gap-2">
+              <span className="text-text-secondary text-sm">
+                Profit filtrado:
+              </span>
+              <span
+                className={`text-sm font-semibold tabular-nums ${
+                  filteredProfit >= 0 ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {filteredProfit >= 0 ? "+" : ""}
+                {filteredProfit.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="glass-panel mt-2 overflow-hidden rounded-3xl p-1">
           <div className="glass-inner rounded-2xl p-4">
             <Table>
               <TableHeader>

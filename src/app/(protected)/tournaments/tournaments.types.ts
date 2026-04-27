@@ -11,6 +11,8 @@ export interface TournamentsViewProps {
   currentPageData: Tournament[];
   paginationPages: (number | "ellipsis")[];
   platform: string;
+  hasActiveFilter: boolean;
+  filteredProfit: number | null;
   isOpenFilter: boolean;
   selectedTournamentId: string | null;
   editingTournamentId: string | null;
@@ -31,6 +33,8 @@ export interface TournamentsViewProps {
     data: { result: number | "ticket"; itm: boolean; hasFt: boolean; position: number | null },
   ) => void;
   onFilterToggle: () => void;
+  nameInput: string;
+  onNameChange: (name: string) => void;
   onPlatformChange: (platform: string) => void;
   onClearFilter: () => void;
   onPageChange: (page: number) => void;

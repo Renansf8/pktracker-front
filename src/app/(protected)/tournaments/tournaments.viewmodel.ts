@@ -38,6 +38,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     string | null
   >(null);
   const [platform, setPlatform] = useState("");
+  const [nameInput, setNameInput] = useState("");
+  const [name, setName] = useState("");
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingTournamentId, setEditingTournamentId] = useState<string | null>(
@@ -62,7 +64,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     createManyTournaments,
     deleteTournament,
     updateTournament,
-  } = useTournaments(platform, currentPage, ITEMS_PER_PAGE);
+  } = useTournaments(platform, currentPage, ITEMS_PER_PAGE, name);
   const { getAllSchedule } = useSchedule();
   const { data: tournaments, isLoading } = getAllTournaments;
   const scheduleResponse = getAllSchedule.data?.data;
@@ -74,12 +76,29 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     setCurrentPage(1);
   }, [platform]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setName(nameInput);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [nameInput]);
+
   const responseData = tournaments?.data;
   const totalPages = responseData?.totalPages ?? 1;
   const total = responseData?.total ?? 0;
   const currentPageData = (responseData?.data ?? []).filter(
     (t: Tournament) => !t.hasSecondDay,
   );
+
+  const hasActiveFilter = platform !== "" || name !== "";
+  const filteredProfit = hasActiveFilter
+    ? (responseData?.totalProfit ??
+        currentPageData.reduce(
+          (sum: number, t: Tournament) => sum + (t.profit ?? 0),
+          0,
+        ))
+    : null;
 
   const day2Response = getDay2Tournaments.data?.data;
   const day2Tournaments: Tournament[] = (day2Response?.data ?? []).filter(
@@ -94,6 +113,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
 
   const clearFilter = () => {
     setPlatform("");
+    setNameInput("");
+    setName("");
     setCurrentPage(1);
     setTimeout(() => {
       getAllTournaments.refetch();
@@ -103,6 +124,10 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const onNameChange = (newName: string) => {
+    setNameInput(newName);
   };
 
   const onPlatformChange = (newPlatform: string) => {
@@ -269,6 +294,9 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     currentPageData,
     paginationPages,
     platform,
+    nameInput,
+    hasActiveFilter,
+    filteredProfit,
     isOpenFilter,
     selectedTournamentId,
     editingTournamentId,
@@ -284,6 +312,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     onCloseFinalizeDay2Modal: () => setTournamentToFinalize(null),
     onConfirmFinalizeDay2,
     onFilterToggle: () => setIsOpenFilter((prev) => !prev),
+    onNameChange,
     onPlatformChange,
     onClearFilter: clearFilter,
     onPageChange: handlePageChange,

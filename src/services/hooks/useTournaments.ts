@@ -15,13 +15,14 @@ type BulkTournamentItem = Omit<Tournament, "id">;
 export const useTournaments = (
   platform: string = "",
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
+  name: string = "",
 ) => {
   const queryClient = useQueryClient();
   const { refetch } = useGetUser();
   const getAllTournaments = useQuery({
-    queryKey: ["tournaments", platform, page, limit],
-    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit)),
+    queryKey: ["tournaments", platform, page, limit, name],
+    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit, undefined, name)),
   });
 
   const getDay2Tournaments = useQuery({

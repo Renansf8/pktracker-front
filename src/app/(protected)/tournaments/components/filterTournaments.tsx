@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ButtonFilter } from "./buttonFilter";
 
 interface FilterTournamentsProps {
@@ -8,15 +9,28 @@ interface FilterTournamentsProps {
   filter?: () => void;
   clearFilter?: () => void;
   selectedPlatform?: string;
+  nameInput?: string;
+  onNameChange?: (name: string) => void;
 }
 
 export function FilterTournaments({
   setPlatform,
   clearFilter,
   selectedPlatform = "",
+  nameInput = "",
+  onNameChange,
 }: FilterTournamentsProps) {
   return (
     <div className="text-text-primary flex flex-col gap-3 pl-4">
+      <div className="flex items-center gap-3">
+        <p className="shrink-0">Nome:</p>
+        <Input
+          value={nameInput}
+          onChange={(e) => onNameChange?.(e.target.value)}
+          placeholder="Buscar por nome..."
+          className="h-[32px] max-w-[240px] text-[13px]"
+        />
+      </div>
       <div className="flex gap-3">
         <p>Plataforma:</p>
         <ButtonFilter

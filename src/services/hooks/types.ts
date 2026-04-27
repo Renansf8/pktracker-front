@@ -17,6 +17,7 @@ export interface PaginatedTournamentsResponse {
   data: Tournament[];
   totalPages: number;
   total: number;
+  totalProfit?: number;
 }
 
 export interface Deposit {
