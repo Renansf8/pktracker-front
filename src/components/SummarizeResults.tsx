@@ -11,11 +11,13 @@ import {
 } from "@/components/ResultsProfitCharts";
 import type { Tournament } from "@/services/hooks/types";
 import { useTournaments } from "@/services/hooks/useTournaments";
+import { useCurrency } from "@/services/hooks/useCurrency";
 import {
   convertIsoDateToBr,
   isSameCalendarDayLocal,
   parseTournamentDateLocal,
 } from "@/utils/dateConvert";
+import { getEurToUsdRate, toUsd } from "@/utils/currencyConvert";
 import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 
 /** Layout for período (Dia / Semana / …); cores vêm do `tabs` base alinhado ao glass */
@@ -40,16 +42,18 @@ const calcItm = (list: Tournament[]) => {
 const calcFt = (list: Tournament[]) =>
   list.filter((t) => t.hasFt === true).length;
 
-const calcAvgDailyBuyIn = (list: Tournament[]) => {
+const calcAvgDailyBuyIn = (list: Tournament[], eurToUsdRate: number) => {
   if (!list.length) return 0;
   const distinctDays = new Set(list.map((t) => String(t.date).split("T")[0])).size;
-  const totalBuyIn = list.reduce((acc, t) => acc + toNum(t.buyIn), 0);
+  const totalBuyIn = list.reduce((acc, t) => acc + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate), 0);
   return distinctDays > 0 ? totalBuyIn / distinctDays : 0;
 };
 
 export const SummarizeResults = () => {
   /** Limite alto: a visão "Dia" precisa dos torneios de hoje; página 1 com 20 pode não incluí-los. */
   const { getAllTournaments } = useTournaments("", 1, 500);
+  const { currencies } = useCurrency();
+  const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
   const [periodTab, setPeriodTab] = useState("dia");
 
   const { data: tournaments } = getAllTournaments;
@@ -151,45 +155,52 @@ export const SummarizeResults = () => {
     });
   }, [tournaments?.data?.data, currentYear]);
 
+  const sumBuyIn = (list: Tournament[]) =>
+    list.reduce((acc, t) => acc + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate), 0);
+  const sumResult = (list: Tournament[]) =>
+    list.reduce((acc, t) => acc + toUsd(toNum(t.result), t.currency, eurToUsdRate), 0);
+  const sumProfit = (list: Tournament[]) =>
+    list.reduce((acc, t) => acc + toUsd(toNum(t.profit), t.currency, eurToUsdRate), 0);
+
   // Daily stats
   const totalTournaments = todayTournaments?.length || 0;
-  const totalBuyIn = todayTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.buyIn), 0) || 0;
+  const totalBuyIn = sumBuyIn(todayTournaments);
   const abi = totalTournaments > 0 ? totalBuyIn / totalTournaments : 0;
-  const totalProfit = todayTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.result), 0) || 0;
-  const totalWinnings = todayTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.profit), 0) || 0;
+  const totalProfit = sumResult(todayTournaments);
+  const totalWinnings = sumProfit(todayTournaments);
   const { itmCount, itmPercentage } = calcItm(todayTournaments);
   const ftCount = calcFt(todayTournaments);
-  const avgDailyBuyIn = calcAvgDailyBuyIn(todayTournaments);
+  const avgDailyBuyIn = calcAvgDailyBuyIn(todayTournaments, eurToUsdRate);
 
   // Monthly stats
   const monthlyTotalTournaments = monthTournaments?.length || 0;
-  const monthlyTotalBuyIn = monthTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.buyIn), 0) || 0;
+  const monthlyTotalBuyIn = sumBuyIn(monthTournaments ?? []);
   const monthlyAbi = monthlyTotalTournaments > 0 ? monthlyTotalBuyIn / monthlyTotalTournaments : 0;
-  const monthlyTotalProfit = monthTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.result), 0) || 0;
-  const monthlyTotalWinnings = monthTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.profit), 0) || 0;
+  const monthlyTotalProfit = sumResult(monthTournaments ?? []);
+  const monthlyTotalWinnings = sumProfit(monthTournaments ?? []);
   const { itmCount: monthlyItmCount, itmPercentage: monthlyItmPercentage } = calcItm(monthTournaments ?? []);
   const monthlyFtCount = calcFt(monthTournaments ?? []);
-  const monthlyAvgDailyBuyIn = calcAvgDailyBuyIn(monthTournaments ?? []);
+  const monthlyAvgDailyBuyIn = calcAvgDailyBuyIn(monthTournaments ?? [], eurToUsdRate);
 
   // Weekly stats
   const weeklyTotalTournaments = weekTournaments?.length || 0;
-  const weeklyTotalBuyIn = weekTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.buyIn), 0) || 0;
+  const weeklyTotalBuyIn = sumBuyIn(weekTournaments);
   const weeklyAbi = weeklyTotalTournaments > 0 ? weeklyTotalBuyIn / weeklyTotalTournaments : 0;
-  const weeklyTotalProfit = weekTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.result), 0) || 0;
-  const weeklyTotalWinnings = weekTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.profit), 0) || 0;
+  const weeklyTotalProfit = sumResult(weekTournaments);
+  const weeklyTotalWinnings = sumProfit(weekTournaments);
   const { itmCount: weeklyItmCount, itmPercentage: weeklyItmPercentage } = calcItm(weekTournaments);
   const weeklyFtCount = calcFt(weekTournaments);
-  const weeklyAvgDailyBuyIn = calcAvgDailyBuyIn(weekTournaments);
+  const weeklyAvgDailyBuyIn = calcAvgDailyBuyIn(weekTournaments, eurToUsdRate);
 
   // Yearly stats
   const yearlyTotalTournaments = yearTournaments?.length || 0;
-  const yearlyTotalBuyIn = yearTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.buyIn), 0) || 0;
+  const yearlyTotalBuyIn = sumBuyIn(yearTournaments);
   const yearlyAbi = yearlyTotalTournaments > 0 ? yearlyTotalBuyIn / yearlyTotalTournaments : 0;
-  const yearlyTotalProfit = yearTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.result), 0) || 0;
-  const yearlyTotalWinnings = yearTournaments?.reduce((acc: number, t: Tournament) => acc + toNum(t.profit), 0) || 0;
+  const yearlyTotalProfit = sumResult(yearTournaments);
+  const yearlyTotalWinnings = sumProfit(yearTournaments);
   const { itmCount: yearlyItmCount, itmPercentage: yearlyItmPercentage } = calcItm(yearTournaments);
   const yearlyFtCount = calcFt(yearTournaments);
-  const yearlyAvgDailyBuyIn = calcAvgDailyBuyIn(yearTournaments);
+  const yearlyAvgDailyBuyIn = calcAvgDailyBuyIn(yearTournaments, eurToUsdRate);
 
   const dayProfitChartData = useMemo(() => {
     if (!todayTournaments?.length) return [];
@@ -206,7 +217,7 @@ export const SummarizeResults = () => {
       }
       return {
         torneio: label,
-        Lucro: getTournamentLucroUsd(t),
+        Lucro: getTournamentLucroUsd(t, eurToUsdRate),
       };
     });
   }, [todayTournaments]);
@@ -219,7 +230,7 @@ export const SummarizeResults = () => {
       for (const t of weekTournaments) {
         const d = parseTournamentDateLocal(t.date);
         const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-        const p = getTournamentLucroUsd(t);
+        const p = getTournamentLucroUsd(t, eurToUsdRate);
         byDate.set(key, (byDate.get(key) || 0) + p);
       }
     }
@@ -248,7 +259,7 @@ export const SummarizeResults = () => {
       for (const t of yearTournaments) {
         const d = parseTournamentDateLocal(t.date);
         const m = d.getMonth();
-        const p = getTournamentLucroUsd(t);
+        const p = getTournamentLucroUsd(t, eurToUsdRate);
         byMonth.set(m, (byMonth.get(m) || 0) + p);
       }
     }
@@ -269,7 +280,7 @@ export const SummarizeResults = () => {
     if (monthTournaments?.length) {
       for (const t of monthTournaments) {
         const datePart = convertIsoDateToBr(t.date).split(" ")[0];
-        const p = getTournamentLucroUsd(t);
+        const p = getTournamentLucroUsd(t, eurToUsdRate);
         byDayFull.set(datePart, (byDayFull.get(datePart) || 0) + p);
       }
     }

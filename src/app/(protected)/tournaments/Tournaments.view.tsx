@@ -43,6 +43,23 @@ import {
 } from "@/components/ui/pagination";
 import { useTournamentsViewModel } from "./tournaments.viewmodel";
 
+function EurTooltip({
+  value,
+  eurToUsdRate,
+}: {
+  value: number;
+  eurToUsdRate: number;
+}) {
+  return (
+    <span className="relative group inline-flex cursor-help">
+      <span>€ {value.toFixed(2)}</span>
+      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:inline-block bg-zinc-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 border border-white/10 pointer-events-none">
+        ≈ $ {(value * eurToUsdRate).toFixed(2)}
+      </span>
+    </span>
+  );
+}
+
 /**
  * View da página Tournaments.
  *
@@ -67,6 +84,7 @@ export function TournamentsView() {
     editingTournamentId,
     editDraftById,
     savingTournamentId,
+    eurToUsdRate,
     isImportScheduleModalOpen,
     isImportingSchedule,
     day2Tournaments,
@@ -179,7 +197,9 @@ export function TournamentsView() {
                           <TableCell className="text-text-primary text-center">
                             {String(tournament.buyIn).toLowerCase() === "ticket"
                               ? "ticket"
-                              : `$ ${Number(tournament.buyIn).toFixed(2)}`}
+                              : tournament.currency === "EUR"
+                                ? <EurTooltip value={Number(tournament.buyIn)} eurToUsdRate={eurToUsdRate} />
+                                : `$ ${Number(tournament.buyIn).toFixed(2)}`}
                           </TableCell>
                           <TableCell className="text-center">
                             <Button
@@ -428,6 +448,8 @@ export function TournamentsView() {
                             />
                           ) : String(tournament.buyIn).toLowerCase() === "ticket" ? (
                             <>ticket</>
+                          ) : tournament.currency === "EUR" ? (
+                            <EurTooltip value={Number(tournament.buyIn)} eurToUsdRate={eurToUsdRate} />
                           ) : (
                             <>$ {Number(tournament.buyIn).toFixed(2)}</>
                           )}
@@ -447,6 +469,8 @@ export function TournamentsView() {
                             />
                           ) : String(tournament.result).toLowerCase() === "ticket" ? (
                             <>ticket</>
+                          ) : tournament.currency === "EUR" ? (
+                            <EurTooltip value={Number(tournament.result)} eurToUsdRate={eurToUsdRate} />
                           ) : (
                             <>$ {Number(tournament.result).toFixed(2)}</>
                           )}
@@ -458,7 +482,9 @@ export function TournamentsView() {
                               : "text-red-500"
                           } text-center`}
                         >
-                          $ {tournament.profit?.toFixed(2)}
+                          {tournament.currency === "EUR"
+                            ? <EurTooltip value={tournament.profit ?? 0} eurToUsdRate={eurToUsdRate} />
+                            : `$ ${tournament.profit?.toFixed(2)}`}
                         </TableCell>
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (

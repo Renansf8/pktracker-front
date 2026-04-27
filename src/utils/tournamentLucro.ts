@@ -5,8 +5,9 @@ import type { Tournament } from "@/services/hooks/types";
  * A API pode preencher `profit` e deixar `result` como 0 — `??` em `result ?? profit`
  * não cobre esse caso.
  */
-export function getTournamentLucroUsd(t: Tournament): number {
+export function getTournamentLucroUsd(t: Tournament, eurToUsdRate = 1): number {
   const raw = t.profit ?? t.result;
   const n = Number(raw);
-  return Number.isFinite(n) ? n : 0;
+  const val = Number.isFinite(n) ? n : 0;
+  return t.currency === "EUR" ? val * eurToUsdRate : val;
 }

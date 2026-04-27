@@ -1,6 +1,7 @@
 "use client";
 
 import { useTournaments } from "@/services/hooks/useTournaments";
+import { useCurrency } from "@/services/hooks/useCurrency";
 import { useEffect, useMemo, useState } from "react";
 import { ITEMS_PER_PAGE } from "./tournaments.types";
 import type { TournamentsViewProps } from "./tournaments.types";
@@ -9,6 +10,7 @@ import {
   buildTournamentPatch,
   type TournamentEditDraft,
 } from "@/utils/tournamentPatch";
+import { getEurToUsdRate } from "@/utils/currencyConvert";
 
 
 function getPaginationPages(
@@ -63,6 +65,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     updateTournament,
     applySchedule,
   } = useTournaments(platform, currentPage, ITEMS_PER_PAGE, name);
+  const { currencies } = useCurrency();
+  const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
   const { data: tournaments, isLoading } = getAllTournaments;
 
   useEffect(() => {
@@ -263,6 +267,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     editingTournamentId,
     editDraftById,
     savingTournamentId,
+    eurToUsdRate,
     isImportScheduleModalOpen,
     isImportingSchedule,
     day2Tournaments,

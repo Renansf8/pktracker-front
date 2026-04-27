@@ -14,7 +14,7 @@ import type { Tournament } from "@/services/hooks/types";
 import { useCurrency } from "@/services/hooks/useCurrency";
 import { useGetUser } from "@/services/hooks/useGetUser";
 import { useTournaments } from "@/services/hooks/useTournaments";
-import { convertUsdToBrl } from "@/utils/currencyConvert";
+import { convertUsdToBrl, getEurToUsdRate, toUsd } from "@/utils/currencyConvert";
 import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert";
 import { useMemo } from "react";
 import type { HomeViewProps } from "./home.types";
@@ -33,6 +33,7 @@ export function useHomeViewModel(): HomeViewProps {
   const { data: tournamentsResponse } = getAllTournaments;
 
   const tournaments: Tournament[] = tournamentsResponse?.data?.data ?? [];
+  const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
 
   const todayBr = useMemo(() => {
     const today = new Date();
@@ -55,8 +56,11 @@ export function useHomeViewModel(): HomeViewProps {
   }, [tournaments, todayBr]);
 
   const todayTotalBuyIn = useMemo(
-    () => todayTournaments.reduce((acc, t) => acc + toNum(t.buyIn), 0),
-    [todayTournaments],
+    () => todayTournaments.reduce(
+      (acc, t) => acc + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
+      0,
+    ),
+    [todayTournaments, eurToUsdRate],
   );
 
   const stats = useMemo(() => {
@@ -72,9 +76,9 @@ export function useHomeViewModel(): HomeViewProps {
     };
     const reduced = tournaments.reduce<StatsAcc>(
       (acc, t) => ({
-        totalBuyIn: acc.totalBuyIn + toNum(t.buyIn),
-        totalProfit: acc.totalProfit + toNum(t.result),
-        totalWinnings: acc.totalWinnings + toNum(t.profit ?? 0),
+        totalBuyIn: acc.totalBuyIn + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
+        totalProfit: acc.totalProfit + toUsd(toNum(t.result), t.currency, eurToUsdRate),
+        totalWinnings: acc.totalWinnings + toUsd(toNum(t.profit ?? 0), t.currency, eurToUsdRate),
       }),
       initial,
     );
@@ -93,7 +97,7 @@ export function useHomeViewModel(): HomeViewProps {
       ftCount,
       avgDailyBuyIn: distinctDays > 0 ? reduced.totalBuyIn / distinctDays : 0,
     };
-  }, [tournaments]);
+  }, [tournaments, eurToUsdRate]);
 
   const bankDisplayText = useMemo(() => {
     const usd = user?.bank?.bank;

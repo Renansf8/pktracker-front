@@ -18,6 +18,7 @@ export interface TournamentsViewProps {
   editingTournamentId: string | null;
   editDraftById: Record<string, TournamentEditDraft | undefined>;
   savingTournamentId: string | null;
+  eurToUsdRate: number;
   isImportScheduleModalOpen: boolean;
   isImportingSchedule: boolean;
   // Dia 2

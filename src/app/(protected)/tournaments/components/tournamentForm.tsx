@@ -215,16 +215,22 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
-                  <div className="flex flex-col justify-between h-[80px] w-20">
+                  <div className="flex flex-col justify-between h-[80px] w-24">
                     <div className="gap-1 flex flex-col">
                       <FormLabel>Moeda</FormLabel>
                       <FormControl>
-                        <Input
-                          className="border-input-border w-20"
-                          placeholder="USD"
-                          {...field}
-                          value={"USD"}
-                        />
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-24">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                     </div>
                     <FormMessage className="text-[10px] min-h-[14px]" />
