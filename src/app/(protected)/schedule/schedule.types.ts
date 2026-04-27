@@ -1,11 +1,17 @@
 import type { ScheduleTournament } from "@/services/hooks/schedule.types";
 import type { ScheduleEditDraft } from "@/utils/schedulePatch";
 
+export interface BuyInSummaryRow {
+  buyIn: number;
+  count: number;
+}
+
 export interface ScheduleViewProps {
   isLoading: boolean;
   total: number;
   totalBuyIns: number;
   list: ScheduleTournament[];
+  buyInSummary: BuyInSummaryRow[];
 
   selectedScheduleId: string | null;
   editingScheduleId: string | null;

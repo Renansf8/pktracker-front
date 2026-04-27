@@ -36,6 +36,17 @@ export function useScheduleViewModel(): ScheduleViewProps {
     0,
   );
 
+  const buyInSummary = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const item of list) {
+      const val = Number(item.buyIn ?? 0);
+      map.set(val, (map.get(val) ?? 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([buyIn, count]) => ({ buyIn, count }))
+      .sort((a, b) => a.buyIn - b.buyIn);
+  }, [list]);
+
   const onConfirmDelete = () => {
     if (selectedScheduleId) {
       deleteSchedule.mutate(selectedScheduleId);
@@ -110,6 +121,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
     total,
     totalBuyIns,
     list,
+    buyInSummary,
 
     selectedScheduleId,
     editingScheduleId,
