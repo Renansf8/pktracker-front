@@ -18,13 +18,16 @@
 import { useBank } from "@/services/hooks/useBank";
 import { useGetUser } from "@/services/hooks/useGetUser";
 import { useState } from "react";
+import { useDailyBuyInLimit } from "@/utils/useDailyBuyInLimit";
 import type { BankViewProps } from "./bank.types";
 
 export function useBankViewModel(): BankViewProps {
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [rakeAmount, setRakeAmount] = useState<number | undefined>(undefined);
+  const [dailyLimitInput, setDailyLimitInput] = useState("");
   const { data: user, isLoading } = useGetUser();
   const { createDeposit, createWithdrawal, createRake } = useBank();
+  const { limitPct: dailyLimitPct, setLimitPct: setDailyLimitPct } = useDailyBuyInLimit();
 
   const handleDeposit = () => {
     createDeposit.mutate({
@@ -50,6 +53,13 @@ export function useBankViewModel(): BankViewProps {
     setRakeAmount(undefined);
   };
 
+  const handleSaveDailyLimit = () => {
+    const parsed = parseFloat(dailyLimitInput);
+    if (!Number.isFinite(parsed) || parsed <= 0) return;
+    setDailyLimitPct(parsed);
+    setDailyLimitInput("");
+  };
+
   return {
     isLoading,
     amount,
@@ -57,10 +67,14 @@ export function useBankViewModel(): BankViewProps {
     deposits: user?.bank?.deposits ?? [],
     withdrawals: user?.bank?.withdrawals ?? [],
     rakes: user?.bank?.rakes ?? [],
+    dailyLimitPct,
+    dailyLimitInput,
     onAmountChange: setAmount,
     onRakeAmountChange: setRakeAmount,
     onDeposit: handleDeposit,
     onWithdrawal: handleWithdrawal,
     onRake: handleRake,
+    onDailyLimitInputChange: setDailyLimitInput,
+    onSaveDailyLimit: handleSaveDailyLimit,
   };
 }

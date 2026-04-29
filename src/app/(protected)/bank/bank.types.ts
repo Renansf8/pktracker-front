@@ -23,9 +23,13 @@ export interface BankViewProps {
   deposits: BankDeposit[];
   withdrawals: BankWithdrawal[];
   rakes: BankRake[];
+  dailyLimitPct: number;
+  dailyLimitInput: string;
   onAmountChange: (value: number | undefined) => void;
   onRakeAmountChange: (value: number | undefined) => void;
   onDeposit: () => void;
   onWithdrawal: () => void;
   onRake: () => void;
+  onDailyLimitInputChange: (value: string) => void;
+  onSaveDailyLimit: () => void;
 }

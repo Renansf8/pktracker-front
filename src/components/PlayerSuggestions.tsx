@@ -7,10 +7,11 @@ import {
   getSuggestedStakeLevels,
 } from "@/utils/abiSuggestion";
 import {
-  DAILY_BUYIN_REFERENCE_RATIO,
   getDailyBuyInToBankRatio,
   shouldWarnDailyBuyInExposure,
 } from "@/utils/dailyBuyInExposure";
+import { useDailyBuyInLimit } from "@/utils/useDailyBuyInLimit";
+import { useDayStartBank } from "@/utils/useDayStartBank";
 import { Input } from "@/components/ui/input";
 import { AlertTriangle } from "lucide-react";
 
@@ -171,16 +172,22 @@ function DailyBuyInExposureCard({
   bankUsd,
   todayTotalBuyIn,
 }: DailyBuyInExposureCardProps) {
-  const ratio = getDailyBuyInToBankRatio(bankUsd, todayTotalBuyIn);
-  const show = ratio !== null && shouldWarnDailyBuyInExposure(bankUsd, todayTotalBuyIn);
+  const { limitPct } = useDailyBuyInLimit();
+  // Usa o saldo do início do dia como base fixa; fallback para o valor atual
+  // enquanto o snapshot ainda não foi criado (primeiro acesso do dia).
+  const dayStartBank = useDayStartBank(bankUsd);
+  const referenceBank = dayStartBank ?? bankUsd;
+
+  const ratio = getDailyBuyInToBankRatio(referenceBank, todayTotalBuyIn);
+  const show = ratio !== null && shouldWarnDailyBuyInExposure(referenceBank, todayTotalBuyIn, limitPct);
 
   if (!show || ratio === null) {
     return null;
   }
 
   const pct = (ratio * 100).toFixed(1);
-  const refPct = (DAILY_BUYIN_REFERENCE_RATIO * 100).toFixed(0);
-  const sevenPercentOfBankUsd = bankUsd * DAILY_BUYIN_REFERENCE_RATIO;
+  const refPct = limitPct.toFixed(0);
+  const sevenPercentOfBankUsd = referenceBank * (limitPct / 100);
 
   return (
     <article className="glass-panel flex flex-col gap-4 rounded-3xl border border-red-500/40 p-5">

@@ -15,6 +15,7 @@ import { useCurrency } from "@/services/hooks/useCurrency";
 import { useGetUser } from "@/services/hooks/useGetUser";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { convertUsdToBrl, getEurToUsdRate, toUsd } from "@/utils/currencyConvert";
+import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert";
 import { useMemo } from "react";
 import type { HomeViewProps } from "./home.types";
@@ -78,7 +79,7 @@ export function useHomeViewModel(): HomeViewProps {
       (acc, t) => ({
         totalBuyIn: acc.totalBuyIn + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
         totalProfit: acc.totalProfit + toUsd(toNum(t.result), t.currency, eurToUsdRate),
-        totalWinnings: acc.totalWinnings + toUsd(toNum(t.profit ?? 0), t.currency, eurToUsdRate),
+        totalWinnings: acc.totalWinnings + getTournamentLucroUsd(t, eurToUsdRate),
       }),
       initial,
     );
@@ -99,17 +100,22 @@ export function useHomeViewModel(): HomeViewProps {
     };
   }, [tournaments, eurToUsdRate]);
 
+  // Recalcula o banco substituindo o profit do backend (que usa t.profit=0 em
+  // torneios não finalizados) pelo lucro corrigido (result - buyIn).
+  const bankUsd = useMemo(() => {
+    const backendBank = user?.bank?.bank ?? 0;
+    const backendProfit = user?.bank?.profit ?? 0;
+    return backendBank - backendProfit + stats.totalWinnings;
+  }, [user?.bank?.bank, user?.bank?.profit, stats.totalWinnings]);
+
   const bankDisplayText = useMemo(() => {
-    const usd = user?.bank?.bank;
-    const usdFormatted = usd !== undefined ? usd.toFixed(2) : "0.00";
+    const usdFormatted = bankUsd.toFixed(2);
     const brl =
-      usd !== undefined && currencies?.data?.rates?.BRL !== undefined
-        ? convertUsdToBrl(currencies.data.rates.BRL * usd)
+      currencies?.data?.rates?.BRL !== undefined
+        ? convertUsdToBrl(currencies.data.rates.BRL * bankUsd)
         : "0.00";
     return `$ ${usdFormatted} (${brl})`;
-  }, [user?.bank?.bank, currencies?.data?.rates?.BRL]);
-
-  const bankUsd = user?.bank?.bank ?? 0;
+  }, [bankUsd, currencies?.data?.rates?.BRL]);
 
   return {
     isLoading,

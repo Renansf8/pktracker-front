@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import { apiClient } from "../api/client";
 import { API_ENDPOINTS } from "../api/endpoints";
-import type { StatsSummary } from "./types";
+import type { PaginatedTournamentsResponse, StatsSummary } from "./types";
 
 export const useStats = () => {
   const getStatsSummary = useQuery<AxiosResponse<StatsSummary>>({
@@ -10,7 +10,17 @@ export const useStats = () => {
     queryFn: () => apiClient.get<StatsSummary>(API_ENDPOINTS.STATS.SUMMARY),
   });
 
+  const getAllTournamentsForStats = useQuery<AxiosResponse<PaginatedTournamentsResponse>>({
+    queryKey: ["stats", "platform-tournaments"],
+    queryFn: () =>
+      apiClient.get<PaginatedTournamentsResponse>(
+        API_ENDPOINTS.TOURNAMENTS.GET_ALL("", 1, 9999),
+      ),
+    staleTime: 5 * 60 * 1000,
+  });
+
   return {
     getStatsSummary,
+    getAllTournamentsForStats,
   };
 };

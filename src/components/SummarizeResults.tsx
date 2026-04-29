@@ -160,7 +160,7 @@ export const SummarizeResults = () => {
   const sumResult = (list: Tournament[]) =>
     list.reduce((acc, t) => acc + toUsd(toNum(t.result), t.currency, eurToUsdRate), 0);
   const sumProfit = (list: Tournament[]) =>
-    list.reduce((acc, t) => acc + toUsd(toNum(t.profit), t.currency, eurToUsdRate), 0);
+    list.reduce((acc, t) => acc + getTournamentLucroUsd(t, eurToUsdRate), 0);
 
   // Daily stats
   const totalTournaments = todayTournaments?.length || 0;

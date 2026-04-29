@@ -22,11 +22,15 @@ export function BankView() {
     deposits,
     withdrawals,
     rakes,
+    dailyLimitPct,
+    dailyLimitInput,
     onAmountChange,
     onRakeAmountChange,
     onDeposit,
     onWithdrawal,
     onRake,
+    onDailyLimitInputChange,
+    onSaveDailyLimit,
   } = useBankViewModel();
 
   if (isLoading) {
@@ -41,6 +45,44 @@ export function BankView() {
 
   return (
     <div className="flex flex-col items-center justify-center w-[90%] mx-auto mt-8 text-text-primary gap-8">
+      <div className="glass-panel flex flex-col gap-4 w-[80%] rounded-3xl p-6">
+        <p className="text-sm font-medium uppercase tracking-wide text-text-secondary">
+          Configurações
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-sm text-text-primary">
+            Limite diário de buy-ins:
+          </span>
+          <span className="text-sm font-semibold text-cyan-300">
+            {dailyLimitPct.toFixed(0)}% da banca
+          </span>
+          <span className="text-xs text-text-secondary">
+            (aviso a partir de {(dailyLimitPct * 0.85).toFixed(1)}%)
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            min={1}
+            max={100}
+            step={0.5}
+            placeholder={`${dailyLimitPct}`}
+            value={dailyLimitInput}
+            onChange={(e) => onDailyLimitInputChange(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && onSaveDailyLimit()}
+            className="w-24"
+          />
+          <span className="text-sm text-text-secondary">%</span>
+          <Button
+            variant="outline"
+            onClick={onSaveDailyLimit}
+            disabled={!dailyLimitInput || Number.isNaN(parseFloat(dailyLimitInput)) || parseFloat(dailyLimitInput) <= 0}
+          >
+            Salvar
+          </Button>
+        </div>
+      </div>
+
       <div className="flex gap-4 w-[80%] items-center justify-center">
         <Button variant="outline" disabled={!amount} onClick={onDeposit}>
           Depósito
@@ -84,6 +126,7 @@ export function BankView() {
           }
         />
       </div>
+
       <div className="glass-panel flex gap-16 w-[80%] items-center justify-center rounded-3xl p-8">
         <div className="flex flex-col gap-4 w-[30%]">
           <p>Registros de depósitos</p>

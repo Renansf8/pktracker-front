@@ -6,7 +6,7 @@ import type {
   StatsHighestAbiDay,
   StatsMostTournamentsInADay,
 } from "@/services/hooks/types";
-import type { BucketCardData } from "./stats.types";
+import type { BucketCardData, StatsPlatformEntry, StatsPlatformStats } from "./stats.types";
 import { useStatsViewModel } from "./stats.viewmodel";
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -371,6 +371,114 @@ function BucketCard({
  * Main view
  * ────────────────────────────────────────────────────────────────────────*/
 
+function PlatformCard({
+  label,
+  badge,
+  entry,
+  valueType,
+}: {
+  label: string;
+  badge: string;
+  entry: StatsPlatformEntry | null;
+  valueType: "profit" | "loss" | "count-most" | "count-least";
+}) {
+  const accentColor =
+    valueType === "profit"
+      ? "#3db87a"
+      : valueType === "loss"
+        ? "#c44040"
+        : "#d4a843";
+
+  return (
+    <Card className="glass-panel w-full border-0 bg-transparent py-6 px-6 shadow-none text-text-primary flex flex-col justify-between min-h-[160px]">
+      <div className="flex items-center justify-between">
+        <p className="activity-card-title">{label}</p>
+        <span
+          className="font-data text-[9px] tracking-[0.22em]"
+          style={{ color: accentColor }}
+        >
+          {badge}
+        </span>
+      </div>
+
+      {entry ? (
+        <>
+          <p
+            className="font-data font-semibold leading-none mt-3"
+            style={{ fontSize: "26px", color: "#f0ede8" }}
+          >
+            {entry.platform}
+          </p>
+          <div className="mt-3 flex items-baseline gap-4">
+            {(valueType === "profit" || valueType === "loss") && (
+              <span
+                className="font-data text-sm font-semibold"
+                style={{ color: accentColor }}
+              >
+                {formatCurrency(entry.profit)}
+              </span>
+            )}
+            <span className="font-data text-[11px]" style={{ color: "#7a7068" }}>
+              {entry.count} {entry.count === 1 ? "torneio" : "torneios"}
+            </span>
+            {(valueType === "count-most" || valueType === "count-least") && (
+              <span
+                className="font-data text-sm font-semibold"
+                style={{ color: entry.profit >= 0 ? "#3db87a" : "#c44040" }}
+              >
+                {formatCurrency(entry.profit)}
+              </span>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="mt-3">
+          <EmptyValue />
+          <p className="font-data text-[11px] mt-3" style={{ color: "#7a7068" }}>
+            Sem dados de plataforma
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function PlatformStatsSection({ stats }: { stats: StatsPlatformStats | null }) {
+  if (!stats) return null;
+
+  return (
+    <section>
+      <SectionLabel index="04" title="Ranking de plataformas" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <PlatformCard
+          label="Maior lucro"
+          badge="◆ LUCRO"
+          entry={stats.mostProfit}
+          valueType="profit"
+        />
+        <PlatformCard
+          label="Maior perda"
+          badge="◆ PERDA"
+          entry={stats.mostLoss}
+          valueType="loss"
+        />
+        <PlatformCard
+          label="Mais torneios"
+          badge="◆ VOLUME"
+          entry={stats.mostTournaments}
+          valueType="count-most"
+        />
+        <PlatformCard
+          label="Menos torneios"
+          badge="◆ MENOR"
+          entry={stats.leastTournaments}
+          valueType="count-least"
+        />
+      </div>
+    </section>
+  );
+}
+
 export function StatsView() {
   const {
     isLoading,
@@ -381,6 +489,7 @@ export function StatsView() {
     highestAbiDay,
     profitBuckets,
     lossBuckets,
+    platformStats,
   } = useStatsViewModel();
 
   if (isLoading) {
@@ -478,6 +587,8 @@ export function StatsView() {
           ))}
         </div>
       </section>
+
+      <PlatformStatsSection stats={platformStats} />
     </div>
   );
 }

@@ -12,6 +12,19 @@ export interface BucketCardData {
   record: StatsBucketRecord | null;
 }
 
+export interface StatsPlatformEntry {
+  platform: string;
+  profit: number;
+  count: number;
+}
+
+export interface StatsPlatformStats {
+  mostProfit: StatsPlatformEntry | null;
+  mostLoss: StatsPlatformEntry | null;
+  mostTournaments: StatsPlatformEntry | null;
+  leastTournaments: StatsPlatformEntry | null;
+}
+
 export interface StatsViewProps {
   isLoading: boolean;
   isError: boolean;
@@ -21,4 +34,5 @@ export interface StatsViewProps {
   highestAbiDay: StatsHighestAbiDay | null;
   profitBuckets: BucketCardData[];
   lossBuckets: BucketCardData[];
+  platformStats: StatsPlatformStats | null;
 }
