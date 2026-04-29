@@ -20,4 +20,6 @@ export interface HomeViewProps {
   itmCount: number;
   ftCount: number;
   avgDailyBuyIn: number;
+  monthlyProfitUsd: number;
+  yearlyProfitUsd: number;
 }

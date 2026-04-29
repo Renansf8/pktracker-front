@@ -17,7 +17,7 @@ import { useTournaments } from "@/services/hooks/useTournaments";
 import { convertUsdToBrl, getEurToUsdRate, toUsd } from "@/utils/currencyConvert";
 import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { HomeViewProps } from "./home.types";
 
 /** Converte buyIn/result para número, ignorando "ticket" (retorna 0). */
@@ -35,6 +35,9 @@ export function useHomeViewModel(): HomeViewProps {
 
   const tournaments: Tournament[] = tournamentsResponse?.data?.data ?? [];
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
+
+  const [thisYear] = useState(() => new Date().getFullYear());
+  const [thisMonth] = useState(() => new Date().getMonth());
 
   const todayBr = useMemo(() => {
     const today = new Date();
@@ -117,6 +120,21 @@ export function useHomeViewModel(): HomeViewProps {
     return `$ ${usdFormatted} (${brl})`;
   }, [bankUsd, currencies?.data?.rates?.BRL]);
 
+  const monthlyProfitUsd = useMemo(() => {
+    return tournaments
+      .filter((t) => {
+        const d = new Date(t.date);
+        return d.getFullYear() === thisYear && d.getMonth() === thisMonth;
+      })
+      .reduce((acc, t) => acc + getTournamentLucroUsd(t, eurToUsdRate), 0);
+  }, [tournaments, eurToUsdRate, thisYear, thisMonth]);
+
+  const yearlyProfitUsd = useMemo(() => {
+    return tournaments
+      .filter((t) => new Date(t.date).getFullYear() === thisYear)
+      .reduce((acc, t) => acc + getTournamentLucroUsd(t, eurToUsdRate), 0);
+  }, [tournaments, eurToUsdRate, thisYear]);
+
   return {
     isLoading,
     userName: user?.name ?? "",
@@ -132,5 +150,7 @@ export function useHomeViewModel(): HomeViewProps {
     itmCount: stats.itmCount,
     ftCount: stats.ftCount,
     avgDailyBuyIn: stats.avgDailyBuyIn,
+    monthlyProfitUsd,
+    yearlyProfitUsd,
   };
 }

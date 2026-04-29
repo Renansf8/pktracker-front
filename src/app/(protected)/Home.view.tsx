@@ -6,6 +6,7 @@
  */
 "use client";
 
+import { GoalProgress } from "@/components/GoalProgress";
 import { PlayerSuggestions } from "@/components/PlayerSuggestions";
 import { SummarizeCards } from "@/components/Summarize Cards";
 import { SummarizeResults } from "@/components/SummarizeResults";
@@ -27,6 +28,8 @@ export function HomeView() {
     itmCount,
     ftCount,
     avgDailyBuyIn,
+    monthlyProfitUsd,
+    yearlyProfitUsd,
   } = useHomeViewModel();
 
   if (isLoading) {
@@ -110,6 +113,11 @@ export function HomeView() {
           twoRows
         />
       </section>
+
+      <GoalProgress
+        monthlyProfitUsd={monthlyProfitUsd}
+        yearlyProfitUsd={yearlyProfitUsd}
+      />
 
       <PlayerSuggestions bankUsd={bankUsd} todayTotalBuyIn={todayTotalBuyIn} />
 
