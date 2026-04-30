@@ -32,8 +32,11 @@ function toBucketCards(records: StatsBucketRecords): BucketCardData[] {
   }));
 }
 
-function computePlatformStats(tournaments: Tournament[]): StatsPlatformStats | null {
-  if (!tournaments.length) return null;
+function buildPlatformData(tournaments: Tournament[]): {
+  allPlatforms: StatsPlatformEntry[];
+  platformStats: StatsPlatformStats | null;
+} {
+  if (!tournaments.length) return { allPlatforms: [], platformStats: null };
 
   const map = new Map<string, { profit: number; count: number }>();
 
@@ -51,18 +54,20 @@ function computePlatformStats(tournaments: Tournament[]): StatsPlatformStats | n
     }
   }
 
-  const entries: StatsPlatformEntry[] = Array.from(map.entries()).map(
-    ([platform, data]) => ({ platform, ...data }),
-  );
+  const allPlatforms: StatsPlatformEntry[] = Array.from(map.entries())
+    .map(([platform, data]) => ({ platform, ...data }))
+    .sort((a, b) => b.profit - a.profit);
 
-  const sortedByProfit = [...entries].sort((a, b) => b.profit - a.profit);
-  const sortedByCount = [...entries].sort((a, b) => b.count - a.count);
+  const byCount = [...allPlatforms].sort((a, b) => b.count - a.count);
 
   return {
-    mostProfit: sortedByProfit[0] ?? null,
-    mostLoss: sortedByProfit[sortedByProfit.length - 1] ?? null,
-    mostTournaments: sortedByCount[0] ?? null,
-    leastTournaments: sortedByCount[sortedByCount.length - 1] ?? null,
+    allPlatforms,
+    platformStats: {
+      mostProfit: allPlatforms[0] ?? null,
+      mostLoss: allPlatforms[allPlatforms.length - 1] ?? null,
+      mostTournaments: byCount[0] ?? null,
+      leastTournaments: byCount[byCount.length - 1] ?? null,
+    },
   };
 }
 
@@ -72,7 +77,10 @@ export function useStatsViewModel(): StatsViewProps {
   const { data: allTournamentsData } = getAllTournamentsForStats;
 
   const summary = data?.data as StatsSummary | undefined;
-  const allTournaments: Tournament[] = allTournamentsData?.data?.data ?? [];
+  const allTournaments: Tournament[] = useMemo(
+    () => allTournamentsData?.data?.data ?? [],
+    [allTournamentsData],
+  );
 
   const profitBuckets = useMemo<BucketCardData[]>(
     () =>
@@ -98,9 +106,28 @@ export function useStatsViewModel(): StatsViewProps {
     [summary],
   );
 
-  const platformStats = useMemo(
-    () => computePlatformStats(allTournaments),
+  const { allPlatforms, platformStats } = useMemo(
+    () => buildPlatformData(allTournaments),
     [allTournaments],
+  );
+
+  const totalTournaments = allTournaments.length;
+
+  const itmRate = useMemo(
+    () =>
+      totalTournaments > 0
+        ? (allTournaments.filter((t) => t.itm).length / totalTournaments) * 100
+        : 0,
+    [allTournaments, totalTournaments],
+  );
+
+  const ftRate = useMemo(
+    () =>
+      totalTournaments > 0
+        ? (allTournaments.filter((t) => t.hasFt).length / totalTournaments) *
+          100
+        : 0,
+    [allTournaments, totalTournaments],
   );
 
   return {
@@ -113,5 +140,9 @@ export function useStatsViewModel(): StatsViewProps {
     profitBuckets,
     lossBuckets,
     platformStats,
+    allPlatforms,
+    totalTournaments,
+    itmRate,
+    ftRate,
   };
 }

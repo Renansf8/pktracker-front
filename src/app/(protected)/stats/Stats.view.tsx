@@ -6,7 +6,7 @@ import type {
   StatsHighestAbiDay,
   StatsMostTournamentsInADay,
 } from "@/services/hooks/types";
-import type { BucketCardData, StatsPlatformEntry, StatsPlatformStats } from "./stats.types";
+import type { BucketCardData, StatsPlatformEntry } from "./stats.types";
 import { useStatsViewModel } from "./stats.viewmodel";
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -45,7 +45,7 @@ function formatWeek(iso: string): string {
   const mm1 = String(start.getUTCMonth() + 1).padStart(2, "0");
   const dd2 = String(end.getUTCDate()).padStart(2, "0");
   const mm2 = String(end.getUTCMonth() + 1).padStart(2, "0");
-  return `${dd1}/${mm1} — ${dd2}/${mm2}`;
+  return `${dd1}/${mm1}—${dd2}/${mm2}`;
 }
 
 function formatMonth(iso: string): string {
@@ -83,19 +83,26 @@ function formatCurrency(value: number): string {
 function formatBucketPeriod(data: BucketCardData): string {
   if (!data.record) return "Sem registro";
   switch (data.range) {
-    case "day":
-      return formatDayFull(data.record.bucketStart);
-    case "week":
-      return formatWeek(data.record.bucketStart);
-    case "month":
-      return formatMonth(data.record.bucketStart);
-    case "year":
-      return formatYear(data.record.bucketStart);
+    case "day":   return formatDayFull(data.record.bucketStart);
+    case "week":  return formatWeek(data.record.bucketStart);
+    case "month": return formatMonth(data.record.bucketStart);
+    case "year":  return formatYear(data.record.bucketStart);
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Sub-components
+ * Animation helper
+ * ────────────────────────────────────────────────────────────────────────*/
+
+function revealed(delayMs: number): React.CSSProperties {
+  return {
+    animation: "stat-reveal 0.55s cubic-bezier(0.16,1,0.3,1) both",
+    animationDelay: `${delayMs}ms`,
+  };
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * SectionLabel
  * ────────────────────────────────────────────────────────────────────────*/
 
 function SectionLabel({ index, title }: { index: string; title: string }) {
@@ -122,22 +129,65 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
   );
 }
 
-function EmptyValue() {
+/* ─────────────────────────────────────────────────────────────────────────
+ * Stat Strip — aggregate overview line under the header
+ * ────────────────────────────────────────────────────────────────────────*/
+
+function StatStrip({
+  totalTournaments,
+  itmRate,
+  ftRate,
+  platformCount,
+}: {
+  totalTournaments: number;
+  itmRate: number;
+  ftRate: number;
+  platformCount: number;
+}) {
+  const items = [
+    { label: "TORNEIOS", value: String(totalTournaments) },
+    { label: "PLATAFORMAS", value: String(platformCount) },
+    { label: "ITM", value: `${itmRate.toFixed(1)}%` },
+    { label: "FT", value: `${ftRate.toFixed(1)}%` },
+  ];
+
   return (
-    <p
-      className="font-data text-2xl font-semibold leading-none"
-      style={{ color: "#3a342d" }}
+    <div
+      className="flex flex-wrap items-center gap-x-8 gap-y-2 py-4"
+      style={{
+        borderTop: "1px solid rgba(212,168,67,0.1)",
+        borderBottom: "1px solid rgba(212,168,67,0.1)",
+      }}
     >
-      —
-    </p>
+      {items.map((item) => (
+        <div key={item.label} className="flex items-baseline gap-2">
+          <span
+            className="font-data text-lg font-semibold leading-none"
+            style={{ color: "#f0ede8" }}
+          >
+            {item.value}
+          </span>
+          <span
+            className="font-data text-[9px] uppercase tracking-[0.22em]"
+            style={{ color: "#7a7068" }}
+          >
+            {item.label}
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
-function BiggestBuyInCard({ data }: { data: StatsBiggestBuyIn | null }) {
+/* ─────────────────────────────────────────────────────────────────────────
+ * Section 01 — Records Hero
+ * ────────────────────────────────────────────────────────────────────────*/
+
+function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
   return (
-    <Card className="glass-panel w-full border-0 bg-transparent py-6 px-6 shadow-none text-text-primary flex flex-col justify-between min-h-[180px]">
+    <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex flex-col h-full min-h-[220px] py-7 px-8">
       <div className="flex items-center justify-between">
-        <p className="activity-card-title">Maior buy-in</p>
+        <p className="activity-card-title">Maior buy-in registrado</p>
         <span
           className="font-data text-[9px] tracking-[0.22em]"
           style={{ color: "#d4a843" }}
@@ -149,27 +199,37 @@ function BiggestBuyInCard({ data }: { data: StatsBiggestBuyIn | null }) {
       {data ? (
         <>
           <p
-            className="font-data font-semibold leading-none mt-3"
-            style={{ fontSize: "34px", color: "#f0ede8" }}
+            className="font-data font-semibold leading-none mt-5"
+            style={{ fontSize: "clamp(40px,6vw,60px)", color: "#f0ede8", letterSpacing: "-0.02em" }}
           >
-            $ {data.value.toFixed(2)}
+            ${" "}{data.value.toFixed(2)}
           </p>
-          <div className="mt-4 flex flex-col gap-1">
-            <p
-              className="font-display text-sm font-semibold leading-tight"
-              style={{ color: "#f0ede8" }}
-            >
-              {data.tournament.name}
-            </p>
-            <p className="font-data text-[11px]" style={{ color: "#7a7068" }}>
-              {data.tournament.platform} · {formatDateTime(data.tournament.date)}
-            </p>
+          <div
+            className="mt-auto pt-5 flex items-end justify-between"
+            style={{ borderTop: "1px solid rgba(212,168,67,0.1)" }}
+          >
+            <div>
+              <p
+                className="font-display text-sm font-semibold leading-tight"
+                style={{ color: "#f0ede8" }}
+              >
+                {data.tournament.name}
+              </p>
+              <p className="font-data text-[11px] mt-1.5" style={{ color: "#7a7068" }}>
+                {data.tournament.platform} · {formatDateTime(data.tournament.date)}
+              </p>
+            </div>
           </div>
         </>
       ) : (
-        <div className="mt-3">
-          <EmptyValue />
-          <p className="font-data text-[11px] mt-3" style={{ color: "#7a7068" }}>
+        <div className="mt-5">
+          <p
+            className="font-data font-semibold leading-none"
+            style={{ fontSize: "60px", color: "#1e1a16", letterSpacing: "-0.02em" }}
+          >
+            —
+          </p>
+          <p className="font-data text-[11px] mt-4" style={{ color: "#4a433c" }}>
             Nenhum torneio registrado ainda
           </p>
         </div>
@@ -178,306 +238,334 @@ function BiggestBuyInCard({ data }: { data: StatsBiggestBuyIn | null }) {
   );
 }
 
-function MostTournamentsCard({
-  data,
-}: {
-  data: StatsMostTournamentsInADay | null;
-}) {
+function MostTournamentsCompact({ data }: { data: StatsMostTournamentsInADay | null }) {
   return (
-    <Card className="glass-panel w-full border-0 bg-transparent py-6 px-6 shadow-none text-text-primary flex flex-col justify-between min-h-[180px]">
+    <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
       <div className="flex items-center justify-between">
         <p className="activity-card-title">Mais torneios em um dia</p>
-        <span
-          className="font-data text-[9px] tracking-[0.22em]"
-          style={{ color: "#d4a843" }}
-        >
+        <span className="font-data text-[9px] tracking-[0.22em]" style={{ color: "#d4a843" }}>
           ◆ VOLUME
         </span>
       </div>
-
       {data ? (
-        <>
-          <div className="flex items-baseline gap-2 mt-3">
-            <p
-              className="font-data font-semibold leading-none"
-              style={{ fontSize: "34px", color: "#f0ede8" }}
-            >
-              {data.count}
-            </p>
+        <div className="mt-3 flex items-baseline gap-3">
+          <p
+            className="font-data font-semibold leading-none"
+            style={{ fontSize: "34px", color: "#f0ede8" }}
+          >
+            {data.count}
+          </p>
+          <div>
             <span
-              className="font-data text-[11px] uppercase tracking-[0.18em]"
+              className="font-data text-[10px] uppercase tracking-[0.15em] block"
               style={{ color: "#7a7068" }}
             >
               torneios
             </span>
-          </div>
-          <div className="mt-4">
-            <p
-              className="font-data text-[11px] uppercase tracking-[0.18em]"
+            <span
+              className="font-data text-[11px] block mt-0.5"
               style={{ color: "#7a7068" }}
             >
-              Em
-            </p>
-            <p className="font-data text-sm mt-1" style={{ color: "#f0ede8" }}>
               {formatDayFull(data.date)}
-            </p>
+            </span>
           </div>
-        </>
-      ) : (
-        <div className="mt-3">
-          <EmptyValue />
-          <p className="font-data text-[11px] mt-3" style={{ color: "#7a7068" }}>
-            Sem histórico de volume
-          </p>
         </div>
+      ) : (
+        <p
+          className="font-data font-semibold leading-none mt-3"
+          style={{ fontSize: "34px", color: "#1e1a16" }}
+        >
+          —
+        </p>
       )}
     </Card>
   );
 }
 
-function HighestAbiCard({ data }: { data: StatsHighestAbiDay | null }) {
+function HighestAbiCompact({ data }: { data: StatsHighestAbiDay | null }) {
   return (
-    <Card className="glass-panel w-full border-0 bg-transparent py-6 px-6 shadow-none text-text-primary flex flex-col justify-between min-h-[180px]">
+    <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
       <div className="flex items-center justify-between">
         <p className="activity-card-title">Maior ABI em um dia</p>
-        <span
-          className="font-data text-[9px] tracking-[0.22em]"
-          style={{ color: "#d4a843" }}
-        >
+        <span className="font-data text-[9px] tracking-[0.22em]" style={{ color: "#d4a843" }}>
           ◆ ALTITUDE
         </span>
       </div>
-
       {data ? (
-        <>
-          <div className="flex items-baseline gap-2 mt-3">
-            <p
-              className="font-data font-semibold leading-none"
-              style={{ fontSize: "34px", color: "#f0ede8" }}
+        <div className="mt-3 flex items-baseline gap-3">
+          <p
+            className="font-data font-semibold leading-none"
+            style={{ fontSize: "34px", color: "#f0ede8" }}
+          >
+            $ {data.abi.toFixed(2)}
+          </p>
+          <div>
+            <span
+              className="font-data text-[10px] uppercase tracking-[0.15em] block"
+              style={{ color: "#7a7068" }}
             >
-              $ {data.abi.toFixed(2)}
-            </p>
+              ABI
+            </span>
+            <span
+              className="font-data text-[11px] block mt-0.5"
+              style={{ color: "#7a7068" }}
+            >
+              {formatDayFull(data.date)} · {data.tournaments}t
+            </span>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div>
-              <p
-                className="font-data text-[10px] uppercase tracking-[0.18em]"
-                style={{ color: "#7a7068" }}
-              >
-                Data
-              </p>
-              <p
-                className="font-data text-sm mt-1"
-                style={{ color: "#f0ede8" }}
-              >
-                {formatDayFull(data.date)}
-              </p>
-            </div>
-            <div>
-              <p
-                className="font-data text-[10px] uppercase tracking-[0.18em]"
-                style={{ color: "#7a7068" }}
-              >
-                Torneios
-              </p>
-              <p
-                className="font-data text-sm mt-1"
-                style={{ color: "#f0ede8" }}
-              >
-                {data.tournaments}
-              </p>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="mt-3">
-          <EmptyValue />
-          <p className="font-data text-[11px] mt-3" style={{ color: "#7a7068" }}>
-            Sem sessões registradas
-          </p>
         </div>
-      )}
-    </Card>
-  );
-}
-
-function BucketCard({
-  data,
-  tone,
-}: {
-  data: BucketCardData;
-  tone: "profit" | "loss";
-}) {
-  const record = data.record;
-  const hasValue = record !== null;
-  const accent = tone === "profit" ? "#3db87a" : "#c44040";
-  const glyph = tone === "profit" ? "▲" : "▼";
-
-  return (
-    <Card className="glass-inner w-full border-0 bg-transparent py-4 px-4 shadow-none text-text-primary">
-      <div className="flex items-center justify-between">
-        <p className="activity-card-title">{data.label}</p>
-        {hasValue && (
-          <span
-            className="font-data text-[10px] leading-none"
-            style={{ color: accent }}
-            aria-hidden="true"
-          >
-            {glyph}
-          </span>
-        )}
-      </div>
-
-      {hasValue ? (
-        <>
-          <p
-            className="font-data leading-none mt-2"
-            style={{
-              fontSize: "20px",
-              fontWeight: 600,
-              color: accent,
-            }}
-          >
-            {formatCurrency(record.amount)}
-          </p>
-          <p
-            className="font-data text-[11px] mt-3"
-            style={{ color: "#7a7068" }}
-          >
-            {formatBucketPeriod(data)}
-          </p>
-        </>
       ) : (
-        <>
-          <p
-            className="font-data leading-none mt-2"
-            style={{ fontSize: "20px", fontWeight: 600, color: "#3a342d" }}
-          >
-            —
-          </p>
-          <p
-            className="font-data text-[11px] mt-3"
-            style={{ color: "#4a433c" }}
-          >
-            Sem registro
-          </p>
-        </>
+        <p
+          className="font-data font-semibold leading-none mt-3"
+          style={{ fontSize: "34px", color: "#1e1a16" }}
+        >
+          —
+        </p>
       )}
     </Card>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Main view
+ * Section 02+03 — Period Comparison Matrix
  * ────────────────────────────────────────────────────────────────────────*/
 
-function PlatformCard({
-  label,
-  badge,
-  entry,
-  valueType,
+const PERIOD_HEADERS = ["DIA", "SEMANA", "MÊS", "ANO"];
+
+function PeriodMatrix({
+  profitBuckets,
+  lossBuckets,
 }: {
-  label: string;
-  badge: string;
-  entry: StatsPlatformEntry | null;
-  valueType: "profit" | "loss" | "count-most" | "count-least";
+  profitBuckets: BucketCardData[];
+  lossBuckets: BucketCardData[];
 }) {
-  const accentColor =
-    valueType === "profit"
-      ? "#3db87a"
-      : valueType === "loss"
-        ? "#c44040"
-        : "#d4a843";
-
-  return (
-    <Card className="glass-panel w-full border-0 bg-transparent py-6 px-6 shadow-none text-text-primary flex flex-col justify-between min-h-[160px]">
-      <div className="flex items-center justify-between">
-        <p className="activity-card-title">{label}</p>
-        <span
-          className="font-data text-[9px] tracking-[0.22em]"
-          style={{ color: accentColor }}
-        >
-          {badge}
-        </span>
-      </div>
-
-      {entry ? (
-        <>
-          <p
-            className="font-data font-semibold leading-none mt-3"
-            style={{ fontSize: "26px", color: "#f0ede8" }}
-          >
-            {entry.platform}
-          </p>
-          <div className="mt-3 flex items-baseline gap-4">
-            {(valueType === "profit" || valueType === "loss") && (
-              <span
-                className="font-data text-sm font-semibold"
-                style={{ color: accentColor }}
-              >
-                {formatCurrency(entry.profit)}
-              </span>
-            )}
-            <span className="font-data text-[11px]" style={{ color: "#7a7068" }}>
-              {entry.count} {entry.count === 1 ? "torneio" : "torneios"}
-            </span>
-            {(valueType === "count-most" || valueType === "count-least") && (
-              <span
-                className="font-data text-sm font-semibold"
-                style={{ color: entry.profit >= 0 ? "#3db87a" : "#c44040" }}
-              >
-                {formatCurrency(entry.profit)}
-              </span>
-            )}
-          </div>
-        </>
-      ) : (
-        <div className="mt-3">
-          <EmptyValue />
-          <p className="font-data text-[11px] mt-3" style={{ color: "#7a7068" }}>
-            Sem dados de plataforma
-          </p>
-        </div>
-      )}
-    </Card>
-  );
-}
-
-function PlatformStatsSection({ stats }: { stats: StatsPlatformStats | null }) {
-  if (!stats) return null;
+  const CELL_BORDER = "1px solid rgba(212,168,67,0.07)";
 
   return (
     <section>
-      <SectionLabel index="04" title="Ranking de plataformas" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <PlatformCard
-          label="Maior lucro"
-          badge="◆ LUCRO"
-          entry={stats.mostProfit}
-          valueType="profit"
-        />
-        <PlatformCard
-          label="Maior perda"
-          badge="◆ PERDA"
-          entry={stats.mostLoss}
-          valueType="loss"
-        />
-        <PlatformCard
-          label="Mais torneios"
-          badge="◆ VOLUME"
-          entry={stats.mostTournaments}
-          valueType="count-most"
-        />
-        <PlatformCard
-          label="Menos torneios"
-          badge="◆ MENOR"
-          entry={stats.leastTournaments}
-          valueType="count-least"
-        />
+      <SectionLabel index="02 — 03" title="Recordes por período" />
+      <div className="glass-panel overflow-x-auto">
+        <div style={{ minWidth: "480px" }}>
+          {/* Column headers */}
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: "64px 1fr 1fr 1fr 1fr",
+              borderBottom: "1px solid rgba(212,168,67,0.12)",
+            }}
+          >
+            <div className="px-5 py-3" />
+            {PERIOD_HEADERS.map((h) => (
+              <div
+                key={h}
+                className="px-5 py-3"
+                style={{ borderLeft: CELL_BORDER }}
+              >
+                <span
+                  className="font-data text-[10px] uppercase tracking-[0.25em]"
+                  style={{ color: "#5a5248" }}
+                >
+                  {h}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Profit row */}
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: "64px 1fr 1fr 1fr 1fr",
+              borderBottom: "1px solid rgba(212,168,67,0.06)",
+            }}
+          >
+            <div className="px-5 py-5 flex items-center">
+              <span
+                className="font-data text-[10px] tracking-[0.1em]"
+                style={{ color: "#3db87a" }}
+              >
+                ▲ MAX
+              </span>
+            </div>
+            {profitBuckets.map((bucket) => (
+              <div
+                key={bucket.range}
+                className="px-5 py-5"
+                style={{ borderLeft: CELL_BORDER }}
+              >
+                {bucket.record ? (
+                  <>
+                    <p
+                      className="font-data font-semibold leading-none"
+                      style={{ fontSize: "15px", color: "#3db87a" }}
+                    >
+                      {formatCurrency(bucket.record.amount)}
+                    </p>
+                    <p
+                      className="font-data text-[10px] mt-2 leading-tight"
+                      style={{ color: "#5a5248" }}
+                    >
+                      {formatBucketPeriod(bucket)}
+                    </p>
+                  </>
+                ) : (
+                  <p
+                    className="font-data font-semibold leading-none"
+                    style={{ fontSize: "15px", color: "#1e1a16" }}
+                  >
+                    —
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Loss row */}
+          <div
+            className="grid"
+            style={{ gridTemplateColumns: "64px 1fr 1fr 1fr 1fr" }}
+          >
+            <div className="px-5 py-5 flex items-center">
+              <span
+                className="font-data text-[10px] tracking-[0.1em]"
+                style={{ color: "#c44040" }}
+              >
+                ▼ MIN
+              </span>
+            </div>
+            {lossBuckets.map((bucket) => (
+              <div
+                key={bucket.range}
+                className="px-5 py-5"
+                style={{ borderLeft: CELL_BORDER }}
+              >
+                {bucket.record ? (
+                  <>
+                    <p
+                      className="font-data font-semibold leading-none"
+                      style={{ fontSize: "15px", color: "#c44040" }}
+                    >
+                      {formatCurrency(bucket.record.amount)}
+                    </p>
+                    <p
+                      className="font-data text-[10px] mt-2 leading-tight"
+                      style={{ color: "#5a5248" }}
+                    >
+                      {formatBucketPeriod(bucket)}
+                    </p>
+                  </>
+                ) : (
+                  <p
+                    className="font-data font-semibold leading-none"
+                    style={{ fontSize: "15px", color: "#1e1a16" }}
+                  >
+                    —
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Section 04 — Platform Bar Chart
+ * ────────────────────────────────────────────────────────────────────────*/
+
+function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
+  if (!platforms.length) return null;
+
+  const maxAbs = Math.max(...platforms.map((p) => Math.abs(p.profit)), 1);
+
+  return (
+    <section>
+      <SectionLabel index="04" title="Plataformas" />
+      <div className="glass-panel overflow-hidden">
+        {platforms.map((p, i) => {
+          const pct = (Math.abs(p.profit) / maxAbs) * 100;
+          const isPositive = p.profit >= 0;
+          const accentColor = isPositive ? "#3db87a" : "#c44040";
+          const isLast = i === platforms.length - 1;
+
+          return (
+            <div
+              key={p.platform}
+              className="group transition-colors duration-150"
+              style={{
+                borderBottom: isLast
+                  ? "none"
+                  : "1px solid rgba(212,168,67,0.07)",
+              }}
+            >
+              <div
+                className="px-6 py-4 flex items-center gap-4 group-hover:bg-[rgba(212,168,67,0.025)]"
+                style={{ transition: "background 0.15s ease" }}
+              >
+                {/* Rank */}
+                <span
+                  className="font-data text-[10px] shrink-0 w-5 text-right"
+                  style={{ color: "#2e2822" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+
+                {/* Platform name */}
+                <span
+                  className="font-display text-sm font-semibold shrink-0"
+                  style={{ color: "#f0ede8", minWidth: "100px" }}
+                >
+                  {p.platform}
+                </span>
+
+                {/* Proportional bar */}
+                <div
+                  className="flex-1 rounded-none overflow-hidden"
+                  style={{
+                    height: "4px",
+                    background: "rgba(255,255,255,0.04)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${pct}%`,
+                      height: "100%",
+                      background: accentColor,
+                      opacity: 0.65,
+                      transition: "width 0.6s cubic-bezier(0.16,1,0.3,1)",
+                    }}
+                  />
+                </div>
+
+                {/* Amount */}
+                <span
+                  className="font-data text-sm font-semibold shrink-0 text-right"
+                  style={{ color: accentColor, minWidth: "96px" }}
+                >
+                  {formatCurrency(p.profit)}
+                </span>
+
+                {/* Count */}
+                <span
+                  className="font-data text-[11px] shrink-0 text-right"
+                  style={{ color: "#7a7068", minWidth: "44px" }}
+                >
+                  {p.count}t
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Main view
+ * ────────────────────────────────────────────────────────────────────────*/
 
 export function StatsView() {
   const {
@@ -489,7 +577,10 @@ export function StatsView() {
     highestAbiDay,
     profitBuckets,
     lossBuckets,
-    platformStats,
+    allPlatforms,
+    totalTournaments,
+    itmRate,
+    ftRate,
   } = useStatsViewModel();
 
   if (isLoading) {
@@ -527,68 +618,69 @@ export function StatsView() {
 
   return (
     <div className="flex flex-col w-[90%] mx-auto mt-10 gap-12 pb-16">
-      <header
-        className="flex items-end justify-between pb-6"
-        style={{ borderBottom: "1px solid rgba(212,168,67,0.14)" }}
-      >
-        <div>
+      {/* ── Header ──────────────────────────────────────────────────────── */}
+      <div style={revealed(0)}>
+        <header
+          className="flex items-end justify-between pb-6"
+          style={{ borderBottom: "1px solid rgba(212,168,67,0.14)" }}
+        >
+          <div>
+            <p
+              className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2"
+              style={{ color: "#7a7068" }}
+            >
+              Estatísticas
+            </p>
+            <h1
+              className="font-display text-3xl font-bold text-text-primary leading-none"
+              style={{ letterSpacing: "0.02em" }}
+            >
+              Seus recordes
+            </h1>
+          </div>
           <p
-            className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2"
+            className="font-data text-[11px] uppercase tracking-[0.2em]"
             style={{ color: "#7a7068" }}
           >
-            Estatísticas
+            Hall of fame
           </p>
-          <h1
-            className="font-display text-3xl font-bold text-text-primary leading-none"
-            style={{ letterSpacing: "0.02em" }}
-          >
-            Seus recordes
-          </h1>
-        </div>
-        <p
-          className="font-data text-[11px] uppercase tracking-[0.2em]"
-          style={{ color: "#7a7068" }}
-        >
-          Hall of fame
-        </p>
-      </header>
+        </header>
 
-      <section>
+        {totalTournaments > 0 && (
+          <StatStrip
+            totalTournaments={totalTournaments}
+            itmRate={itmRate}
+            ftRate={ftRate}
+            platformCount={allPlatforms.length}
+          />
+        )}
+      </div>
+
+      {/* ── 01 — Records Hero ───────────────────────────────────────────── */}
+      <div style={revealed(80)}>
         <SectionLabel index="01" title="Recordes pessoais" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <BiggestBuyInCard data={biggestBuyIn} />
-          <MostTournamentsCard data={mostTournamentsInADay} />
-          <HighestAbiCard data={highestAbiDay} />
+          <div className="md:col-span-2">
+            <BiggestBuyInHero data={biggestBuyIn} />
+          </div>
+          <div className="flex flex-col gap-4">
+            <MostTournamentsCompact data={mostTournamentsInADay} />
+            <HighestAbiCompact data={highestAbiDay} />
+          </div>
         </div>
-      </section>
+      </div>
 
-      <section>
-        <SectionLabel index="02" title="Maior lucro por período" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {profitBuckets.map((bucket) => (
-            <BucketCard
-              key={`profit-${bucket.range}`}
-              data={bucket}
-              tone="profit"
-            />
-          ))}
+      {/* ── 02+03 — Period Matrix ────────────────────────────────────────── */}
+      <div style={revealed(160)}>
+        <PeriodMatrix profitBuckets={profitBuckets} lossBuckets={lossBuckets} />
+      </div>
+
+      {/* ── 04 — Platform Bars ──────────────────────────────────────────── */}
+      {allPlatforms.length > 0 && (
+        <div style={revealed(240)}>
+          <PlatformBars platforms={allPlatforms} />
         </div>
-      </section>
-
-      <section>
-        <SectionLabel index="03" title="Maior perda por período" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {lossBuckets.map((bucket) => (
-            <BucketCard
-              key={`loss-${bucket.range}`}
-              data={bucket}
-              tone="loss"
-            />
-          ))}
-        </div>
-      </section>
-
-      <PlatformStatsSection stats={platformStats} />
+      )}
     </div>
   );
 }

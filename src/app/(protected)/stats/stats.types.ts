@@ -35,4 +35,8 @@ export interface StatsViewProps {
   profitBuckets: BucketCardData[];
   lossBuckets: BucketCardData[];
   platformStats: StatsPlatformStats | null;
+  allPlatforms: StatsPlatformEntry[];
+  totalTournaments: number;
+  itmRate: number;
+  ftRate: number;
 }
