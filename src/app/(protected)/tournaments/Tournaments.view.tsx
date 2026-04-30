@@ -150,7 +150,7 @@ export function TournamentsView() {
               <h3 className="text-text-primary text-lg font-semibold">
                 Aguardando Dia 2
               </h3>
-              <span className="text-xs text-text-secondary bg-white/10 rounded-full px-2 py-0.5">
+              <span className="text-xs text-muted-foreground bg-secondary rounded-full px-2 py-0.5">
                 {day2Tournaments.length}
               </span>
             </div>
@@ -223,17 +223,17 @@ export function TournamentsView() {
         <div className="mb-4 flex items-center justify-between">
           <Button
             onClick={onOpenImportScheduleModal}
-            className="flex items-center gap-2 text-text-primary bg-transparent border-[2px] !border-white"
+            className="flex items-center gap-2 text-foreground bg-transparent border-[2px] border-border hover:border-primary/50 hover:text-foreground"
           >
             Adicionar grade
           </Button>
           <Button
             onClick={onFilterToggle}
-            className="flex w-[104px] items-center gap-2 text-text-primary bg-transparent border-[2px] !border-white "
+            className="flex w-[104px] items-center gap-2 text-foreground bg-transparent border-[2px] border-border hover:border-primary/50 hover:text-foreground"
           >
             Filtros
-            <FilterIcon className="size-4" color="white" />
-            {isOpenFilter && <X className="size-4" color="white" />}
+            <FilterIcon className="size-4" />
+            {isOpenFilter && <X className="size-4" />}
           </Button>
         </div>
 

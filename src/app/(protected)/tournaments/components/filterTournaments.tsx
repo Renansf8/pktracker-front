@@ -81,7 +81,7 @@ export function FilterTournaments({
       </div>
       <Button
         className="text-[12px] p-2 h-[32px] max-w-[80px]"
-        variant="secondary"
+        variant="outline"
         onClick={clearFilter}
       >
         Limpar

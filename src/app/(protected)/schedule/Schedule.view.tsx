@@ -68,7 +68,7 @@ export function ScheduleView() {
         <div className="flex justify-between items-start mb-6">
           <div className="flex flex-col gap-3">
             <h2 className="text-text-primary text-2xl font-bold">Grade</h2>
-            <div className="flex gap-1 p-1 rounded-xl bg-white/5 w-fit">
+            <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
               {(
                 [
                   { value: "WEEKLY", label: "Semanal" },
@@ -81,8 +81,8 @@ export function ScheduleView() {
                   onClick={() => onTabChange(tab.value)}
                   className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                     activeTab === tab.value
-                      ? "bg-white/15 text-text-primary"
-                      : "text-text-secondary hover:text-text-primary"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {tab.label}
@@ -115,8 +115,8 @@ export function ScheduleView() {
                   key={s.id}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-colors ${
                     s.id === activeScheduleId
-                      ? "border-white/30 bg-white/10 text-text-primary"
-                      : "border-white/10 bg-white/5 text-text-secondary hover:border-white/20 hover:text-text-primary"
+                      ? "border-primary/50 bg-primary/10 text-foreground"
+                      : "border-border bg-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <button
@@ -174,7 +174,7 @@ export function ScheduleView() {
                 <button
                   type="button"
                   onClick={onStartCreateSchedule}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-dashed border-white/20 text-text-secondary hover:text-text-primary hover:border-white/30 transition-colors text-sm cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors text-sm cursor-pointer"
                 >
                   <Plus className="size-3.5" />
                   Nova grade

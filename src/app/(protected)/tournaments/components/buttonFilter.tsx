@@ -22,12 +22,12 @@ export function ButtonFilter({
 }: ButtonFilterProps) {
   return (
     <Button
-      className={`min-w-[80px] text-[12px] p-2 h-[32px] bg-background border-1 ${
+      className={`min-w-[80px] text-[12px] p-2 h-[32px] bg-background border ${
         isSelected
-          ? "text-purple-500 border-purple-500"
-          : "text-text-primary border-white"
+          ? "text-gold border-primary"
+          : "text-foreground border-border hover:border-primary/50"
       }`}
-      variant="secondary"
+      variant="outline"
       onClick={() => setPlatform(platform)}
     >
       {platform}
