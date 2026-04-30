@@ -62,6 +62,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       className={`${syne.variable} ${jetbrains.variable} ${dmSans.variable}`}
+      suppressHydrationWarning
     >
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>

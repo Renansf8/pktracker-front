@@ -70,10 +70,10 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-cyan-300/90">
+          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--primary)" }}>
             Gestão de banca
           </span>
-          <h3 className="text-lg font-semibold tracking-tight text-slate-100">
+          <h3 className="text-lg font-semibold tracking-tight text-foreground">
             ABI ideal para sua banca
           </h3>
         </div>
@@ -81,7 +81,7 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
         <div className="flex flex-col items-end gap-1 shrink-0">
           <label
             htmlFor="custom-buy-ins"
-            className="text-xs text-slate-500 whitespace-nowrap"
+            className="text-xs whitespace-nowrap text-muted-foreground"
           >
             Qtd. de buy-ins
           </label>
@@ -95,12 +95,13 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
               value={customBuyInsInput}
               onChange={(e) => setCustomBuyInsInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleApply()}
-              className="h-8 w-20 rounded-lg border-white/10 bg-white/5 px-2 text-right text-sm text-slate-100 placeholder:text-slate-600 focus-visible:ring-cyan-400/50"
+              className="h-8 w-20 rounded-none border-border bg-input px-2 text-right text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
             />
             <button
               onClick={handleApply}
               disabled={!isValidInput}
-              className="h-8 rounded-lg bg-cyan-500/20 px-3 text-xs font-medium text-cyan-300 transition-colors hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-40"
+              className="h-8 rounded-none px-3 text-xs font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ background: "rgba(212,168,67,0.15)", color: "var(--primary)" }}
             >
               Aplicar
             </button>
@@ -111,13 +112,13 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
       {/* Stats */}
       {hasValidBank ? (
         <>
-          <ul className="flex flex-col gap-2.5 text-sm text-slate-200">
-            <li className="flex flex-wrap gap-x-2 border-b border-white/5 pb-2">
-              <span className="text-slate-500">Banca</span>
-              <span className="font-medium text-slate-100">{money(bankUsd)}</span>
+          <ul className="flex flex-col gap-2.5 text-sm text-foreground">
+            <li className="flex flex-wrap gap-x-2 border-b border-border pb-2">
+              <span className="text-muted-foreground">Banca</span>
+              <span className="font-medium">{money(bankUsd)}</span>
             </li>
-            <li className="flex flex-wrap gap-x-2 border-b border-white/5 pb-2">
-              <span className="text-slate-500">Regra</span>
+            <li className="flex flex-wrap gap-x-2 border-b border-border pb-2">
+              <span className="text-muted-foreground">Regra</span>
               <span>
                 {isCustom && appliedBuyIns !== null
                   ? `${Math.round(appliedBuyIns)} buy-ins`
@@ -125,8 +126,8 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
               </span>
             </li>
             <li className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
-              <span className="text-slate-500">Seu ABI ideal</span>
-              <span className="font-semibold text-cyan-200">
+              <span className="text-muted-foreground">Seu ABI ideal</span>
+              <span className="font-semibold text-gold">
                 {isCustom && abiCustom !== null
                   ? money(abiCustom)
                   : `${money(displayMin!)} a ${money(displayMax!)}`}
@@ -135,17 +136,17 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
           </ul>
 
           {stakes && (
-            <div className="glass-inner rounded-xl border border-white/10 px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="glass-inner px-4 py-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Foco de stakes
               </p>
-              <p className="mt-1 text-sm leading-relaxed text-slate-300">
+              <p className="mt-1 text-sm leading-relaxed text-foreground">
                 Torneios de{" "}
-                <span className="font-semibold text-slate-100">
+                <span className="font-semibold">
                   {money(stakes.low)}
                 </span>{" "}
                 e alguns de{" "}
-                <span className="font-semibold text-slate-100">
+                <span className="font-semibold">
                   {money(stakes.high)}
                 </span>{" "}
                 intercalados.
@@ -154,7 +155,7 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
           )}
         </>
       ) : (
-        <p className="text-sm leading-relaxed text-slate-400">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Quando sua banca em USD estiver disponível, mostramos aqui uma faixa
           de ABI e stakes sugeridos com base na regra de 100 a 150 buy-ins.
         </p>
@@ -190,32 +191,39 @@ function DailyBuyInExposureCard({
   const sevenPercentOfBankUsd = referenceBank * (limitPct / 100);
 
   return (
-    <article className="glass-panel flex flex-col gap-4 rounded-3xl border border-red-500/40 p-5">
+    <article
+      className="glass-panel flex flex-col gap-4 rounded-3xl p-5"
+      style={{ borderColor: "var(--destructive)" }}
+    >
       <div className="flex flex-col gap-2">
-        <span className="text-xs font-medium uppercase tracking-wide text-red-300/90">
+        <span
+          className="text-xs font-medium uppercase tracking-wide"
+          style={{ color: "var(--destructive)" }}
+        >
           Buy-ins do dia
         </span>
         <div className="flex items-start gap-2.5">
           <AlertTriangle
-            className="mt-0.5 size-5 shrink-0 text-red-400/90"
+            className="mt-0.5 size-5 shrink-0"
+            style={{ color: "var(--destructive)" }}
             aria-hidden
             strokeWidth={2}
           />
-          <h3 className="text-lg font-semibold tracking-tight text-red-100">
+          <h3 className="text-lg font-semibold tracking-tight text-foreground">
             Atenção à exposição na banca
           </h3>
         </div>
       </div>
-      <p className="text-sm leading-relaxed text-slate-300">
+      <p className="text-sm leading-relaxed text-foreground">
         Hoje você já acumulou{" "}
-        <span className="font-semibold text-slate-100">
+        <span className="font-semibold">
           {money(todayTotalBuyIn)}
         </span>{" "}
         em buy-ins (~{pct}% da sua banca). Você está se aproximando de{" "}
-        <span className="font-semibold text-red-200">{refPct}%</span>{" "}
-        <span className="text-slate-400">({money(sevenPercentOfBankUsd)})</span>{" "}
+        <span className="font-semibold" style={{ color: "var(--destructive)" }}>{refPct}%</span>{" "}
+        <span className="text-muted-foreground">({money(sevenPercentOfBankUsd)})</span>{" "}
         do valor total da banca em relação aos buy-ins do dia. Vale considerar{" "}
-        <span className="font-medium text-slate-100">
+        <span className="font-medium">
           não passar de 7% em buy ins
         </span>
         , a menos que faça sentido para o seu plano.

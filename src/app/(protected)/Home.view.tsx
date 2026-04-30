@@ -47,12 +47,12 @@ export function HomeView() {
       {/* ── Header: greeting + banca ─────────────────────────────────────── */}
       <header
         className="flex items-end justify-between pb-6"
-        style={{ borderBottom: "1px solid rgba(212,168,67,0.14)" }}
+        style={{ borderBottom: "1px solid var(--border)" }}
       >
         <div>
           <p
             className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2"
-            style={{ color: "#7a7068" }}
+            style={{ color: "var(--muted-foreground)" }}
           >
             Bem-vindo de volta
           </p>
@@ -67,20 +67,20 @@ export function HomeView() {
         <div className="text-right">
           <p
             className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2"
-            style={{ color: "#7a7068" }}
+            style={{ color: "var(--muted-foreground)" }}
           >
             Banca atual
           </p>
           <p
             className="font-data text-2xl font-semibold leading-none"
-            style={{ color: "#d4a843" }}
+            style={{ color: "var(--primary)" }}
           >
             {bankDisplayText}
           </p>
           {bankUsd > 0 && (
             <p
               className="font-data text-xs mt-1.5"
-              style={{ color: "#7a7068" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               ${" "}
               {bankUsd.toLocaleString("en-US", {
@@ -96,7 +96,7 @@ export function HomeView() {
       <section>
         <p
           className="text-[10px] uppercase tracking-[0.18em] font-medium mb-4"
-          style={{ color: "#7a7068" }}
+          style={{ color: "var(--muted-foreground)" }}
         >
           Resumo geral
         </p>

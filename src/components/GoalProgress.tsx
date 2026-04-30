@@ -49,12 +49,12 @@ function CircularRing({ pct }: { pct: number }) {
   const offset = circumference * (1 - clamped / 100);
 
   const ringColor =
-    pct >= 100 ? "#3db87a"
-    : pct >= 50 ? "#d4a843"
-    : pct > 0 ? "#c44040"
+    pct >= 100 ? "var(--pk-success)"
+    : pct >= 50 ? "var(--primary)"
+    : pct > 0 ? "var(--destructive)"
     : "rgba(255,255,255,0.06)";
 
-  const textColor = pct > 0 ? ringColor : "#4a433c";
+  const textColor = pct > 0 ? ringColor : "var(--pk-text-hint)";
   const label = pct <= 0 ? "0%" : `${Math.round(pct)}%`;
 
   return (
@@ -71,7 +71,7 @@ function CircularRing({ pct }: { pct: number }) {
         cy={cy}
         r={radius}
         fill="none"
-        stroke="rgba(255,255,255,0.06)"
+        stroke="var(--pk-ring-track)"
         strokeWidth={8}
       />
       {/* Progress arc */}
@@ -136,12 +136,12 @@ function GoalInput({
     <div className="flex flex-col items-center gap-3 py-3">
       <p
         className="font-data text-[10px] uppercase tracking-[0.18em]"
-        style={{ color: "#7a7068" }}
+        style={{ color: "var(--muted-foreground)" }}
       >
         Definir meta em USD
       </p>
       <div className="flex items-center gap-2">
-        <span className="font-data text-sm" style={{ color: "#7a7068" }}>
+        <span className="font-data text-sm" style={{ color: "var(--muted-foreground)" }}>
           $
         </span>
         <Input
@@ -153,13 +153,13 @@ function GoalInput({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSet()}
-          className="h-8 w-28 rounded-lg border-white/10 bg-white/5 px-2 text-right text-sm text-slate-100 placeholder:text-slate-600 focus-visible:ring-1 focus-visible:ring-yellow-500/50"
+          className="h-8 w-28 rounded-none border-border bg-input px-2 text-right text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
         />
         <button
           onClick={handleSet}
           disabled={!value || parseFloat(value) <= 0}
           className="h-8 rounded-lg px-3 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-          style={{ background: "rgba(212,168,67,0.15)", color: "#d4a843" }}
+          style={{ background: "rgba(212,168,67,0.15)", color: "var(--primary)" }}
         >
           Definir
         </button>
@@ -172,12 +172,12 @@ function GoalInput({
 
 function PrevMonthBadge({ summary }: { summary: PrevMonthSummary }) {
   const met = summary.met;
-  const color = met ? "#3db87a" : "#c44040";
+  const color = met ? "var(--pk-success)" : "var(--destructive)";
   return (
     <div className="flex flex-col items-end gap-0.5">
       <span
         className="font-data text-[9px] uppercase tracking-[0.2em]"
-        style={{ color: "#7a7068" }}
+        style={{ color: "var(--muted-foreground)" }}
       >
         {formatGoalMonth(summary.month)}
       </span>
@@ -187,7 +187,7 @@ function PrevMonthBadge({ summary }: { summary: PrevMonthSummary }) {
       >
         {met ? "✓" : "✗"} {moneyAbs(summary.achieved)}
       </span>
-      <span className="font-data text-[9px]" style={{ color: "#7a7068" }}>
+      <span className="font-data text-[9px]" style={{ color: "var(--muted-foreground)" }}>
         meta: {moneyGoal(summary.goal)}
       </span>
     </div>
@@ -196,12 +196,12 @@ function PrevMonthBadge({ summary }: { summary: PrevMonthSummary }) {
 
 function PrevYearBadge({ summary }: { summary: PrevYearSummary }) {
   const met = summary.met;
-  const color = met ? "#3db87a" : "#c44040";
+  const color = met ? "var(--pk-success)" : "var(--destructive)";
   return (
     <div className="flex flex-col items-end gap-0.5">
       <span
         className="font-data text-[9px] uppercase tracking-[0.2em]"
-        style={{ color: "#7a7068" }}
+        style={{ color: "var(--muted-foreground)" }}
       >
         {summary.year}
       </span>
@@ -211,7 +211,7 @@ function PrevYearBadge({ summary }: { summary: PrevYearSummary }) {
       >
         {met ? "✓" : "✗"} {moneyAbs(summary.achieved)}
       </span>
-      <span className="font-data text-[9px]" style={{ color: "#7a7068" }}>
+      <span className="font-data text-[9px]" style={{ color: "var(--muted-foreground)" }}>
         meta: {moneyGoal(summary.goal)}
       </span>
     </div>
@@ -243,9 +243,9 @@ function GoalCard({
     goal !== null && goal > 0 ? (currentProfit / goal) * 100 : 0;
 
   const profitColor =
-    currentProfit > 0 ? "#3db87a"
-    : currentProfit < 0 ? "#c44040"
-    : "#7a7068";
+    currentProfit > 0 ? "var(--pk-success)"
+    : currentProfit < 0 ? "var(--destructive)"
+    : "var(--muted-foreground)";
 
   return (
     <article className="glass-panel relative flex flex-col rounded-3xl p-5 min-h-[240px]">
@@ -254,13 +254,13 @@ function GoalCard({
         <div className="flex flex-col gap-0.5">
           <span
             className="font-data text-[9px] tracking-[0.22em]"
-            style={{ color: "#d4a843" }}
+            style={{ color: "var(--primary)" }}
           >
             {badge}
           </span>
           <h3
             className="text-lg font-semibold tracking-tight"
-            style={{ color: "#f0ede8" }}
+            style={{ color: "var(--foreground)" }}
           >
             {title}
           </h3>
@@ -272,7 +272,7 @@ function GoalCard({
             className="mt-0.5 rounded-md p-1.5 transition-colors hover:bg-white/5"
             aria-label="Redefinir meta"
           >
-            <Pencil size={12} style={{ color: "#7a7068" }} />
+            <Pencil size={12} style={{ color: "var(--muted-foreground)" }} />
           </button>
         )}
       </div>
@@ -288,8 +288,8 @@ function GoalCard({
               {currentProfit < 0 ? "- " : ""}
               {moneyAbs(currentProfit)}
             </span>
-            <span style={{ color: "#7a7068" }}> / </span>
-            <span style={{ color: "#d4a843" }}>{moneyGoal(goal)}</span>
+            <span style={{ color: "var(--muted-foreground)" }}> / </span>
+            <span style={{ color: "var(--primary)" }}>{moneyGoal(goal)}</span>
           </p>
         </div>
       )}

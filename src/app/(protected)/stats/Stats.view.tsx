@@ -110,19 +110,19 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
     <div className="flex items-baseline gap-3 mb-4">
       <span
         className="font-data text-[10px] tracking-[0.3em]"
-        style={{ color: "#d4a843" }}
+        style={{ color: "var(--primary)" }}
       >
         {index}
       </span>
       <span
         className="text-[10px] uppercase tracking-[0.18em] font-medium"
-        style={{ color: "#7a7068" }}
+        style={{ color: "var(--muted-foreground)" }}
       >
         {title}
       </span>
       <span
         className="flex-1 h-px"
-        style={{ background: "rgba(212,168,67,0.14)" }}
+        style={{ background: "var(--border)" }}
         aria-hidden="true"
       />
     </div>
@@ -155,21 +155,21 @@ function StatStrip({
     <div
       className="flex flex-wrap items-center gap-x-8 gap-y-2 py-4"
       style={{
-        borderTop: "1px solid rgba(212,168,67,0.1)",
-        borderBottom: "1px solid rgba(212,168,67,0.1)",
+        borderTop: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border)",
       }}
     >
       {items.map((item) => (
         <div key={item.label} className="flex items-baseline gap-2">
           <span
             className="font-data text-lg font-semibold leading-none"
-            style={{ color: "#f0ede8" }}
+            style={{ color: "var(--foreground)" }}
           >
             {item.value}
           </span>
           <span
             className="font-data text-[9px] uppercase tracking-[0.22em]"
-            style={{ color: "#7a7068" }}
+            style={{ color: "var(--muted-foreground)" }}
           >
             {item.label}
           </span>
@@ -190,7 +190,7 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
         <p className="activity-card-title">Maior buy-in registrado</p>
         <span
           className="font-data text-[9px] tracking-[0.22em]"
-          style={{ color: "#d4a843" }}
+          style={{ color: "var(--primary)" }}
         >
           ◆ RECORDE
         </span>
@@ -200,22 +200,29 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
         <>
           <p
             className="font-data font-semibold leading-none mt-5"
-            style={{ fontSize: "clamp(40px,6vw,60px)", color: "#f0ede8", letterSpacing: "-0.02em" }}
+            style={{
+              fontSize: "clamp(40px,6vw,60px)",
+              color: "var(--foreground)",
+              letterSpacing: "-0.02em",
+            }}
           >
             ${" "}{data.value.toFixed(2)}
           </p>
           <div
             className="mt-auto pt-5 flex items-end justify-between"
-            style={{ borderTop: "1px solid rgba(212,168,67,0.1)" }}
+            style={{ borderTop: "1px solid var(--border)" }}
           >
             <div>
               <p
                 className="font-display text-sm font-semibold leading-tight"
-                style={{ color: "#f0ede8" }}
+                style={{ color: "var(--foreground)" }}
               >
                 {data.tournament.name}
               </p>
-              <p className="font-data text-[11px] mt-1.5" style={{ color: "#7a7068" }}>
+              <p
+                className="font-data text-[11px] mt-1.5"
+                style={{ color: "var(--muted-foreground)" }}
+              >
                 {data.tournament.platform} · {formatDateTime(data.tournament.date)}
               </p>
             </div>
@@ -225,11 +232,11 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
         <div className="mt-5">
           <p
             className="font-data font-semibold leading-none"
-            style={{ fontSize: "60px", color: "#1e1a16", letterSpacing: "-0.02em" }}
+            style={{ fontSize: "60px", color: "var(--pk-deep-dim)", letterSpacing: "-0.02em" }}
           >
             —
           </p>
-          <p className="font-data text-[11px] mt-4" style={{ color: "#4a433c" }}>
+          <p className="font-data text-[11px] mt-4" style={{ color: "var(--pk-text-hint)" }}>
             Nenhum torneio registrado ainda
           </p>
         </div>
@@ -243,7 +250,10 @@ function MostTournamentsCompact({ data }: { data: StatsMostTournamentsInADay | n
     <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
       <div className="flex items-center justify-between">
         <p className="activity-card-title">Mais torneios em um dia</p>
-        <span className="font-data text-[9px] tracking-[0.22em]" style={{ color: "#d4a843" }}>
+        <span
+          className="font-data text-[9px] tracking-[0.22em]"
+          style={{ color: "var(--primary)" }}
+        >
           ◆ VOLUME
         </span>
       </div>
@@ -251,20 +261,20 @@ function MostTournamentsCompact({ data }: { data: StatsMostTournamentsInADay | n
         <div className="mt-3 flex items-baseline gap-3">
           <p
             className="font-data font-semibold leading-none"
-            style={{ fontSize: "34px", color: "#f0ede8" }}
+            style={{ fontSize: "34px", color: "var(--foreground)" }}
           >
             {data.count}
           </p>
           <div>
             <span
               className="font-data text-[10px] uppercase tracking-[0.15em] block"
-              style={{ color: "#7a7068" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               torneios
             </span>
             <span
               className="font-data text-[11px] block mt-0.5"
-              style={{ color: "#7a7068" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               {formatDayFull(data.date)}
             </span>
@@ -273,7 +283,7 @@ function MostTournamentsCompact({ data }: { data: StatsMostTournamentsInADay | n
       ) : (
         <p
           className="font-data font-semibold leading-none mt-3"
-          style={{ fontSize: "34px", color: "#1e1a16" }}
+          style={{ fontSize: "34px", color: "var(--pk-deep-dim)" }}
         >
           —
         </p>
@@ -287,7 +297,10 @@ function HighestAbiCompact({ data }: { data: StatsHighestAbiDay | null }) {
     <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
       <div className="flex items-center justify-between">
         <p className="activity-card-title">Maior ABI em um dia</p>
-        <span className="font-data text-[9px] tracking-[0.22em]" style={{ color: "#d4a843" }}>
+        <span
+          className="font-data text-[9px] tracking-[0.22em]"
+          style={{ color: "var(--primary)" }}
+        >
           ◆ ALTITUDE
         </span>
       </div>
@@ -295,20 +308,20 @@ function HighestAbiCompact({ data }: { data: StatsHighestAbiDay | null }) {
         <div className="mt-3 flex items-baseline gap-3">
           <p
             className="font-data font-semibold leading-none"
-            style={{ fontSize: "34px", color: "#f0ede8" }}
+            style={{ fontSize: "34px", color: "var(--foreground)" }}
           >
             $ {data.abi.toFixed(2)}
           </p>
           <div>
             <span
               className="font-data text-[10px] uppercase tracking-[0.15em] block"
-              style={{ color: "#7a7068" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               ABI
             </span>
             <span
               className="font-data text-[11px] block mt-0.5"
-              style={{ color: "#7a7068" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               {formatDayFull(data.date)} · {data.tournaments}t
             </span>
@@ -317,7 +330,7 @@ function HighestAbiCompact({ data }: { data: StatsHighestAbiDay | null }) {
       ) : (
         <p
           className="font-data font-semibold leading-none mt-3"
-          style={{ fontSize: "34px", color: "#1e1a16" }}
+          style={{ fontSize: "34px", color: "var(--pk-deep-dim)" }}
         >
           —
         </p>
@@ -356,14 +369,10 @@ function PeriodMatrix({
           >
             <div className="px-5 py-3" />
             {PERIOD_HEADERS.map((h) => (
-              <div
-                key={h}
-                className="px-5 py-3"
-                style={{ borderLeft: CELL_BORDER }}
-              >
+              <div key={h} className="px-5 py-3" style={{ borderLeft: CELL_BORDER }}>
                 <span
                   className="font-data text-[10px] uppercase tracking-[0.25em]"
-                  style={{ color: "#5a5248" }}
+                  style={{ color: "var(--muted-foreground)" }}
                 >
                   {h}
                 </span>
@@ -382,28 +391,24 @@ function PeriodMatrix({
             <div className="px-5 py-5 flex items-center">
               <span
                 className="font-data text-[10px] tracking-[0.1em]"
-                style={{ color: "#3db87a" }}
+                style={{ color: "var(--pk-success)" }}
               >
                 ▲ MAX
               </span>
             </div>
             {profitBuckets.map((bucket) => (
-              <div
-                key={bucket.range}
-                className="px-5 py-5"
-                style={{ borderLeft: CELL_BORDER }}
-              >
+              <div key={bucket.range} className="px-5 py-5" style={{ borderLeft: CELL_BORDER }}>
                 {bucket.record ? (
                   <>
                     <p
                       className="font-data font-semibold leading-none"
-                      style={{ fontSize: "15px", color: "#3db87a" }}
+                      style={{ fontSize: "15px", color: "var(--pk-success)" }}
                     >
                       {formatCurrency(bucket.record.amount)}
                     </p>
                     <p
                       className="font-data text-[10px] mt-2 leading-tight"
-                      style={{ color: "#5a5248" }}
+                      style={{ color: "var(--muted-foreground)" }}
                     >
                       {formatBucketPeriod(bucket)}
                     </p>
@@ -411,7 +416,7 @@ function PeriodMatrix({
                 ) : (
                   <p
                     className="font-data font-semibold leading-none"
-                    style={{ fontSize: "15px", color: "#1e1a16" }}
+                    style={{ fontSize: "15px", color: "var(--pk-deep-dim)" }}
                   >
                     —
                   </p>
@@ -428,28 +433,24 @@ function PeriodMatrix({
             <div className="px-5 py-5 flex items-center">
               <span
                 className="font-data text-[10px] tracking-[0.1em]"
-                style={{ color: "#c44040" }}
+                style={{ color: "var(--destructive)" }}
               >
                 ▼ MIN
               </span>
             </div>
             {lossBuckets.map((bucket) => (
-              <div
-                key={bucket.range}
-                className="px-5 py-5"
-                style={{ borderLeft: CELL_BORDER }}
-              >
+              <div key={bucket.range} className="px-5 py-5" style={{ borderLeft: CELL_BORDER }}>
                 {bucket.record ? (
                   <>
                     <p
                       className="font-data font-semibold leading-none"
-                      style={{ fontSize: "15px", color: "#c44040" }}
+                      style={{ fontSize: "15px", color: "var(--destructive)" }}
                     >
                       {formatCurrency(bucket.record.amount)}
                     </p>
                     <p
                       className="font-data text-[10px] mt-2 leading-tight"
-                      style={{ color: "#5a5248" }}
+                      style={{ color: "var(--muted-foreground)" }}
                     >
                       {formatBucketPeriod(bucket)}
                     </p>
@@ -457,7 +458,7 @@ function PeriodMatrix({
                 ) : (
                   <p
                     className="font-data font-semibold leading-none"
-                    style={{ fontSize: "15px", color: "#1e1a16" }}
+                    style={{ fontSize: "15px", color: "var(--pk-deep-dim)" }}
                   >
                     —
                   </p>
@@ -487,7 +488,8 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
         {platforms.map((p, i) => {
           const pct = (Math.abs(p.profit) / maxAbs) * 100;
           const isPositive = p.profit >= 0;
-          const accentColor = isPositive ? "#3db87a" : "#c44040";
+          const accentColor = isPositive ? "var(--pk-success)" : "var(--destructive)";
+          const barHex = isPositive ? "var(--pk-success)" : "var(--destructive)";
           const isLast = i === platforms.length - 1;
 
           return (
@@ -501,56 +503,51 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
               }}
             >
               <div
-                className="px-6 py-4 flex items-center gap-4 group-hover:bg-[rgba(212,168,67,0.025)]"
+                className="px-6 py-4 flex items-center gap-4"
                 style={{ transition: "background 0.15s ease" }}
+                onMouseEnter={(e) =>
+                  ((e.currentTarget as HTMLElement).style.background =
+                    "rgba(212,168,67,0.025)")
+                }
+                onMouseLeave={(e) =>
+                  ((e.currentTarget as HTMLElement).style.background = "")
+                }
               >
-                {/* Rank */}
                 <span
                   className="font-data text-[10px] shrink-0 w-5 text-right"
-                  style={{ color: "#2e2822" }}
+                  style={{ color: "var(--pk-dim)" }}
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
-
-                {/* Platform name */}
                 <span
                   className="font-display text-sm font-semibold shrink-0"
-                  style={{ color: "#f0ede8", minWidth: "100px" }}
+                  style={{ color: "var(--foreground)", minWidth: "100px" }}
                 >
                   {p.platform}
                 </span>
-
-                {/* Proportional bar */}
                 <div
                   className="flex-1 rounded-none overflow-hidden"
-                  style={{
-                    height: "4px",
-                    background: "rgba(255,255,255,0.04)",
-                  }}
+                  style={{ height: "4px", background: "rgba(255,255,255,0.04)" }}
                 >
                   <div
                     style={{
                       width: `${pct}%`,
                       height: "100%",
-                      background: accentColor,
+                      background: barHex,
                       opacity: 0.65,
                       transition: "width 0.6s cubic-bezier(0.16,1,0.3,1)",
                     }}
                   />
                 </div>
-
-                {/* Amount */}
                 <span
                   className="font-data text-sm font-semibold shrink-0 text-right"
                   style={{ color: accentColor, minWidth: "96px" }}
                 >
                   {formatCurrency(p.profit)}
                 </span>
-
-                {/* Count */}
                 <span
                   className="font-data text-[11px] shrink-0 text-right"
-                  style={{ color: "#7a7068", minWidth: "44px" }}
+                  style={{ color: "var(--muted-foreground)", minWidth: "44px" }}
                 >
                   {p.count}t
                 </span>
@@ -598,7 +595,7 @@ export function StatsView() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <p
           className="font-data text-sm tracking-[0.1em] uppercase"
-          style={{ color: "#c44040" }}
+          style={{ color: "var(--destructive)" }}
         >
           Erro ao carregar estatísticas
         </p>
@@ -622,12 +619,12 @@ export function StatsView() {
       <div style={revealed(0)}>
         <header
           className="flex items-end justify-between pb-6"
-          style={{ borderBottom: "1px solid rgba(212,168,67,0.14)" }}
+          style={{ borderBottom: "1px solid var(--border)" }}
         >
           <div>
             <p
               className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2"
-              style={{ color: "#7a7068" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               Estatísticas
             </p>
@@ -640,7 +637,7 @@ export function StatsView() {
           </div>
           <p
             className="font-data text-[11px] uppercase tracking-[0.2em]"
-            style={{ color: "#7a7068" }}
+            style={{ color: "var(--muted-foreground)" }}
           >
             Hall of fame
           </p>
