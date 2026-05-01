@@ -30,12 +30,19 @@ export const useTournaments = (
     queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL("", 1, 100, true)),
   });
 
+  const invalidateAll = async () => {
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ["tournaments"] }),
+      queryClient.invalidateQueries({ queryKey: ["stats"], refetchType: "all" }),
+    ]);
+    refetch();
+  };
+
   const createTournament = useMutation({
     mutationFn: (data: Tournament) =>
       apiClient.post(API_ENDPOINTS.TOURNAMENTS.CREATE, data),
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
-      refetch();
+      await invalidateAll();
       toast.success("Torneio registrado com sucesso");
     },
     onError: () => {
@@ -51,8 +58,7 @@ export const useTournaments = (
       });
     },
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
-      refetch();
+      await invalidateAll();
       toast.success("Grade adicionada com sucesso");
     },
     onError: () => {
@@ -64,8 +70,7 @@ export const useTournaments = (
     mutationFn: (id: string) =>
       apiClient.delete(API_ENDPOINTS.TOURNAMENTS.DELETE(id)),
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
-      refetch();
+      await invalidateAll();
       toast.success("Torneio deletado com sucesso");
     },
     onError: () => {
@@ -77,8 +82,7 @@ export const useTournaments = (
     mutationFn: ({ id, data }: UpdateTournamentInput) =>
       apiClient.patch(API_ENDPOINTS.TOURNAMENTS.UPDATE(id), data),
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
-      refetch();
+      await invalidateAll();
       toast.success("Torneio atualizado com sucesso");
     },
     onError: () => {
@@ -90,8 +94,7 @@ export const useTournaments = (
     mutationFn: (scheduleId: string) =>
       apiClient.post(API_ENDPOINTS.SCHEDULES.APPLY(scheduleId)),
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["tournaments"] });
-      refetch();
+      await invalidateAll();
       toast.success("Grade aplicada com sucesso");
     },
     onError: () => {

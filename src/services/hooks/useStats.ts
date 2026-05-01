@@ -16,7 +16,6 @@ export const useStats = () => {
       apiClient.get<PaginatedTournamentsResponse>(
         API_ENDPOINTS.TOURNAMENTS.GET_ALL("", 1, 9999),
       ),
-    staleTime: 5 * 60 * 1000,
   });
 
   return {

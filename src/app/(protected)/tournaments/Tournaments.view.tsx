@@ -42,6 +42,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useTournamentsViewModel } from "./tournaments.viewmodel";
+import { getTournamentProfitNative } from "@/utils/tournamentLucro";
 
 function EurTooltip({
   value,
@@ -477,14 +478,14 @@ export function TournamentsView() {
                         </TableCell>
                         <TableCell
                           className={`${
-                            (tournament.profit ?? 0) > 0
+                            getTournamentProfitNative(tournament) > 0
                               ? "text-green-500"
                               : "text-red-500"
                           } text-center`}
                         >
                           {tournament.currency === "EUR"
-                            ? <EurTooltip value={tournament.profit ?? 0} eurToUsdRate={eurToUsdRate} />
-                            : `$ ${tournament.profit?.toFixed(2)}`}
+                            ? <EurTooltip value={getTournamentProfitNative(tournament)} eurToUsdRate={eurToUsdRate} />
+                            : `$ ${getTournamentProfitNative(tournament).toFixed(2)}`}
                         </TableCell>
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (

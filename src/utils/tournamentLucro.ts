@@ -7,11 +7,19 @@ function toN(v: unknown): number {
 }
 
 /**
- * Lucro líquido em USD: result - buyIn.
- * Importações de grade criam torneios com profit=0 (ainda não jogado),
- * então usar profit diretamente daria 0 em vez de -buyIn.
+ * Lucro líquido na moeda nativa do torneio (result - buyIn), sem conversão.
+ * Usar para exibição na tabela: torneios EUR mostram valor em EUR, USD em USD.
+ * Importações de grade têm profit=0 no backend, então não usar t.profit diretamente.
+ */
+export function getTournamentProfitNative(t: Tournament): number {
+  return toN(t.result) - toN(t.buyIn);
+}
+
+/**
+ * Lucro líquido em USD: result - buyIn com conversão EUR→USD quando aplicável.
+ * Usar para totais e comparações entre moedas.
  */
 export function getTournamentLucroUsd(t: Tournament, eurToUsdRate = 1): number {
-  const val = toN(t.result) - toN(t.buyIn);
+  const val = getTournamentProfitNative(t);
   return t.currency === "EUR" ? val * eurToUsdRate : val;
 }

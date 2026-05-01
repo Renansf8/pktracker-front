@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useStats } from "@/services/hooks/useStats";
+import { getTournamentProfitNative } from "@/utils/tournamentLucro";
 import type {
   StatsBucketRange,
   StatsBucketRecords,
@@ -32,6 +33,71 @@ function toBucketCards(records: StatsBucketRecords): BucketCardData[] {
   }));
 }
 
+function getWeekStartIso(d: Date): string {
+  const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = utc.getUTCDay();
+  utc.setUTCDate(utc.getUTCDate() + (day === 0 ? -6 : 1 - day));
+  const y = utc.getUTCFullYear();
+  const m = String(utc.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(utc.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+
+function computeBucketRecords(
+  tournaments: Tournament[],
+  type: "profit" | "loss",
+): StatsBucketRecords {
+  const maps: Record<StatsBucketRange, Map<string, number>> = {
+    day: new Map(),
+    week: new Map(),
+    month: new Map(),
+    year: new Map(),
+  };
+
+  for (const t of tournaments) {
+    const profit = getTournamentProfitNative(t);
+    const d = new Date(t.date);
+    if (Number.isNaN(d.getTime())) continue;
+
+    const y = d.getUTCFullYear();
+    const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const dd = String(d.getUTCDate()).padStart(2, "0");
+
+    const keys: Record<StatsBucketRange, string> = {
+      day: `${y}-${mo}-${dd}`,
+      week: getWeekStartIso(d),
+      month: `${y}-${mo}-01`,
+      year: `${y}-01-01`,
+    };
+
+    for (const range of RANGE_ORDER) {
+      const k = keys[range];
+      maps[range].set(k, (maps[range].get(k) ?? 0) + profit);
+    }
+  }
+
+  const result: StatsBucketRecords = { day: null, week: null, month: null, year: null };
+
+  for (const range of RANGE_ORDER) {
+    const map = maps[range];
+    if (!map.size) continue;
+
+    let bestKey = "";
+    let bestAmount = type === "profit" ? -Infinity : Infinity;
+
+    for (const [key, amount] of map) {
+      if (type === "profit" ? amount > bestAmount : amount < bestAmount) {
+        bestAmount = amount;
+        bestKey = key;
+      }
+    }
+
+    if (bestKey) result[range] = { bucketStart: bestKey, amount: bestAmount };
+  }
+
+  return result;
+}
+
 function buildPlatformData(tournaments: Tournament[]): {
   allPlatforms: StatsPlatformEntry[];
   platformStats: StatsPlatformStats | null;
@@ -41,10 +107,7 @@ function buildPlatformData(tournaments: Tournament[]): {
   const map = new Map<string, { profit: number; count: number }>();
 
   for (const t of tournaments) {
-    const profit =
-      t.profit !== undefined
-        ? t.profit
-        : Number(t.result) - Number(t.buyIn);
+    const profit = getTournamentProfitNative(t);
     const existing = map.get(t.platform);
     if (existing) {
       existing.profit += profit;
@@ -83,27 +146,13 @@ export function useStatsViewModel(): StatsViewProps {
   );
 
   const profitBuckets = useMemo<BucketCardData[]>(
-    () =>
-      summary
-        ? toBucketCards(summary.profitRecords)
-        : RANGE_ORDER.map((range) => ({
-            range,
-            label: RANGE_LABELS[range],
-            record: null,
-          })),
-    [summary],
+    () => toBucketCards(computeBucketRecords(allTournaments, "profit")),
+    [allTournaments],
   );
 
   const lossBuckets = useMemo<BucketCardData[]>(
-    () =>
-      summary
-        ? toBucketCards(summary.lossRecords)
-        : RANGE_ORDER.map((range) => ({
-            range,
-            label: RANGE_LABELS[range],
-            record: null,
-          })),
-    [summary],
+    () => toBucketCards(computeBucketRecords(allTournaments, "loss")),
+    [allTournaments],
   );
 
   const { allPlatforms, platformStats } = useMemo(

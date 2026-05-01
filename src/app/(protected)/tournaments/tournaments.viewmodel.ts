@@ -11,6 +11,7 @@ import {
   type TournamentEditDraft,
 } from "@/utils/tournamentPatch";
 import { getEurToUsdRate } from "@/utils/currencyConvert";
+import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 
 
 function getPaginationPages(
@@ -92,7 +93,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const filteredProfit = hasActiveFilter
     ? (responseData?.totalProfit ??
         currentPageData.reduce(
-          (sum: number, t: Tournament) => sum + (t.profit ?? 0),
+          (sum: number, t: Tournament) => sum + getTournamentLucroUsd(t, eurToUsdRate),
           0,
         ))
     : null;
