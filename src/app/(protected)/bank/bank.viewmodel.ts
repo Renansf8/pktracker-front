@@ -22,35 +22,34 @@ import { useDailyBuyInLimit } from "@/utils/useDailyBuyInLimit";
 import type { BankViewProps } from "./bank.types";
 
 export function useBankViewModel(): BankViewProps {
-  const [amount, setAmount] = useState<number | undefined>(undefined);
-  const [rakeAmount, setRakeAmount] = useState<number | undefined>(undefined);
+  const [amount, setAmount] = useState("");
+  const [rakeAmount, setRakeAmount] = useState("");
   const [dailyLimitInput, setDailyLimitInput] = useState("");
   const { data: user, isLoading } = useGetUser();
   const { createDeposit, createWithdrawal, createRake } = useBank();
   const { limitPct: dailyLimitPct, setLimitPct: setDailyLimitPct } = useDailyBuyInLimit();
 
+  const parseAmount = (raw: string) => parseFloat(raw.replace(",", "."));
+
   const handleDeposit = () => {
-    createDeposit.mutate({
-      date: new Date().toISOString(),
-      amount: amount ?? 0,
-    });
-    setAmount(undefined);
+    const parsed = parseAmount(amount);
+    if (!Number.isFinite(parsed) || parsed <= 0) return;
+    createDeposit.mutate({ date: new Date().toISOString(), amount: parsed });
+    setAmount("");
   };
 
   const handleWithdrawal = () => {
-    createWithdrawal.mutate({
-      date: new Date().toISOString(),
-      amount: amount ?? 0,
-    });
-    setAmount(undefined);
+    const parsed = parseAmount(amount);
+    if (!Number.isFinite(parsed) || parsed <= 0) return;
+    createWithdrawal.mutate({ date: new Date().toISOString(), amount: parsed });
+    setAmount("");
   };
 
   const handleRake = () => {
-    createRake.mutate({
-      date: new Date().toISOString(),
-      amount: rakeAmount ?? 0,
-    });
-    setRakeAmount(undefined);
+    const parsed = parseAmount(rakeAmount);
+    if (!Number.isFinite(parsed) || parsed <= 0) return;
+    createRake.mutate({ date: new Date().toISOString(), amount: parsed });
+    setRakeAmount("");
   };
 
   const handleSaveDailyLimit = () => {
@@ -69,8 +68,8 @@ export function useBankViewModel(): BankViewProps {
     rakes: user?.bank?.rakes ?? [],
     dailyLimitPct,
     dailyLimitInput,
-    onAmountChange: setAmount,
-    onRakeAmountChange: setRakeAmount,
+    onAmountChange: (v: string) => setAmount(v),
+    onRakeAmountChange: (v: string) => setRakeAmount(v),
     onDeposit: handleDeposit,
     onWithdrawal: handleWithdrawal,
     onRake: handleRake,

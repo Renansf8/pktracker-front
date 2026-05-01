@@ -18,15 +18,15 @@ export interface BankRake {
 
 export interface BankViewProps {
   isLoading: boolean;
-  amount: number | undefined;
-  rakeAmount: number | undefined;
+  amount: string;
+  rakeAmount: string;
   deposits: BankDeposit[];
   withdrawals: BankWithdrawal[];
   rakes: BankRake[];
   dailyLimitPct: number;
   dailyLimitInput: string;
-  onAmountChange: (value: number | undefined) => void;
-  onRakeAmountChange: (value: number | undefined) => void;
+  onAmountChange: (value: string) => void;
+  onRakeAmountChange: (value: string) => void;
   onDeposit: () => void;
   onWithdrawal: () => void;
   onRake: () => void;

@@ -97,13 +97,9 @@ export function BankView() {
         </Button>
         <Input
           className="w-[15%]"
-          placeholder="R$ 0,00"
-          value={amount ?? ""}
-          onChange={(e) =>
-            onAmountChange(
-              e.target.value === "" ? undefined : Number(e.target.value),
-            )
-          }
+          placeholder="0.00"
+          value={amount}
+          onChange={(e) => onAmountChange(e.target.value)}
         />
       </div>
       <div className="flex gap-4 w-[80%] items-center justify-center">
@@ -117,13 +113,9 @@ export function BankView() {
         </Button>
         <Input
           className="w-[15%]"
-          placeholder="R$ 0,00"
-          value={rakeAmount ?? ""}
-          onChange={(e) =>
-            onRakeAmountChange(
-              e.target.value === "" ? undefined : Number(e.target.value),
-            )
-          }
+          placeholder="0.00"
+          value={rakeAmount}
+          onChange={(e) => onRakeAmountChange(e.target.value)}
         />
       </div>
 
