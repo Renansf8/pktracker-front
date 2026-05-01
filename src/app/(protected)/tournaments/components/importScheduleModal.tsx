@@ -61,8 +61,8 @@ function ScheduleList({
           onClick={() => onSelect(s.id)}
           className={`w-full text-left px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors cursor-pointer ${
             selectedId === s.id
-              ? "border-white/30 bg-white/10 text-text-primary"
-              : "border-white/10 bg-white/5 text-text-secondary hover:border-white/20 hover:text-text-primary"
+              ? "border-primary/50 bg-primary/10 text-foreground"
+              : "border-border bg-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
           {s.name}
@@ -113,7 +113,7 @@ export function ImportScheduleModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex gap-1 p-1 rounded-xl bg-white/5 w-fit mx-auto">
+        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit mx-auto">
           {TABS.map((tab) => (
             <button
               key={tab.value}
@@ -122,8 +122,8 @@ export function ImportScheduleModal({
               onClick={() => handleTabChange(tab.value)}
               className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:cursor-not-allowed ${
                 selectedType === tab.value
-                  ? "bg-white/15 text-text-primary"
-                  : "text-text-secondary hover:text-text-primary"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {tab.label}

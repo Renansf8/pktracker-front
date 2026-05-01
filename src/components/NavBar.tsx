@@ -18,6 +18,8 @@ const NAV_ITEMS = [
   { href: "/schedule", label: "Grade" },
   { href: "/bank", label: "Banca" },
   { href: "/stats", label: "Estatísticas" },
+  { href: "/analytics", label: "Análise" },
+  { href: "/career", label: "Carreira" },
   { href: "/profile", label: "Perfil" },
 ] as const;
 

@@ -22,8 +22,8 @@ const FILL_PROFIT_NEG = "#ef4444";
 /** Linha do lucro total (contrasta com barras verde/vermelho) */
 const STROKE_TOTAL_LINE = "#38bdf8";
 
-const tickStyle = { fill: "#cbd5e1", fontSize: 12 };
-const tickStyleSmall = { fill: "#cbd5e1", fontSize: 11 };
+const tickStyle = { fill: "var(--color-muted-foreground)", fontSize: 12 };
+const tickStyleSmall = { fill: "var(--color-muted-foreground)", fontSize: 11 };
 
 /** Largura do eixo Y para valores $ com casa decimal não serem cortados */
 const yAxisMoneyWidth = 92;
@@ -112,7 +112,7 @@ function ProfitStackedBars({
             className="inline-block h-0 w-9 shrink-0 border-t-[1.75px] border-dashed border-sky-400"
             aria-hidden
           />
-          <span className="text-xs font-medium tabular-nums text-slate-400">
+          <span className="text-xs font-medium tabular-nums text-muted-foreground">
             Total {usd(totalLucro)}
           </span>
         </div>
@@ -185,7 +185,7 @@ type WeekChartRow = WeekRow & ChartRowBase;
 export function DayProfitBarChart({ data }: { data: DayRow[] }) {
   if (data.length === 0) {
     return (
-      <p className="mt-4 text-sm text-slate-400">
+      <p className="mt-4 text-sm text-muted-foreground">
         Nenhum torneio neste dia — sem dados para o gráfico.
       </p>
     );
@@ -199,12 +199,12 @@ export function DayProfitBarChart({ data }: { data: DayRow[] }) {
   const totalLucro = data.reduce((s, r) => s + (Number(r.Lucro) || 0), 0);
 
   return (
-    <div className="dark mt-6 w-full">
+    <div className="mt-6 w-full">
       <div className="glass-chart-surface w-full overflow-x-auto p-4 sm:p-5">
-        <Title className="text-base font-semibold text-slate-100">
+        <Title className="text-base font-semibold text-foreground">
           Lucro por torneio (hoje)
         </Title>
-        <Text className="text-sm text-slate-400">
+        <Text className="text-sm text-muted-foreground">
           Cada barra é um torneio do dia · valores em USD (lucro pode ser
           negativo)
         </Text>
@@ -233,12 +233,12 @@ export function WeekProfitBarChart({ data }: { data: WeekRow[] }) {
   const totalLucro = data.reduce((s, r) => s + (Number(r.Lucro) || 0), 0);
 
   return (
-    <div className="dark mt-6 w-full">
+    <div className="mt-6 w-full">
       <div className="glass-chart-surface w-full overflow-x-auto p-4 sm:p-5">
-        <Title className="text-base font-semibold text-slate-100">
+        <Title className="text-base font-semibold text-foreground">
           Lucro por dia (semana atual)
         </Title>
-        <Text className="text-sm text-slate-400">
+        <Text className="text-sm text-muted-foreground">
           Todos os dias da semana · dias sem torneio aparecem com $ 0,00
         </Text>
         <div className="mt-4 w-full min-w-0 pl-1">
@@ -262,12 +262,12 @@ export function YearProfitBarChart({ data }: { data: YearRow[] }) {
   const showTotalLine = Number.isFinite(totalLucro);
 
   return (
-    <div className="dark mt-6 w-full">
+    <div className="mt-6 w-full">
       <div className="glass-chart-surface w-full overflow-x-auto p-4 sm:p-5">
-        <Title className="text-base font-semibold text-slate-100">
+        <Title className="text-base font-semibold text-foreground">
           Lucro por mês (ano atual)
         </Title>
-        <Text className="text-sm text-slate-400">
+        <Text className="text-sm text-muted-foreground">
           Todos os meses do ano · meses sem torneio aparecem com $ 0,00
         </Text>
         <div className="mt-4 w-full min-w-0 pl-1">
@@ -277,7 +277,7 @@ export function YearProfitBarChart({ data }: { data: YearRow[] }) {
                 className="inline-block h-0 w-9 shrink-0 border-t-[1.75px] border-dashed border-sky-400"
                 aria-hidden
               />
-              <span className="text-xs font-medium tabular-nums text-slate-400">
+              <span className="text-xs font-medium tabular-nums text-muted-foreground">
                 Total {usd(totalLucro)}
               </span>
             </div>
@@ -352,12 +352,12 @@ export function MonthProfitBarChart({ data }: { data: MonthRow[] }) {
   const totalLucro = data.reduce((s, r) => s + (Number(r.Lucro) || 0), 0);
 
   return (
-    <div className="dark mt-6 w-full">
+    <div className="mt-6 w-full">
       <div className="glass-chart-surface w-full overflow-x-auto p-4 sm:p-5">
-        <Title className="text-base font-semibold text-slate-100">
+        <Title className="text-base font-semibold text-foreground">
           Lucro por dia (mês atual)
         </Title>
-        <Text className="text-sm text-slate-400">
+        <Text className="text-sm text-muted-foreground">
           Todos os dias do mês · dias sem torneio aparecem com $ 0,00
         </Text>
         <div className="mt-4 w-full min-w-0 pl-1">
