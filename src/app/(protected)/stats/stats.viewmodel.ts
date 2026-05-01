@@ -92,7 +92,9 @@ function computeBucketRecords(
       }
     }
 
-    if (bestKey) result[range] = { bucketStart: bestKey, amount: bestAmount };
+    const isValidRecord =
+      type === "profit" ? bestAmount > 0 : bestAmount < 0;
+    if (bestKey && isValidRecord) result[range] = { bucketStart: bestKey, amount: bestAmount };
   }
 
   return result;
