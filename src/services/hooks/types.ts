@@ -33,6 +33,7 @@ export interface Withdrawal {
 export interface Rake {
   date: string;
   amount: number;
+  platform?: string;
 }
 
 export interface StatsTournamentRef {

@@ -24,6 +24,7 @@ import type { BankViewProps } from "./bank.types";
 export function useBankViewModel(): BankViewProps {
   const [amount, setAmount] = useState("");
   const [rakeAmount, setRakeAmount] = useState("");
+  const [rakePlatform, setRakePlatform] = useState("");
   const [dailyLimitInput, setDailyLimitInput] = useState("");
   const { data: user, isLoading } = useGetUser();
   const { createDeposit, createWithdrawal, createRake } = useBank();
@@ -48,8 +49,13 @@ export function useBankViewModel(): BankViewProps {
   const handleRake = () => {
     const parsed = parseAmount(rakeAmount);
     if (!Number.isFinite(parsed) || parsed <= 0) return;
-    createRake.mutate({ date: new Date().toISOString(), amount: parsed });
+    createRake.mutate({
+      date: new Date().toISOString(),
+      amount: parsed,
+      ...(rakePlatform.trim() && { platform: rakePlatform.trim() }),
+    });
     setRakeAmount("");
+    setRakePlatform("");
   };
 
   const handleSaveDailyLimit = () => {
@@ -68,8 +74,10 @@ export function useBankViewModel(): BankViewProps {
     rakes: user?.bank?.rakes ?? [],
     dailyLimitPct,
     dailyLimitInput,
+    rakePlatform,
     onAmountChange: (v: string) => setAmount(v),
     onRakeAmountChange: (v: string) => setRakeAmount(v),
+    onRakePlatformChange: (v: string) => setRakePlatform(v),
     onDeposit: handleDeposit,
     onWithdrawal: handleWithdrawal,
     onRake: handleRake,

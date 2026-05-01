@@ -14,12 +14,14 @@ export interface BankRake {
   id?: string;
   date: string;
   amount: number;
+  platform?: string;
 }
 
 export interface BankViewProps {
   isLoading: boolean;
   amount: string;
   rakeAmount: string;
+  rakePlatform: string;
   deposits: BankDeposit[];
   withdrawals: BankWithdrawal[];
   rakes: BankRake[];
@@ -27,6 +29,7 @@ export interface BankViewProps {
   dailyLimitInput: string;
   onAmountChange: (value: string) => void;
   onRakeAmountChange: (value: string) => void;
+  onRakePlatformChange: (value: string) => void;
   onDeposit: () => void;
   onWithdrawal: () => void;
   onRake: () => void;

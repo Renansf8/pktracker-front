@@ -13,12 +13,21 @@ import {
 import { convertIsoDateToBr } from "@/utils/dateConvert";
 import type { BankDeposit, BankRake, BankWithdrawal } from "./bank.types";
 import { useBankViewModel } from "./bank.viewmodel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { platforms } from "@/utils/platforms";
 
 export function BankView() {
   const {
     isLoading,
     amount,
     rakeAmount,
+    rakePlatform,
     deposits,
     withdrawals,
     rakes,
@@ -26,6 +35,7 @@ export function BankView() {
     dailyLimitInput,
     onAmountChange,
     onRakeAmountChange,
+    onRakePlatformChange,
     onDeposit,
     onWithdrawal,
     onRake,
@@ -117,6 +127,18 @@ export function BankView() {
           value={rakeAmount}
           onChange={(e) => onRakeAmountChange(e.target.value)}
         />
+        <Select value={rakePlatform} onValueChange={onRakePlatformChange}>
+          <SelectTrigger className="w-[15%]">
+            <SelectValue placeholder="Plataforma" />
+          </SelectTrigger>
+          <SelectContent>
+            {platforms.map((p) => (
+              <SelectItem key={p.id} value={p.name}>
+                {p.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="glass-panel flex gap-16 w-[80%] items-center justify-center rounded-3xl p-8">
@@ -183,6 +205,9 @@ export function BankView() {
                   Data
                 </TableHead>
                 <TableHead className="text-text-primary text-center">
+                  Plataforma
+                </TableHead>
+                <TableHead className="text-text-primary text-center">
                   Valor
                 </TableHead>
               </TableRow>
@@ -192,6 +217,9 @@ export function BankView() {
                 <TableRow key={rake.id ?? rake.date}>
                   <TableCell className="text-text-primary text-center">
                     {convertIsoDateToBr(rake.date)}
+                  </TableCell>
+                  <TableCell className="text-text-primary text-center">
+                    {rake.platform ?? "—"}
                   </TableCell>
                   <TableCell className="text-text-primary text-center">
                     $ {Number(rake.amount).toFixed(2)}
