@@ -62,7 +62,7 @@
   --secondary:                 #1a1a1a;
   --secondary-foreground:      #f0ede8;
   --muted:                     #181818;
-  --muted-foreground:          #7a7068;
+  --muted-foreground:          #a09488;
   --accent:                    #1c1a16;
   --accent-foreground:         #d4a843;
   --destructive:               #c44040;
@@ -301,13 +301,13 @@ button {
 
   .glass-chart-surface .recharts-text,
   .glass-chart-surface .recharts-text tspan {
-    fill: #7a7068 !important;
+    fill: var(--muted-foreground) !important;
     font-family: var(--font-jetbrains), monospace;
     font-size: 11px;
   }
 
   .glass-chart-surface .recharts-default-legend {
-    color: #7a7068;
+    color: var(--muted-foreground);
   }
 
   .glass-chart-surface .recharts-tooltip-cursor {
@@ -316,7 +316,7 @@ button {
 
   /* ── Activity card typography ────────────────────────────────────────── */
   .activity-card-title {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;

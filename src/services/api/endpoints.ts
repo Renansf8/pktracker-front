@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
     CREATE_DEPOSIT: "/banks/deposits",
     CREATE_WITHDRAWAL: "/banks/withdrawals",
     CREATE_RAKE: "/banks/rakes",
+    ME: "/banks/me",
   },
   STATS: {
     SUMMARY: "/stats/summary",
