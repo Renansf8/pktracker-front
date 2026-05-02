@@ -21,6 +21,6 @@ export function useProfileViewModel(): ProfileViewProps {
     bankBalance: bankUsd,
     totalDeposit: user?.bank?.totalDeposit ?? 0,
     totalWithdrawal: user?.bank?.totalWithdrawal ?? 0,
-    profit: totalWinnings,
+    profit: totalWinnings + (user?.bank?.totalRake ?? 0),
   };
 }
