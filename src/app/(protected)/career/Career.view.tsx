@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useCareerViewModel } from "./career.viewmodel";
 import type { Milestone, StakesProgression, StakingDeal, NewDealState } from "./career.types";
 
@@ -47,9 +48,79 @@ function StakesProgressionSection({
   prog: StakesProgression;
   totalTournaments: number;
 }) {
+  const [showHelp, setShowHelp] = useState(false);
+
+  const fmt = (v: number) =>
+    `$ ${v.toFixed(v % 1 === 0 ? 0 : 1)}`;
+
   return (
     <section>
-      <SectionLabel index="01" title="Progressão de stakes" />
+      <div className="flex items-baseline gap-3 mb-4">
+        <span className="font-data text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>01</span>
+        <span className="text-[10px] uppercase tracking-[0.18em] font-medium" style={{ color: MUTED }}>
+          Progressão de stakes
+        </span>
+        <span className="flex-1 h-px" style={{ background: "var(--border)" }} aria-hidden />
+        <button
+          onClick={() => setShowHelp((v) => !v)}
+          className="font-data text-[9px] uppercase tracking-[0.18em] px-3 py-1 transition-opacity hover:opacity-100"
+          style={{
+            color: showHelp ? GOLD : "var(--foreground)",
+            border: `1px solid ${showHelp ? "rgba(212,168,67,0.6)" : "rgba(212,168,67,0.25)"}`,
+          }}
+        >
+          {showHelp ? "◆ fechar" : "◇ como funciona"}
+        </button>
+      </div>
+
+      {showHelp && (
+        <div
+          className="mb-4 px-6 py-5"
+          style={{
+            border: "1px solid rgba(212,168,67,0.15)",
+            background: "rgba(212,168,67,0.03)",
+          }}
+        >
+          <p className="font-data text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: GOLD }}>
+            Entendendo os níveis
+          </p>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-4 items-start">
+              <span className="font-data text-[10px] w-24 shrink-0" style={{ color: GOLD }}>
+                ◆ {fmt(prog.lowStake)}
+              </span>
+              <p className="font-data text-[11px] leading-relaxed" style={{ color: "var(--foreground)" }}>
+                <span className="font-semibold">Nível atual — foco de volume.</span>{" "}
+                A maioria dos seus torneios deve ser aqui. Com sua banca atual você tem buy-ins suficientes para jogar esse stake como base.
+              </p>
+            </div>
+            {prog.highStake && (
+              <div className="flex gap-4 items-start">
+                <span className="font-data text-[10px] w-24 shrink-0" style={{ color: MUTED }}>
+                  ◇ {fmt(prog.highStake)}
+                </span>
+                <p className="font-data text-[11px] leading-relaxed" style={{ color: "var(--foreground)" }}>
+                  <span className="font-semibold">Intercalado — já pode jogar agora.</span>{" "}
+                  Alguns torneios por sessão nesse stake são aceitáveis. Não é o foco, mas a banca aguenta ocasionalmente.
+                </p>
+              </div>
+            )}
+            {prog.nextLowStake && (
+              <div className="flex gap-4 items-start">
+                <span className="font-data text-[10px] w-24 shrink-0" style={{ color: MUTED }}>
+                  ◈ {fmt(prog.nextLowStake)}
+                </span>
+                <p className="font-data text-[11px] leading-relaxed" style={{ color: "var(--foreground)" }}>
+                  <span className="font-semibold">Próximo nível — meta de longo prazo.</span>{" "}
+                  Quando sua banca chegar em{" "}
+                  {prog.bankNeededForNextLow ? fmtUsd(prog.bankNeededForNextLow) : "—"},{" "}
+                  {fmt(prog.nextLowStake)} vira o novo foco de volume.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div className="glass-panel py-7 px-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* Nível atual */}
@@ -61,7 +132,7 @@ function StakesProgressionSection({
               className="font-data font-semibold leading-none"
               style={{ fontSize: "clamp(40px,5vw,56px)", color: "var(--foreground)" }}
             >
-              $ {prog.currentStake.toFixed(prog.currentStake % 1 === 0 ? 0 : 1)}
+              $ {prog.lowStake.toFixed(prog.lowStake % 1 === 0 ? 0 : 1)}
             </p>
             <p className="font-data text-[11px] mt-2" style={{ color: MUTED }}>
               {prog.customBuyIns !== null
@@ -76,21 +147,21 @@ function StakesProgressionSection({
             </p>
           </div>
 
-          {/* Próximo nível */}
+          {/* Stake intercalado */}
           <div>
             <p className="font-data text-[9px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>
-              ◇ PRÓXIMO NÍVEL
+              ◇ INTERCALADO
             </p>
-            {prog.nextStake ? (
+            {prog.highStake ? (
               <>
                 <p
                   className="font-data font-semibold leading-none"
                   style={{ fontSize: "clamp(40px,5vw,56px)", color: MUTED }}
                 >
-                  $ {prog.nextStake.toFixed(prog.nextStake % 1 === 0 ? 0 : 1)}
+                  $ {prog.highStake.toFixed(prog.highStake % 1 === 0 ? 0 : 1)}
                 </p>
                 <p className="font-data text-[11px] mt-3" style={{ color: MUTED }}>
-                  Banca necessária: {fmtUsd(prog.bankNeededForNext ?? 0)}
+                  Alguns torneios por sessão
                 </p>
               </>
             ) : (
@@ -124,15 +195,18 @@ function StakesProgressionSection({
           </div>
         </div>
 
-        {/* Progress bar */}
-        {prog.nextStake && (
+        {/* Progress bar — toward next primary stake */}
+        {prog.nextLowStake && (
           <div className="mt-8">
             <div className="flex justify-between mb-2">
               <span className="font-data text-[10px]" style={{ color: MUTED }}>
-                $ {prog.currentStake.toFixed(prog.currentStake % 1 === 0 ? 0 : 1)}
+                $ {prog.lowStake.toFixed(prog.lowStake % 1 === 0 ? 0 : 1)}
               </span>
               <span className="font-data text-[10px]" style={{ color: MUTED }}>
-                {prog.progressToNext.toFixed(1)}% para $ {prog.nextStake.toFixed(prog.nextStake % 1 === 0 ? 0 : 1)}
+                {prog.progressToNextLow.toFixed(1)}% para $ {prog.nextLowStake.toFixed(prog.nextLowStake % 1 === 0 ? 0 : 1)}
+                {prog.bankNeededForNextLow && (
+                  <span style={{ color: MUTED }}> — banca: {fmtUsd(prog.bankNeededForNextLow)}</span>
+                )}
               </span>
             </div>
             <div
@@ -141,7 +215,7 @@ function StakesProgressionSection({
             >
               <div
                 style={{
-                  width: `${prog.progressToNext}%`,
+                  width: `${prog.progressToNextLow}%`,
                   height: "100%",
                   background: GOLD,
                   transition: "width 0.6s cubic-bezier(0.16,1,0.3,1)",

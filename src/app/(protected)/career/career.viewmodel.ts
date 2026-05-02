@@ -6,7 +6,7 @@ import { useStats } from "@/services/hooks/useStats";
 import { useCurrency } from "@/services/hooks/useCurrency";
 import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
 import { getEurToUsdRate } from "@/utils/currencyConvert";
-import { getAbiSuggestedRange } from "@/utils/abiSuggestion";
+import { getAbiSuggestedRange, getSuggestedStakeLevels } from "@/utils/abiSuggestion";
 import type { Tournament } from "@/services/hooks/types";
 import type {
   CareerViewProps,
@@ -69,22 +69,24 @@ function computeStakesProgression(
     effectiveBuyIns = 100;
   }
 
-  const currentStake =
-    [...COMMON_STAKES].reverse().find((s) => s <= rangeMax) ??
-    COMMON_STAKES[0];
-  const idx = COMMON_STAKES.indexOf(currentStake);
-  const nextStake =
-    idx < COMMON_STAKES.length - 1 ? COMMON_STAKES[idx + 1] : null;
-  const bankNeededForNext = nextStake ? nextStake * effectiveBuyIns : null;
-  const progressToNext = bankNeededForNext
-    ? Math.min((bankUsd / bankNeededForNext) * 100, 100)
+  const { low, high } = getSuggestedStakeLevels(rangeMin, rangeMax);
+
+  const lowIdx = COMMON_STAKES.indexOf(low);
+  const nextLowStake =
+    lowIdx < COMMON_STAKES.length - 1 ? COMMON_STAKES[lowIdx + 1] : null;
+  const bankNeededForNextLow = nextLowStake
+    ? nextLowStake * effectiveBuyIns
+    : null;
+  const progressToNextLow = bankNeededForNextLow
+    ? Math.min((bankUsd / bankNeededForNextLow) * 100, 100)
     : 100;
 
   return {
-    currentStake,
-    nextStake,
-    bankNeededForNext,
-    progressToNext,
+    lowStake: low,
+    highStake: high,
+    nextLowStake,
+    bankNeededForNextLow,
+    progressToNextLow,
     bankUsd,
     rangeMin,
     rangeMax,

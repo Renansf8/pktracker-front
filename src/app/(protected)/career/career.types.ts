@@ -1,8 +1,9 @@
 export interface StakesProgression {
-  currentStake: number;
-  nextStake: number | null;
-  bankNeededForNext: number | null;
-  progressToNext: number;
+  lowStake: number;
+  highStake: number | null;
+  nextLowStake: number | null;
+  bankNeededForNextLow: number | null;
+  progressToNextLow: number;
   bankUsd: number;
   rangeMin: number;
   rangeMax: number;
