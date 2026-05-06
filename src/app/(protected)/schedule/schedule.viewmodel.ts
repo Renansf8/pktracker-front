@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { ScheduleViewProps } from "./schedule.types";
+import type { ScheduleViewProps, PlatformSummaryRow } from "./schedule.types";
 import type {
   ScheduleType,
   TournamentSchedule,
@@ -175,6 +175,17 @@ export function useScheduleViewModel(): ScheduleViewProps {
       .sort((a, b) => a.buyIn - b.buyIn);
   }, [items]);
 
+  const platformSummary = useMemo((): PlatformSummaryRow[] => {
+    const map = new Map<string, number>();
+    for (const item of items) {
+      const platform = String(item.platform ?? "").trim() || "—";
+      map.set(platform, (map.get(platform) ?? 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([platform, count]) => ({ platform, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [items]);
+
   return {
     activeTab,
     onTabChange,
@@ -204,6 +215,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
     totalBuyIns,
     list: items,
     buyInSummary,
+    platformSummary,
 
     selectedItemId,
     editingItemId,

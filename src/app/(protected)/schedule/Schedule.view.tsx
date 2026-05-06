@@ -43,6 +43,7 @@ export function ScheduleView() {
     totalBuyIns,
     list,
     buyInSummary,
+    platformSummary,
 
     selectedItemId,
     editingItemId,
@@ -391,35 +392,71 @@ export function ScheduleView() {
               </div>
             </div>
 
-            {buyInSummary.length > 0 && (
-              <div className="glass-panel mt-6 rounded-3xl p-4">
-                <p className="text-text-secondary text-xs uppercase tracking-widest mb-3">
-                  Resumo por Buy-in
-                </p>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-text-primary text-center">
-                        Buy-in
-                      </TableHead>
-                      <TableHead className="text-text-primary text-center">
-                        Quantidade
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {buyInSummary.map(({ buyIn, count }) => (
-                      <TableRow key={buyIn}>
-                        <TableCell className="text-text-primary text-center">
-                          $ {buyIn.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-text-primary text-center">
-                          {count}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+            {(buyInSummary.length > 0 || platformSummary.length > 0) && (
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {buyInSummary.length > 0 && (
+                  <div className="glass-panel rounded-3xl p-4">
+                    <p className="text-text-secondary text-xs uppercase tracking-widest mb-3">
+                      Resumo por Buy-in
+                    </p>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-text-primary text-center">
+                            Buy-in
+                          </TableHead>
+                          <TableHead className="text-text-primary text-center">
+                            Quantidade
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {buyInSummary.map(({ buyIn, count }) => (
+                          <TableRow key={buyIn}>
+                            <TableCell className="text-text-primary text-center">
+                              $ {buyIn.toFixed(2)}
+                            </TableCell>
+                            <TableCell className="text-text-primary text-center">
+                              {count}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+
+                {platformSummary.length > 0 && (
+                  <div className="glass-panel rounded-3xl p-4">
+                    <p className="text-text-secondary text-xs uppercase tracking-widest mb-3">
+                      Resumo por Plataforma
+                    </p>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-text-primary text-center">
+                            Plataforma
+                          </TableHead>
+                          <TableHead className="text-text-primary text-center">
+                            Quantidade
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {platformSummary.map(({ platform, count }) => (
+                          <TableRow key={platform}>
+                            <TableCell className="text-text-primary text-center">
+                              {platform}
+                            </TableCell>
+                            <TableCell className="text-text-primary text-center">
+                              {count}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </div>
             )}
           </>

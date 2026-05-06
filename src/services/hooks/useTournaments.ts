@@ -22,7 +22,7 @@ export const useTournaments = (
   const { refetch } = useGetUser();
   const getAllTournaments = useQuery({
     queryKey: ["tournaments", platform, page, limit, name],
-    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit, undefined, name)),
+    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit, false, name)),
   });
 
   const getDay2Tournaments = useQuery({

@@ -10,6 +10,11 @@ export interface BuyInSummaryRow {
   count: number;
 }
 
+export interface PlatformSummaryRow {
+  platform: string;
+  count: number;
+}
+
 export interface ScheduleViewProps {
   // Tabs
   activeTab: ScheduleType;
@@ -41,6 +46,7 @@ export interface ScheduleViewProps {
   totalBuyIns: number;
   list: TournamentScheduleItem[];
   buyInSummary: BuyInSummaryRow[];
+  platformSummary: PlatformSummaryRow[];
 
   // Item editing / deleting
   selectedItemId: string | null;

@@ -85,9 +85,7 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const responseData = tournaments?.data;
   const totalPages = responseData?.totalPages ?? 1;
   const total = responseData?.total ?? 0;
-  const currentPageData = (responseData?.data ?? []).filter(
-    (t: Tournament) => !t.hasSecondDay,
-  );
+  const currentPageData = (responseData?.data ?? []) as Tournament[];
 
   const hasActiveFilter = platform !== "" || name !== "";
   const filteredProfit = hasActiveFilter
@@ -248,7 +246,10 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     setIsImportingSchedule(true);
     applySchedule.mutate(scheduleId, {
       onSettled: () => setIsImportingSchedule(false),
-      onSuccess: () => setIsImportScheduleModalOpen(false),
+      onSuccess: () => {
+        setIsImportScheduleModalOpen(false);
+        setCurrentPage(1);
+      },
     });
   };
 
