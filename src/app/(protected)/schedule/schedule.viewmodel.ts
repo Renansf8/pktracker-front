@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import type { ScheduleViewProps, PlatformSummaryRow } from "./schedule.types";
+import { useCurrency } from "@/services/hooks/useCurrency";
+import { convertUsdToBrl } from "@/utils/currencyConvert";
 import type {
   ScheduleType,
   TournamentSchedule,
@@ -31,6 +33,9 @@ export function useScheduleViewModel(): ScheduleViewProps {
   const [editDraftById, setEditDraftById] = useState<
     Record<string, ScheduleEditDraft | undefined>
   >({});
+
+  const { currencies } = useCurrency();
+  const brlRate: number | undefined = currencies?.data?.rates?.BRL;
 
   const { getSchedules, schedules, createSchedule, deleteSchedule } =
     useSchedules(activeTab);
@@ -163,6 +168,10 @@ export function useScheduleViewModel(): ScheduleViewProps {
     (acc, item) => acc + Number(item.buyIn ?? 0),
     0,
   );
+  const totalBuyInsBrl =
+    brlRate !== undefined
+      ? convertUsdToBrl(brlRate * totalBuyIns)
+      : undefined;
 
   const buyInSummary = useMemo(() => {
     const map = new Map<number, number>();
@@ -176,13 +185,17 @@ export function useScheduleViewModel(): ScheduleViewProps {
   }, [items]);
 
   const platformSummary = useMemo((): PlatformSummaryRow[] => {
-    const map = new Map<string, number>();
+    const map = new Map<string, { count: number; totalBuyIn: number }>();
     for (const item of items) {
       const platform = String(item.platform ?? "").trim() || "—";
-      map.set(platform, (map.get(platform) ?? 0) + 1);
+      const prev = map.get(platform) ?? { count: 0, totalBuyIn: 0 };
+      map.set(platform, {
+        count: prev.count + 1,
+        totalBuyIn: prev.totalBuyIn + Number(item.buyIn ?? 0),
+      });
     }
     return Array.from(map.entries())
-      .map(([platform, count]) => ({ platform, count }))
+      .map(([platform, { count, totalBuyIn }]) => ({ platform, count, totalBuyIn }))
       .sort((a, b) => b.count - a.count);
   }, [items]);
 
@@ -213,6 +226,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
     isLoadingItems: getItems.isLoading,
     total,
     totalBuyIns,
+    totalBuyInsBrl,
     list: items,
     buyInSummary,
     platformSummary,

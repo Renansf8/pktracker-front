@@ -13,6 +13,7 @@ export interface BuyInSummaryRow {
 export interface PlatformSummaryRow {
   platform: string;
   count: number;
+  totalBuyIn: number;
 }
 
 export interface ScheduleViewProps {
@@ -44,6 +45,7 @@ export interface ScheduleViewProps {
   isLoadingItems: boolean;
   total: number;
   totalBuyIns: number;
+  totalBuyInsBrl: string | undefined;
   list: TournamentScheduleItem[];
   buyInSummary: BuyInSummaryRow[];
   platformSummary: PlatformSummaryRow[];

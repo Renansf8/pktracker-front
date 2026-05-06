@@ -41,6 +41,7 @@ export function ScheduleView() {
     isLoadingItems,
     total,
     totalBuyIns,
+    totalBuyInsBrl,
     list,
     buyInSummary,
     platformSummary,
@@ -98,6 +99,11 @@ export function ScheduleView() {
               </p>
               <p className="text-text-secondary text-sm">
                 Total Buy-ins: $ {totalBuyIns.toFixed(2)}
+                {totalBuyInsBrl && (
+                  <span className="text-text-secondary/70">
+                    {" "}({totalBuyInsBrl})
+                  </span>
+                )}
               </p>
             </div>
           )}
@@ -440,16 +446,22 @@ export function ScheduleView() {
                           <TableHead className="text-text-primary text-center">
                             Quantidade
                           </TableHead>
+                          <TableHead className="text-text-primary text-center">
+                            Total Buy-ins
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {platformSummary.map(({ platform, count }) => (
+                        {platformSummary.map(({ platform, count, totalBuyIn }) => (
                           <TableRow key={platform}>
                             <TableCell className="text-text-primary text-center">
                               {platform}
                             </TableCell>
                             <TableCell className="text-text-primary text-center">
                               {count}
+                            </TableCell>
+                            <TableCell className="text-text-primary text-center">
+                              $ {totalBuyIn.toFixed(2)}
                             </TableCell>
                           </TableRow>
                         ))}

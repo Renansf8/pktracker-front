@@ -41,6 +41,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTournamentsViewModel } from "./tournaments.viewmodel";
 import { getTournamentProfitNative } from "@/utils/tournamentLucro";
 
@@ -420,16 +427,21 @@ export function TournamentsView() {
                         </TableCell>
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (
-                            <Input
+                            <Select
                               value={draft.currency}
-                              onChange={(e) =>
-                                onChangeEditDraft(id, {
-                                  currency: e.target.value,
-                                })
-                              }
                               disabled={disabled}
-                              className="h-9 text-text-primary"
-                            />
+                              onValueChange={(newCurrency) => {
+                                onChangeEditDraft(id, { currency: newCurrency });
+                              }}
+                            >
+                              <SelectTrigger className="h-9 w-20">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="USD">USD</SelectItem>
+                                <SelectItem value="EUR">EUR</SelectItem>
+                              </SelectContent>
+                            </Select>
                           ) : (
                             tournament.currency
                           )}
