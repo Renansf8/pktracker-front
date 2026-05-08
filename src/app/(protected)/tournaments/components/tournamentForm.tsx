@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useTournaments } from "@/services/hooks/useTournaments";
+import { TournamentNameCombobox } from "./TournamentNameCombobox";
 
 import {
   Select,
@@ -82,6 +83,7 @@ export function TournamentForm({ platform }: TournamentFormProps) {
   const { createTournament } = useTournaments(platform);
 
   const itm = form.watch("itm");
+  const selectedPlatform = form.watch("platform");
 
   const normalizeTicketField = (v: string): number | "ticket" =>
     v.toLowerCase() === "ticket" ? "ticket" : Number(v);
@@ -200,10 +202,10 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                     <div className="gap-1 flex flex-col">
                       <FormLabel>Torneio</FormLabel>
                       <FormControl>
-                        <Input
-                          className="border-input-border"
-                          placeholder="Daily big"
-                          {...field}
+                        <TournamentNameCombobox
+                          value={field.value}
+                          onChange={field.onChange}
+                          platform={selectedPlatform}
                         />
                       </FormControl>
                     </div>
