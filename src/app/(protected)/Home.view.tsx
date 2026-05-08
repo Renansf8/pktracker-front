@@ -10,9 +10,12 @@ import { GoalProgress } from "@/components/GoalProgress";
 import { PlayerSuggestions } from "@/components/PlayerSuggestions";
 import { SummarizeCards } from "@/components/Summarize Cards";
 import { SummarizeResults } from "@/components/SummarizeResults";
+import { WhatsNewModal } from "@/components/WhatsNewModal";
+import { useWhatsNew } from "@/utils/useWhatsNew";
 import { useHomeViewModel } from "./home.viewmodel";
 
 export function HomeView() {
+  const { open, dismiss, changelog, version } = useWhatsNew();
   const {
     isLoading,
     userName,
@@ -46,6 +49,8 @@ export function HomeView() {
   }
 
   return (
+    <>
+    <WhatsNewModal open={open} onClose={dismiss} changelog={changelog} version={version} />
     <div className="flex flex-col w-[90%] mx-auto mt-10 gap-10">
       {/* ── Header: greeting + banca ─────────────────────────────────────── */}
       <header
@@ -129,5 +134,6 @@ export function HomeView() {
 
       <SummarizeResults />
     </div>
+    </>
   );
 }
