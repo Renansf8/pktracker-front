@@ -4,6 +4,7 @@ import type {
   StatsBucketRecord,
   StatsHighestAbiDay,
   StatsMostTournamentsInADay,
+  Tournament,
 } from "@/services/hooks/types";
 
 export interface BucketCardData {
@@ -25,6 +26,12 @@ export interface StatsPlatformStats {
   leastTournaments: StatsPlatformEntry | null;
 }
 
+export interface PodiumByPosition {
+  gold: Tournament[];
+  silver: Tournament[];
+  bronze: Tournament[];
+}
+
 export interface StatsViewProps {
   isLoading: boolean;
   isError: boolean;
@@ -39,4 +46,5 @@ export interface StatsViewProps {
   totalTournaments: number;
   itmRate: number;
   ftRate: number;
+  podiumByPosition: PodiumByPosition;
 }

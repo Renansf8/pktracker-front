@@ -91,6 +91,9 @@ export function useHomeViewModel(): HomeViewProps {
     const totalTournaments = tournaments.length;
     const itmCount = tournaments.filter((t) => t.itm === true).length;
     const ftCount = tournaments.filter((t) => t.hasFt === true).length;
+    const goldCount = tournaments.filter((t) => t.position === 1).length;
+    const silverCount = tournaments.filter((t) => t.position === 2).length;
+    const bronzeCount = tournaments.filter((t) => t.position === 3).length;
     const distinctDays = new Set(
       tournaments.map((t) => String(t.date).split("T")[0])
     ).size;
@@ -102,6 +105,9 @@ export function useHomeViewModel(): HomeViewProps {
       itmCount,
       ftCount,
       avgDailyBuyIn: distinctDays > 0 ? reduced.totalBuyIn / distinctDays : 0,
+      goldCount,
+      silverCount,
+      bronzeCount,
     };
   }, [tournaments, eurToUsdRate]);
 
@@ -144,6 +150,9 @@ export function useHomeViewModel(): HomeViewProps {
     itmCount: stats.itmCount,
     ftCount: stats.ftCount,
     avgDailyBuyIn: stats.avgDailyBuyIn,
+    goldCount: stats.goldCount,
+    silverCount: stats.silverCount,
+    bronzeCount: stats.bronzeCount,
     monthlyProfitUsd,
     yearlyProfitUsd,
   };

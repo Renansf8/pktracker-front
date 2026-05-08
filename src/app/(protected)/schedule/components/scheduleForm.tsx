@@ -164,7 +164,7 @@ export function ScheduleForm({ scheduleId }: { scheduleId: string }) {
               )}
             />
 
-            <div className="flex items-end h-[80px]">
+            <div className="flex items-start pt-5 h-20">
               <Button type="submit" disabled={createItem.isPending}>
                 {createItem.isPending ? "Adicionando..." : "Adicionar"}
               </Button>

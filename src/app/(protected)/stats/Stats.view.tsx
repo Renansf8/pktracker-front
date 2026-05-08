@@ -5,8 +5,10 @@ import type {
   StatsBiggestBuyIn,
   StatsHighestAbiDay,
   StatsMostTournamentsInADay,
+  Tournament,
 } from "@/services/hooks/types";
-import type { BucketCardData, StatsPlatformEntry } from "./stats.types";
+import type { BucketCardData, PodiumByPosition, StatsPlatformEntry } from "./stats.types";
+import { getTournamentProfitNative } from "@/utils/tournamentLucro";
 import { useStatsViewModel } from "./stats.viewmodel";
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -561,6 +563,194 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * Section 05 — Podium
+ * ────────────────────────────────────────────────────────────────────────*/
+
+const PODIUM_CONFIG = [
+  {
+    key: "silver" as const,
+    emoji: "🥈",
+    label: "2º Lugar",
+    color: "#9BA3AF",
+    border: "rgba(155,163,175,0.20)",
+    bg: "rgba(155,163,175,0.04)",
+    offset: "40px",
+  },
+  {
+    key: "gold" as const,
+    emoji: "🥇",
+    label: "1º Lugar",
+    color: "var(--primary)",
+    border: "rgba(212,168,67,0.35)",
+    bg: "rgba(212,168,67,0.05)",
+    offset: "0px",
+  },
+  {
+    key: "bronze" as const,
+    emoji: "🥉",
+    label: "3º Lugar",
+    color: "#CD7F32",
+    border: "rgba(205,127,50,0.20)",
+    bg: "rgba(205,127,50,0.04)",
+    offset: "72px",
+  },
+] as const;
+
+function PodiumItem({ t, accentColor }: { t: Tournament; accentColor: string }) {
+  const profit = getTournamentProfitNative(t);
+  const isPos = profit >= 0;
+  const profitColor = isPos ? "var(--pk-success)" : "var(--destructive)";
+
+  return (
+    <div
+      className="px-5 py-3.5 flex flex-col gap-1"
+      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+    >
+      <p
+        className="font-display text-sm font-semibold leading-tight truncate"
+        style={{ color: "var(--foreground)" }}
+      >
+        {t.name}
+      </p>
+      <div className="flex items-center justify-between gap-2">
+        <span
+          className="font-data text-[11px] truncate"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          {t.platform} · {formatDayFull(t.date)}
+        </span>
+        <span
+          className="font-data text-[12px] font-semibold shrink-0"
+          style={{ color: profitColor }}
+        >
+          {profit >= 0 ? "+" : ""}
+          {formatCurrency(profit)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function PodiumColumn({
+  emoji,
+  label,
+  color,
+  border,
+  bg,
+  offset,
+  tournaments,
+}: {
+  emoji: string;
+  label: string;
+  color: string;
+  border: string;
+  bg: string;
+  offset: string;
+  tournaments: Tournament[];
+}) {
+  const count = tournaments.length;
+
+  return (
+    <div className="flex flex-col" style={{ marginTop: offset }}>
+      <div
+        className="overflow-hidden rounded-2xl flex flex-col"
+        style={{ border: `1px solid ${border}` }}
+      >
+        {/* Column header */}
+        <div
+          className="px-5 py-5 flex flex-col items-center gap-2 text-center"
+          style={{
+            background: bg,
+            borderBottom: `1px solid ${border}`,
+          }}
+        >
+          <span style={{ fontSize: "32px", lineHeight: 1 }}>{emoji}</span>
+          <div>
+            <p
+              className="font-data text-[10px] uppercase tracking-[0.22em] font-semibold"
+              style={{ color }}
+            >
+              {label}
+            </p>
+            <p
+              className="font-data text-[11px] mt-0.5"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              {count} torneio{count !== 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+
+        {/* Tournament list */}
+        {count === 0 ? (
+          <div
+            className="flex items-center justify-center py-10 px-5"
+            style={{ background: "rgba(255,255,255,0.01)" }}
+          >
+            <p
+              className="font-data text-[11px] uppercase tracking-[0.15em] text-center"
+              style={{ color: "var(--muted-foreground)", opacity: 0.5 }}
+            >
+              Sem registros
+            </p>
+          </div>
+        ) : (
+          <div
+            className="overflow-y-auto"
+            style={{
+              maxHeight: "300px",
+              background: "rgba(255,255,255,0.01)",
+            }}
+          >
+            {tournaments.map((t) => (
+              <PodiumItem key={t.id ?? `${t.date}-${t.name}`} t={t} accentColor={color} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PodiumSection({ podium }: { podium: PodiumByPosition }) {
+  const total = podium.gold.length + podium.silver.length + podium.bronze.length;
+
+  return (
+    <section>
+      <SectionLabel index="05" title="Pódios" />
+      {total === 0 ? (
+        <div
+          className="glass-panel flex items-center justify-center py-12"
+          style={{ borderStyle: "dashed" }}
+        >
+          <p
+            className="font-data text-[11px] uppercase tracking-[0.18em]"
+            style={{ color: "var(--muted-foreground)", opacity: 0.5 }}
+          >
+            Nenhum pódio registrado ainda
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+          {PODIUM_CONFIG.map((cfg) => (
+            <PodiumColumn
+              key={cfg.key}
+              emoji={cfg.emoji}
+              label={cfg.label}
+              color={cfg.color}
+              border={cfg.border}
+              bg={cfg.bg}
+              offset={cfg.offset}
+              tournaments={podium[cfg.key]}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * Main view
  * ────────────────────────────────────────────────────────────────────────*/
 
@@ -578,6 +768,7 @@ export function StatsView() {
     totalTournaments,
     itmRate,
     ftRate,
+    podiumByPosition,
   } = useStatsViewModel();
 
   if (isLoading) {
@@ -678,6 +869,11 @@ export function StatsView() {
           <PlatformBars platforms={allPlatforms} />
         </div>
       )}
+
+      {/* ── 05 — Podium ─────────────────────────────────────────────────── */}
+      <div style={revealed(320)}>
+        <PodiumSection podium={podiumByPosition} />
+      </div>
     </div>
   );
 }

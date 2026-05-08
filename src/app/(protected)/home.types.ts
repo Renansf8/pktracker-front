@@ -20,6 +20,9 @@ export interface HomeViewProps {
   itmCount: number;
   ftCount: number;
   avgDailyBuyIn: number;
+  goldCount: number;
+  silverCount: number;
+  bronzeCount: number;
   monthlyProfitUsd: number;
   yearlyProfitUsd: number;
 }

@@ -11,6 +11,7 @@ import type {
 } from "@/services/hooks/types";
 import type {
   BucketCardData,
+  PodiumByPosition,
   StatsPlatformEntry,
   StatsPlatformStats,
   StatsViewProps,
@@ -181,6 +182,16 @@ export function useStatsViewModel(): StatsViewProps {
     [allTournaments, totalTournaments],
   );
 
+  const podiumByPosition = useMemo<PodiumByPosition>(() => {
+    const byDate = (a: Tournament, b: Tournament) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime();
+    return {
+      gold:   [...allTournaments.filter((t) => t.position === 1)].sort(byDate),
+      silver: [...allTournaments.filter((t) => t.position === 2)].sort(byDate),
+      bronze: [...allTournaments.filter((t) => t.position === 3)].sort(byDate),
+    };
+  }, [allTournaments]);
+
   return {
     isLoading,
     isError,
@@ -195,5 +206,6 @@ export function useStatsViewModel(): StatsViewProps {
     totalTournaments,
     itmRate,
     ftRate,
+    podiumByPosition,
   };
 }

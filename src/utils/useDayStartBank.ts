@@ -30,7 +30,6 @@ export function useDayStartBank(currentBankUsd: number): number | null {
   });
 
   useEffect(() => {
-    // Só salva quando o banco estiver carregado (> 0) e não existir snapshot de hoje
     if (!Number.isFinite(currentBankUsd) || currentBankUsd <= 0) return;
 
     const today = getTodayKey();
@@ -38,7 +37,8 @@ export function useDayStartBank(currentBankUsd: number): number | null {
       const raw = localStorage.getItem(LS_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { date: string; bankUsd: number };
-        if (parsed.date === today) return; // snapshot do dia já existe
+        // Atualiza snapshot se: novo dia OU banca aumentou (depósito/correção manual)
+        if (parsed.date === today && currentBankUsd <= parsed.bankUsd) return;
       }
       localStorage.setItem(LS_KEY, JSON.stringify({ date: today, bankUsd: currentBankUsd }));
       setDayStartBank(currentBankUsd);

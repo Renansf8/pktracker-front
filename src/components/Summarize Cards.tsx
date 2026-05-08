@@ -2,6 +2,7 @@
 
 import { convertUsdToBrl } from "@/utils/currencyConvert";
 import { ActivityCard } from "./ActivityCard";
+import { PodiumCard } from "./PodiumCard";
 import { useCurrency } from "@/services/hooks/useCurrency";
 
 interface SummarizeCardsProps {
@@ -14,6 +15,9 @@ interface SummarizeCardsProps {
   itmCount?: number;
   ftCount?: number;
   avgDailyBuyIn?: number;
+  goldCount?: number;
+  silverCount?: number;
+  bronzeCount?: number;
   cardVariant?: "elevated" | "nested";
   twoRows?: boolean;
 }
@@ -28,6 +32,9 @@ export const SummarizeCards = ({
   itmCount,
   ftCount,
   avgDailyBuyIn,
+  goldCount = 0,
+  silverCount = 0,
+  bronzeCount = 0,
   cardVariant = "elevated",
   twoRows = false,
 }: SummarizeCardsProps) => {
@@ -95,6 +102,12 @@ export const SummarizeCards = ({
           <ActivityCard
             title="Final Tables"
             value={ftCount ?? 0}
+            variant={cardVariant}
+          />
+          <PodiumCard
+            goldCount={goldCount}
+            silverCount={silverCount}
+            bronzeCount={bronzeCount}
             variant={cardVariant}
           />
         </div>

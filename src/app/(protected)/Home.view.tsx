@@ -28,6 +28,9 @@ export function HomeView() {
     itmCount,
     ftCount,
     avgDailyBuyIn,
+    goldCount,
+    silverCount,
+    bronzeCount,
     monthlyProfitUsd,
     yearlyProfitUsd,
   } = useHomeViewModel();
@@ -110,6 +113,9 @@ export function HomeView() {
           itmCount={itmCount}
           ftCount={ftCount}
           avgDailyBuyIn={avgDailyBuyIn}
+          goldCount={goldCount}
+          silverCount={silverCount}
+          bronzeCount={bronzeCount}
           twoRows
         />
       </section>
