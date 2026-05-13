@@ -47,4 +47,5 @@ export interface StatsViewProps {
   itmRate: number;
   ftRate: number;
   podiumByPosition: PodiumByPosition;
+  ticketCount: number;
 }

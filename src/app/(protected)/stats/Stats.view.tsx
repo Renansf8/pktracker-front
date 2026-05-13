@@ -294,6 +294,36 @@ function MostTournamentsCompact({ data }: { data: StatsMostTournamentsInADay | n
   );
 }
 
+function TicketCountCompact({ count }: { count: number }) {
+  return (
+    <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
+      <div className="flex items-center justify-between">
+        <p className="activity-card-title">Tickets ganhos</p>
+        <span
+          className="font-data text-[9px] tracking-[0.22em]"
+          style={{ color: "var(--primary)" }}
+        >
+          ◆ SATÉLITES
+        </span>
+      </div>
+      <div className="mt-3 flex items-baseline gap-3">
+        <p
+          className="font-data font-semibold leading-none"
+          style={{ fontSize: "34px", color: count > 0 ? "var(--pk-success)" : "var(--pk-deep-dim)" }}
+        >
+          {count}
+        </p>
+        <span
+          className="font-data text-[10px] uppercase tracking-[0.15em]"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          ticket{count !== 1 ? "s" : ""}
+        </span>
+      </div>
+    </Card>
+  );
+}
+
 function HighestAbiCompact({ data }: { data: StatsHighestAbiDay | null }) {
   return (
     <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
@@ -769,6 +799,7 @@ export function StatsView() {
     itmRate,
     ftRate,
     podiumByPosition,
+    ticketCount,
   } = useStatsViewModel();
 
   if (isLoading) {
@@ -854,6 +885,7 @@ export function StatsView() {
           <div className="flex flex-col gap-4">
             <MostTournamentsCompact data={mostTournamentsInADay} />
             <HighestAbiCompact data={highestAbiDay} />
+            <TicketCountCompact count={ticketCount} />
           </div>
         </div>
       </div>

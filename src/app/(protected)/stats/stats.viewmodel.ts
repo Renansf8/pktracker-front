@@ -182,6 +182,11 @@ export function useStatsViewModel(): StatsViewProps {
     [allTournaments, totalTournaments],
   );
 
+  const ticketCount = useMemo(
+    () => allTournaments.filter((t) => String(t.result).toLowerCase() === "ticket").length,
+    [allTournaments],
+  );
+
   const podiumByPosition = useMemo<PodiumByPosition>(() => {
     const byDate = (a: Tournament, b: Tournament) =>
       new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -207,5 +212,6 @@ export function useStatsViewModel(): StatsViewProps {
     itmRate,
     ftRate,
     podiumByPosition,
+    ticketCount,
   };
 }
