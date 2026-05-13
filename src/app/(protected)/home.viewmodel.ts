@@ -135,9 +135,17 @@ export function useHomeViewModel(): HomeViewProps {
       .reduce((acc, t) => acc + getTournamentLucroUsd(t, eurToUsdRate), 0);
   }, [tournaments, eurToUsdRate, thisYear]);
 
+  const memberSince = useMemo(() => {
+    if (!user?.createdAt) return null;
+    const d = new Date(user.createdAt);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString("pt-BR", { month: "short", year: "numeric" });
+  }, [user?.createdAt]);
+
   return {
     isLoading,
     userName: user?.name ?? "",
+    memberSince,
     bankDisplayText,
     bankUsd,
     todayTotalBuyIn,

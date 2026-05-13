@@ -19,6 +19,7 @@ export function HomeView() {
   const {
     isLoading,
     userName,
+    memberSince,
     bankDisplayText,
     bankUsd,
     todayTotalBuyIn,
@@ -70,6 +71,14 @@ export function HomeView() {
           >
             {userName}
           </h1>
+          {memberSince && (
+            <p
+              className="font-data text-[10px] uppercase tracking-[0.18em] mt-2"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              membro desde {memberSince}
+            </p>
+          )}
         </div>
 
         <div className="text-right">
