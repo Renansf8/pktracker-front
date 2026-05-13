@@ -153,7 +153,7 @@ export function useHomeViewModel(): HomeViewProps {
     totalBuyIn: stats.totalBuyIn,
     abi: stats.abi,
     totalProfit: stats.totalProfit,
-    totalWinnings: stats.totalWinnings + (user?.bank?.totalRake ?? 0),
+    totalWinnings: (user?.bank?.profit ?? 0) + (user?.bank?.totalRake ?? 0),
     itmPercentage: stats.itmPercentage,
     itmCount: stats.itmCount,
     ftCount: stats.ftCount,
