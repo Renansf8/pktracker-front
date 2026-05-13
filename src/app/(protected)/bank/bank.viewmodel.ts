@@ -1,18 +1,3 @@
-/**
- * src/app/(protected)/bank/bank.viewmodel.ts
- * ---------------------------------------------------------------------------
- * ViewModel da Banca.
- *
- * Mantivemos o pattern TanStack Query (`useMutation` via `useBank`) aqui
- * em vez de converter pra Server Action. Motivo: as mutations são rápidas,
- * a UI precisa de feedback otimista imediato, e o axios está configurado
- * para chamar `/api/proxy` (que injeta o token). Server Actions brilham
- * mais em forms de submit único — em tela com dois botões que disparam
- * mutations recorrentes, o client pattern é mais ergonômico.
- *
- * Esta é uma decisão explicitamente admitida no CLAUDE.md §7.3:
- *     "Refetch interativo no client → continua usando TanStack Query"
- */
 "use client";
 
 import { useBank } from "@/services/hooks/useBank";
@@ -28,7 +13,8 @@ export function useBankViewModel(): BankViewProps {
   const [dailyLimitInput, setDailyLimitInput] = useState("");
   const { data: user, isLoading } = useGetUser();
   const { createDeposit, createWithdrawal, createRake } = useBank();
-  const { limitPct: dailyLimitPct, setLimitPct: setDailyLimitPct } = useDailyBuyInLimit();
+  const { limitPct: dailyLimitPct, setLimitPct: setDailyLimitPct } =
+    useDailyBuyInLimit();
 
   const parseAmount = (raw: string) => parseFloat(raw.replace(",", "."));
 

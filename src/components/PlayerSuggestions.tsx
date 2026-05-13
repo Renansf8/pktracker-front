@@ -37,8 +37,8 @@ function readStoredBuyIns(): number | null {
 
 function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
   const [customBuyInsInput, setCustomBuyInsInput] = useState<string>("");
-  const [appliedBuyIns, setAppliedBuyIns] = useState<number | null>(
-    () => readStoredBuyIns(),
+  const [appliedBuyIns, setAppliedBuyIns] = useState<number | null>(() =>
+    readStoredBuyIns(),
   );
 
   const parsedInput = parseFloat(customBuyInsInput);
@@ -52,7 +52,9 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
   }
 
   const isCustom = appliedBuyIns !== null;
-  const abiCustom = isCustom ? getAbiForCustomBuyIns(bankUsd, appliedBuyIns!) : null;
+  const abiCustom = isCustom
+    ? getAbiForCustomBuyIns(bankUsd, appliedBuyIns!)
+    : null;
   const abiRange = isCustom ? null : getAbiSuggestedRange(bankUsd);
 
   const displayMin = abiCustom ?? abiRange?.min ?? null;
@@ -67,10 +69,12 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
 
   return (
     <article className="glass-panel flex flex-col gap-4 rounded-3xl p-5">
-      {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--primary)" }}>
+          <span
+            className="text-xs font-medium uppercase tracking-wide"
+            style={{ color: "var(--primary)" }}
+          >
             Gestão de banca
           </span>
           <h3 className="text-lg font-semibold tracking-tight text-foreground">
@@ -101,7 +105,10 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
               onClick={handleApply}
               disabled={!isValidInput}
               className="h-8 rounded-none px-3 text-xs font-medium transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ background: "rgba(212,168,67,0.15)", color: "var(--primary)" }}
+              style={{
+                background: "rgba(212,168,67,0.15)",
+                color: "var(--primary)",
+              }}
             >
               Aplicar
             </button>
@@ -109,7 +116,6 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
         </div>
       </div>
 
-      {/* Stats */}
       {hasValidBank ? (
         <>
           <ul className="flex flex-col gap-2.5 text-sm text-foreground">
@@ -142,13 +148,9 @@ function AbiSuggestionCard({ bankUsd }: AbiSuggestionCardProps) {
               </p>
               <p className="mt-1 text-sm leading-relaxed text-foreground">
                 Torneios de{" "}
-                <span className="font-semibold">
-                  {money(stakes.low)}
-                </span>{" "}
-                e alguns de{" "}
-                <span className="font-semibold">
-                  {money(stakes.high)}
-                </span>{" "}
+                <span className="font-semibold">{money(stakes.low)}</span> e
+                alguns de{" "}
+                <span className="font-semibold">{money(stakes.high)}</span>{" "}
                 intercalados.
               </p>
             </div>
@@ -174,13 +176,13 @@ function DailyBuyInExposureCard({
   todayTotalBuyIn,
 }: DailyBuyInExposureCardProps) {
   const { limitPct } = useDailyBuyInLimit();
-  // Usa o saldo do início do dia como base fixa; fallback para o valor atual
-  // enquanto o snapshot ainda não foi criado (primeiro acesso do dia).
   const dayStartBank = useDayStartBank(bankUsd);
   const referenceBank = dayStartBank ?? bankUsd;
 
   const ratio = getDailyBuyInToBankRatio(referenceBank, todayTotalBuyIn);
-  const show = ratio !== null && shouldWarnDailyBuyInExposure(referenceBank, todayTotalBuyIn, limitPct);
+  const show =
+    ratio !== null &&
+    shouldWarnDailyBuyInExposure(referenceBank, todayTotalBuyIn, limitPct);
 
   if (!show || ratio === null) {
     return null;
@@ -216,17 +218,17 @@ function DailyBuyInExposureCard({
       </div>
       <p className="text-sm leading-relaxed text-foreground">
         Hoje você já acumulou{" "}
-        <span className="font-semibold">
-          {money(todayTotalBuyIn)}
+        <span className="font-semibold">{money(todayTotalBuyIn)}</span> em
+        buy-ins (~{pct}% da sua banca). Você está se aproximando de{" "}
+        <span className="font-semibold" style={{ color: "var(--destructive)" }}>
+          {refPct}%
         </span>{" "}
-        em buy-ins (~{pct}% da sua banca). Você está se aproximando de{" "}
-        <span className="font-semibold" style={{ color: "var(--destructive)" }}>{refPct}%</span>{" "}
-        <span className="text-muted-foreground">({money(sevenPercentOfBankUsd)})</span>{" "}
+        <span className="text-muted-foreground">
+          ({money(sevenPercentOfBankUsd)})
+        </span>{" "}
         do valor total da banca em relação aos buy-ins do dia. Vale considerar{" "}
-        <span className="font-medium">
-          não passar de 7% em buy ins
-        </span>
-        , a menos que faça sentido para o seu plano.
+        <span className="font-medium">não passar de 7% em buy ins</span>, a
+        menos que faça sentido para o seu plano.
       </p>
     </article>
   );
@@ -237,9 +239,6 @@ type PlayerSuggestionsProps = {
   todayTotalBuyIn: number;
 };
 
-/**
- * Bloco de sugestões na Home — preparado para novos cards lado a lado (grid responsivo).
- */
 export function PlayerSuggestions({
   bankUsd,
   todayTotalBuyIn,

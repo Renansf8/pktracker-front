@@ -3,17 +3,21 @@
 import { useState, useRef } from "react";
 import { Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  useGoals,
-  type PrevMonthSummary,
-  type PrevYearSummary,
-} from "@/utils/useGoals";
-
-/* ─── Helpers ──────────────────────────────────────────────────────────── */
+import { useGoals } from "@/utils/useGoals";
 
 const MONTH_PT = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
 ];
 
 function moneyAbs(n: number): string {
@@ -36,23 +40,23 @@ function formatGoalMonth(monthKey: string): string {
   return `${MONTH_PT[idx] ?? mon} ${year}`;
 }
 
-/* ─── Circular ring ────────────────────────────────────────────────────── */
-
 function CircularRing({ pct }: { pct: number }) {
   const radius = 44;
   const cx = 56;
   const cy = 56;
   const circumference = 2 * Math.PI * radius;
 
-  // Visual ring fills up to 100%; text can exceed it
   const clamped = Math.min(Math.max(pct, 0), 100);
   const offset = circumference * (1 - clamped / 100);
 
   const ringColor =
-    pct >= 100 ? "var(--pk-success)"
-    : pct >= 50 ? "var(--primary)"
-    : pct > 0 ? "var(--destructive)"
-    : "rgba(255,255,255,0.06)";
+    pct >= 100
+      ? "var(--pk-success)"
+      : pct >= 50
+        ? "var(--primary)"
+        : pct > 0
+          ? "var(--destructive)"
+          : "rgba(255,255,255,0.06)";
 
   const textColor = pct > 0 ? ringColor : "var(--pk-text-hint)";
   const label = pct <= 0 ? "0%" : `${Math.round(pct)}%`;
@@ -112,8 +116,6 @@ function CircularRing({ pct }: { pct: number }) {
   );
 }
 
-/* ─── Goal input (shown when no goal is set) ───────────────────────────── */
-
 function GoalInput({
   onSet,
   placeholder,
@@ -141,7 +143,10 @@ function GoalInput({
         Definir meta em USD
       </p>
       <div className="flex items-center gap-2">
-        <span className="font-data text-sm" style={{ color: "var(--muted-foreground)" }}>
+        <span
+          className="font-data text-sm"
+          style={{ color: "var(--muted-foreground)" }}
+        >
           $
         </span>
         <Input
@@ -159,7 +164,10 @@ function GoalInput({
           onClick={handleSet}
           disabled={!value || parseFloat(value) <= 0}
           className="h-8 rounded-lg px-3 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-          style={{ background: "rgba(212,168,67,0.15)", color: "var(--primary)" }}
+          style={{
+            background: "rgba(212,168,67,0.15)",
+            color: "var(--primary)",
+          }}
         >
           Definir
         </button>
@@ -168,57 +176,30 @@ function GoalInput({
   );
 }
 
-/* ─── Prev-period summary badge ────────────────────────────────────────── */
+type PrevSummaryBase = { met: boolean; achieved: number; goal: number };
 
-function PrevMonthBadge({ summary }: { summary: PrevMonthSummary }) {
-  const met = summary.met;
-  const color = met ? "var(--pk-success)" : "var(--destructive)";
+function PrevSummaryBadge({ label, summary }: { label: string; summary: PrevSummaryBase }) {
+  const color = summary.met ? "var(--pk-success)" : "var(--destructive)";
   return (
     <div className="flex flex-col items-end gap-0.5">
       <span
         className="font-data text-[9px] uppercase tracking-[0.2em]"
         style={{ color: "var(--muted-foreground)" }}
       >
-        {formatGoalMonth(summary.month)}
+        {label}
+      </span>
+      <span className="font-data text-[11px] font-semibold" style={{ color }}>
+        {summary.met ? "✓" : "✗"} {moneyAbs(summary.achieved)}
       </span>
       <span
-        className="font-data text-[11px] font-semibold"
-        style={{ color }}
-      >
-        {met ? "✓" : "✗"} {moneyAbs(summary.achieved)}
-      </span>
-      <span className="font-data text-[9px]" style={{ color: "var(--muted-foreground)" }}>
-        meta: {moneyGoal(summary.goal)}
-      </span>
-    </div>
-  );
-}
-
-function PrevYearBadge({ summary }: { summary: PrevYearSummary }) {
-  const met = summary.met;
-  const color = met ? "var(--pk-success)" : "var(--destructive)";
-  return (
-    <div className="flex flex-col items-end gap-0.5">
-      <span
-        className="font-data text-[9px] uppercase tracking-[0.2em]"
+        className="font-data text-[9px]"
         style={{ color: "var(--muted-foreground)" }}
       >
-        {summary.year}
-      </span>
-      <span
-        className="font-data text-[11px] font-semibold"
-        style={{ color }}
-      >
-        {met ? "✓" : "✗"} {moneyAbs(summary.achieved)}
-      </span>
-      <span className="font-data text-[9px]" style={{ color: "var(--muted-foreground)" }}>
         meta: {moneyGoal(summary.goal)}
       </span>
     </div>
   );
 }
-
-/* ─── Goal card ─────────────────────────────────────────────────────────── */
 
 function GoalCard({
   badge,
@@ -239,13 +220,14 @@ function GoalCard({
   onClearGoal: () => void;
   prevSummarySlot: React.ReactNode;
 }) {
-  const pct =
-    goal !== null && goal > 0 ? (currentProfit / goal) * 100 : 0;
+  const pct = goal !== null && goal > 0 ? (currentProfit / goal) * 100 : 0;
 
   const profitColor =
-    currentProfit > 0 ? "var(--pk-success)"
-    : currentProfit < 0 ? "var(--destructive)"
-    : "var(--muted-foreground)";
+    currentProfit > 0
+      ? "var(--pk-success)"
+      : currentProfit < 0
+        ? "var(--destructive)"
+        : "var(--muted-foreground)";
 
   return (
     <article className="glass-panel relative flex flex-col rounded-3xl p-5 min-h-[240px]">
@@ -277,7 +259,6 @@ function GoalCard({
         )}
       </div>
 
-      {/* Body */}
       {goal === null ? (
         <GoalInput onSet={onSetGoal} placeholder={inputPlaceholder} />
       ) : (
@@ -294,15 +275,12 @@ function GoalCard({
         </div>
       )}
 
-      {/* Prev period summary — bottom-right corner */}
       {prevSummarySlot && (
         <div className="absolute bottom-4 right-5">{prevSummarySlot}</div>
       )}
     </article>
   );
 }
-
-/* ─── Exported component ────────────────────────────────────────────────── */
 
 type GoalProgressProps = {
   monthlyProfitUsd: number;
@@ -340,7 +318,7 @@ export function GoalProgress({
           onClearGoal={clearMonthlyGoal}
           prevSummarySlot={
             prevMonthSummary ? (
-              <PrevMonthBadge summary={prevMonthSummary} />
+              <PrevSummaryBadge label={formatGoalMonth(prevMonthSummary.month)} summary={prevMonthSummary} />
             ) : null
           }
         />
@@ -354,7 +332,7 @@ export function GoalProgress({
           onClearGoal={clearAnnualGoal}
           prevSummarySlot={
             prevYearSummary ? (
-              <PrevYearBadge summary={prevYearSummary} />
+              <PrevSummaryBadge label={String(prevYearSummary.year)} summary={prevYearSummary} />
             ) : null
           }
         />
