@@ -16,7 +16,6 @@ import { useGetUser } from "@/services/hooks/useGetUser";
 import { useTournaments } from "@/services/hooks/useTournaments";
 import { convertUsdToBrl, getEurToUsdRate, toUsd } from "@/utils/currencyConvert";
 import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
-import { useCorrectedBank } from "@/services/hooks/useCorrectedBank";
 import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert";
 import { useMemo, useState } from "react";
 import type { HomeViewProps } from "./home.types";
@@ -32,8 +31,9 @@ export function useHomeViewModel(): HomeViewProps {
   const { data: user, isLoading } = useGetUser();
   const { currencies } = useCurrency();
   const { getAllTournaments } = useTournaments("", 1, 500);
-  const { bankUsd } = useCorrectedBank();
   const { data: tournamentsResponse } = getAllTournaments;
+
+  const bankUsd = user?.bank?.bank ?? 0;
 
   const tournaments: Tournament[] = tournamentsResponse?.data?.data ?? [];
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
