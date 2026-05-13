@@ -16,16 +16,13 @@ import { cn } from "@/lib/utils";
 
 const usd = (v: number) => `$ ${v.toFixed(2)}`;
 
-/** Mesmos tons de `text-green-500` / `text-red-500` (Tailwind default) */
 const FILL_PROFIT_POS = "#22c55e";
 const FILL_PROFIT_NEG = "#ef4444";
-/** Linha do lucro total (contrasta com barras verde/vermelho) */
 const STROKE_TOTAL_LINE = "#38bdf8";
 
 const tickStyle = { fill: "var(--color-muted-foreground)", fontSize: 12 };
 const tickStyleSmall = { fill: "var(--color-muted-foreground)", fontSize: 11 };
 
-/** Largura do eixo Y para valores $ com casa decimal não serem cortados */
 const yAxisMoneyWidth = 92;
 
 function splitLucro(lucro: number) {
@@ -78,7 +75,6 @@ type ChartRowBase = {
   LucroNeg: number;
 };
 
-/** Altura padrão do gráfico (área útil + eixos). */
 const DEFAULT_CHART_HEIGHT = 420;
 
 function ProfitStackedBars({
@@ -98,7 +94,6 @@ function ProfitStackedBars({
   barCategoryGap?: string | number;
   xAxisAngle?: number;
   xAxisHeight?: number;
-  /** Soma do lucro do período — linha horizontal de referência */
   totalLucro?: number;
 }) {
   const bottomMargin = xAxisAngle ? 48 : 8;

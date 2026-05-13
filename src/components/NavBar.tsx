@@ -65,12 +65,8 @@ export function NavBar({ user }: NavBarProps) {
   const inactiveCls = "text-text-secondary hover:text-text-primary";
 
   return (
-    <nav
-      className="w-full"
-      style={{ borderBottom: "1px solid var(--border)" }}
-    >
+    <nav className="w-full" style={{ borderBottom: "1px solid var(--border)" }}>
       <div className="flex items-center justify-between w-[90%] mx-auto py-5">
-        {/* Brand */}
         <div className="flex items-center gap-2.5">
           <span
             className="flex items-center justify-center w-7 h-7 text-[10px] font-bold font-display text-gold"
@@ -95,7 +91,6 @@ export function NavBar({ user }: NavBarProps) {
           )}
         </div>
 
-        {/* Nav links */}
         <div className="flex items-center gap-7">
           {NAV_ITEMS.map((item) => (
             <Link
@@ -122,7 +117,8 @@ export function NavBar({ user }: NavBarProps) {
                 ((e.target as HTMLElement).style.color = "var(--destructive)")
               }
               onMouseLeave={(e) =>
-                ((e.target as HTMLElement).style.color = "var(--muted-foreground)")
+                ((e.target as HTMLElement).style.color =
+                  "var(--muted-foreground)")
               }
             >
               Sair
