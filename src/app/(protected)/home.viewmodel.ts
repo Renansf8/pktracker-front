@@ -35,7 +35,10 @@ export function useHomeViewModel(): HomeViewProps {
 
   const bankUsd = user?.bank?.bank ?? 0;
 
-  const tournaments: Tournament[] = tournamentsResponse?.data?.data ?? [];
+  const tournaments: Tournament[] = useMemo(
+    () => tournamentsResponse?.data?.data ?? [],
+    [tournamentsResponse],
+  );
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
 
   const [thisYear] = useState(() => new Date().getFullYear());

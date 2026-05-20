@@ -626,7 +626,7 @@ const PODIUM_CONFIG = [
   },
 ] as const;
 
-function PodiumItem({ t, accentColor }: { t: Tournament; accentColor: string }) {
+function PodiumItem({ t, accentColor: _accentColor }: { t: Tournament; accentColor: string }) {
   const profit = getTournamentProfitNative(t);
   const isPos = profit >= 0;
   const profitColor = isPos ? "var(--pk-success)" : "var(--destructive)";
