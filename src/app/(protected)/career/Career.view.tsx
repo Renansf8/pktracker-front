@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { useCareerViewModel } from "./career.viewmodel";
-import type { Milestone, StakesProgression, StakingDeal, NewDealState } from "./career.types";
-
-/* ── Constants ────────────────────────────────────────────────────────────── */
+import type {
+  Milestone,
+  StakesProgression,
+  StakingDeal,
+  NewDealState,
+} from "./career.types";
 
 const GOLD = "#d4a843";
 const MUTED = "#7a7068";
@@ -20,12 +23,13 @@ function fmtDate(iso: string): string {
   return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-/* ── Section label ────────────────────────────────────────────────────────── */
-
 function SectionLabel({ index, title }: { index: string; title: string }) {
   return (
     <div className="flex items-baseline gap-3 mb-4">
-      <span className="font-data text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>
+      <span
+        className="font-data text-[10px] tracking-[0.3em]"
+        style={{ color: GOLD }}
+      >
         {index}
       </span>
       <span
@@ -34,12 +38,14 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
       >
         {title}
       </span>
-      <span className="flex-1 h-px" style={{ background: "var(--border)" }} aria-hidden />
+      <span
+        className="flex-1 h-px"
+        style={{ background: "var(--border)" }}
+        aria-hidden
+      />
     </div>
   );
 }
-
-/* ── Section 01 — Stakes Progression ─────────────────────────────────────── */
 
 function StakesProgressionSection({
   prog,
@@ -50,17 +56,28 @@ function StakesProgressionSection({
 }) {
   const [showHelp, setShowHelp] = useState(false);
 
-  const fmt = (v: number) =>
-    `$ ${v.toFixed(v % 1 === 0 ? 0 : 1)}`;
+  const fmt = (v: number) => `$ ${v.toFixed(v % 1 === 0 ? 0 : 1)}`;
 
   return (
     <section>
       <div className="flex items-baseline gap-3 mb-4">
-        <span className="font-data text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>01</span>
-        <span className="text-[10px] uppercase tracking-[0.18em] font-medium" style={{ color: MUTED }}>
+        <span
+          className="font-data text-[10px] tracking-[0.3em]"
+          style={{ color: GOLD }}
+        >
+          01
+        </span>
+        <span
+          className="text-[10px] uppercase tracking-[0.18em] font-medium"
+          style={{ color: MUTED }}
+        >
           Progressão de stakes
         </span>
-        <span className="flex-1 h-px" style={{ background: "var(--border)" }} aria-hidden />
+        <span
+          className="flex-1 h-px"
+          style={{ background: "var(--border)" }}
+          aria-hidden
+        />
         <button
           onClick={() => setShowHelp((v) => !v)}
           className="font-data text-[9px] uppercase tracking-[0.18em] px-3 py-1 transition-opacity hover:opacity-100"
@@ -81,40 +98,71 @@ function StakesProgressionSection({
             background: "rgba(212,168,67,0.03)",
           }}
         >
-          <p className="font-data text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: GOLD }}>
+          <p
+            className="font-data text-[9px] uppercase tracking-[0.22em] mb-4"
+            style={{ color: GOLD }}
+          >
             Entendendo os níveis
           </p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-4 items-start">
-              <span className="font-data text-[10px] w-24 shrink-0" style={{ color: GOLD }}>
+              <span
+                className="font-data text-[10px] w-24 shrink-0"
+                style={{ color: GOLD }}
+              >
                 ◆ {fmt(prog.lowStake)}
               </span>
-              <p className="font-data text-[11px] leading-relaxed" style={{ color: "var(--foreground)" }}>
-                <span className="font-semibold">Nível atual — foco de volume.</span>{" "}
-                A maioria dos seus torneios deve ser aqui. Com sua banca atual você tem buy-ins suficientes para jogar esse stake como base.
+              <p
+                className="font-data text-[11px] leading-relaxed"
+                style={{ color: "var(--foreground)" }}
+              >
+                <span className="font-semibold">
+                  Nível atual — foco de volume.
+                </span>{" "}
+                A maioria dos seus torneios deve ser aqui. Com sua banca atual
+                você tem buy-ins suficientes para jogar esse stake como base.
               </p>
             </div>
             {prog.highStake && (
               <div className="flex gap-4 items-start">
-                <span className="font-data text-[10px] w-24 shrink-0" style={{ color: MUTED }}>
+                <span
+                  className="font-data text-[10px] w-24 shrink-0"
+                  style={{ color: MUTED }}
+                >
                   ◇ {fmt(prog.highStake)}
                 </span>
-                <p className="font-data text-[11px] leading-relaxed" style={{ color: "var(--foreground)" }}>
-                  <span className="font-semibold">Intercalado — já pode jogar agora.</span>{" "}
-                  Alguns torneios por sessão nesse stake são aceitáveis. Não é o foco, mas a banca aguenta ocasionalmente.
+                <p
+                  className="font-data text-[11px] leading-relaxed"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  <span className="font-semibold">
+                    Intercalado — já pode jogar agora.
+                  </span>{" "}
+                  Alguns torneios por sessão nesse stake são aceitáveis. Não é o
+                  foco, mas a banca aguenta ocasionalmente.
                 </p>
               </div>
             )}
             {prog.nextLowStake && (
               <div className="flex gap-4 items-start">
-                <span className="font-data text-[10px] w-24 shrink-0" style={{ color: MUTED }}>
+                <span
+                  className="font-data text-[10px] w-24 shrink-0"
+                  style={{ color: MUTED }}
+                >
                   ◈ {fmt(prog.nextLowStake)}
                 </span>
-                <p className="font-data text-[11px] leading-relaxed" style={{ color: "var(--foreground)" }}>
-                  <span className="font-semibold">Próximo nível — meta de longo prazo.</span>{" "}
+                <p
+                  className="font-data text-[11px] leading-relaxed"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  <span className="font-semibold">
+                    Próximo nível — meta de longo prazo.
+                  </span>{" "}
                   Quando sua banca chegar em{" "}
-                  {prog.bankNeededForNextLow ? fmtUsd(prog.bankNeededForNextLow) : "—"},{" "}
-                  {fmt(prog.nextLowStake)} vira o novo foco de volume.
+                  {prog.bankNeededForNextLow
+                    ? fmtUsd(prog.bankNeededForNextLow)
+                    : "—"}
+                  , {fmt(prog.nextLowStake)} vira o novo foco de volume.
                 </p>
               </div>
             )}
@@ -125,12 +173,18 @@ function StakesProgressionSection({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* Nível atual */}
           <div>
-            <p className="font-data text-[9px] uppercase tracking-[0.22em] mb-3" style={{ color: GOLD }}>
+            <p
+              className="font-data text-[9px] uppercase tracking-[0.22em] mb-3"
+              style={{ color: GOLD }}
+            >
               ◆ NÍVEL ATUAL
             </p>
             <p
               className="font-data font-semibold leading-none"
-              style={{ fontSize: "clamp(40px,5vw,56px)", color: "var(--foreground)" }}
+              style={{
+                fontSize: "clamp(40px,5vw,56px)",
+                color: "var(--foreground)",
+              }}
             >
               $ {prog.lowStake.toFixed(prog.lowStake % 1 === 0 ? 0 : 1)}
             </p>
@@ -149,7 +203,10 @@ function StakesProgressionSection({
 
           {/* Stake intercalado */}
           <div>
-            <p className="font-data text-[9px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>
+            <p
+              className="font-data text-[9px] uppercase tracking-[0.22em] mb-3"
+              style={{ color: MUTED }}
+            >
               ◇ INTERCALADO
             </p>
             {prog.highStake ? (
@@ -160,7 +217,10 @@ function StakesProgressionSection({
                 >
                   $ {prog.highStake.toFixed(prog.highStake % 1 === 0 ? 0 : 1)}
                 </p>
-                <p className="font-data text-[11px] mt-3" style={{ color: MUTED }}>
+                <p
+                  className="font-data text-[11px] mt-3"
+                  style={{ color: MUTED }}
+                >
                   Alguns torneios por sessão
                 </p>
               </>
@@ -177,18 +237,30 @@ function StakesProgressionSection({
           {/* Stats */}
           <div className="flex flex-col gap-4">
             <div>
-              <p className="font-data text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: MUTED }}>
+              <p
+                className="font-data text-[9px] uppercase tracking-[0.2em] mb-1"
+                style={{ color: MUTED }}
+              >
                 Banca atual
               </p>
-              <p className="font-data text-lg font-semibold" style={{ color: "var(--foreground)" }}>
+              <p
+                className="font-data text-lg font-semibold"
+                style={{ color: "var(--foreground)" }}
+              >
                 {fmtUsd(prog.bankUsd)}
               </p>
             </div>
             <div>
-              <p className="font-data text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: MUTED }}>
+              <p
+                className="font-data text-[9px] uppercase tracking-[0.2em] mb-1"
+                style={{ color: MUTED }}
+              >
                 Torneios registrados
               </p>
-              <p className="font-data text-lg font-semibold" style={{ color: "var(--foreground)" }}>
+              <p
+                className="font-data text-lg font-semibold"
+                style={{ color: "var(--foreground)" }}
+              >
                 {totalTournaments}
               </p>
             </div>
@@ -203,9 +275,13 @@ function StakesProgressionSection({
                 $ {prog.lowStake.toFixed(prog.lowStake % 1 === 0 ? 0 : 1)}
               </span>
               <span className="font-data text-[10px]" style={{ color: MUTED }}>
-                {prog.progressToNextLow.toFixed(1)}% para $ {prog.nextLowStake.toFixed(prog.nextLowStake % 1 === 0 ? 0 : 1)}
+                {prog.progressToNextLow.toFixed(1)}% para ${" "}
+                {prog.nextLowStake.toFixed(prog.nextLowStake % 1 === 0 ? 0 : 1)}
                 {prog.bankNeededForNextLow && (
-                  <span style={{ color: MUTED }}> — banca: {fmtUsd(prog.bankNeededForNextLow)}</span>
+                  <span style={{ color: MUTED }}>
+                    {" "}
+                    — banca: {fmtUsd(prog.bankNeededForNextLow)}
+                  </span>
                 )}
               </span>
             </div>
@@ -245,7 +321,9 @@ function MilestonesTimeline({ milestones }: { milestones: Milestone[] }) {
               key={m.id}
               className="flex items-center gap-5 px-6 py-4"
               style={{
-                borderBottom: isLast ? "none" : "1px solid rgba(212,168,67,0.07)",
+                borderBottom: isLast
+                  ? "none"
+                  : "1px solid rgba(212,168,67,0.07)",
               }}
             >
               <span
@@ -331,7 +409,9 @@ function StakingTracker({
                 key={deal.id}
                 className="flex items-center gap-5 px-6 py-4"
                 style={{
-                  borderBottom: isLast ? "none" : "1px solid rgba(212,168,67,0.07)",
+                  borderBottom: isLast
+                    ? "none"
+                    : "1px solid rgba(212,168,67,0.07)",
                 }}
               >
                 <div className="flex-1 min-w-0">
@@ -342,25 +422,40 @@ function StakingTracker({
                     {deal.backerName}
                   </p>
                   {deal.notes && (
-                    <p className="font-data text-[11px] mt-0.5 truncate" style={{ color: MUTED }}>
+                    <p
+                      className="font-data text-[11px] mt-0.5 truncate"
+                      style={{ color: MUTED }}
+                    >
                       {deal.notes}
                     </p>
                   )}
                 </div>
                 <div className="flex items-center gap-6 shrink-0">
                   <div className="text-right">
-                    <p className="font-data text-[9px] uppercase tracking-[0.15em]" style={{ color: MUTED }}>
+                    <p
+                      className="font-data text-[9px] uppercase tracking-[0.15em]"
+                      style={{ color: MUTED }}
+                    >
                       Minha parte
                     </p>
-                    <p className="font-data text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+                    <p
+                      className="font-data text-sm font-semibold"
+                      style={{ color: "var(--foreground)" }}
+                    >
                       {deal.myPct}%
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-data text-[9px] uppercase tracking-[0.15em]" style={{ color: MUTED }}>
+                    <p
+                      className="font-data text-[9px] uppercase tracking-[0.15em]"
+                      style={{ color: MUTED }}
+                    >
                       Markup
                     </p>
-                    <p className="font-data text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+                    <p
+                      className="font-data text-sm font-semibold"
+                      style={{ color: "var(--foreground)" }}
+                    >
                       {deal.markup.toFixed(2)}x
                     </p>
                   </div>
@@ -394,7 +489,10 @@ function StakingTracker({
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
           <div className="sm:col-span-2">
-            <label className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1" style={{ color: MUTED }}>
+            <label
+              className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1"
+              style={{ color: MUTED }}
+            >
               Backer
             </label>
             <input
@@ -405,7 +503,10 @@ function StakingTracker({
             />
           </div>
           <div>
-            <label className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1" style={{ color: MUTED }}>
+            <label
+              className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1"
+              style={{ color: MUTED }}
+            >
               Minha %
             </label>
             <input
@@ -419,7 +520,10 @@ function StakingTracker({
             />
           </div>
           <div>
-            <label className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1" style={{ color: MUTED }}>
+            <label
+              className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1"
+              style={{ color: MUTED }}
+            >
               Markup
             </label>
             <input
@@ -434,7 +538,10 @@ function StakingTracker({
           </div>
         </div>
         <div className="mb-4">
-          <label className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1" style={{ color: MUTED }}>
+          <label
+            className="font-data text-[9px] uppercase tracking-[0.15em] block mb-1"
+            style={{ color: MUTED }}
+          >
             Notas
           </label>
           <input
@@ -454,7 +561,8 @@ function StakingTracker({
             background: "transparent",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(212,168,67,0.08)";
+            (e.currentTarget as HTMLElement).style.background =
+              "rgba(212,168,67,0.08)";
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.background = "transparent";
@@ -530,9 +638,7 @@ export function CareerView() {
         />
       )}
 
-      {milestones.length > 0 && (
-        <MilestonesTimeline milestones={milestones} />
-      )}
+      {milestones.length > 0 && <MilestonesTimeline milestones={milestones} />}
 
       <StakingTracker
         deals={stakingDeals}
