@@ -13,9 +13,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useAnalyticsViewModel } from "./analytics.viewmodel";
-import type { BankCurvePoint, HeatmapEntry, PeriodStats, StreakInfo } from "./analytics.types";
-
-/* ── Helpers ──────────────────────────────────────────────────────────────── */
+import type {
+  BankCurvePoint,
+  HeatmapEntry,
+  PeriodStats,
+  StreakInfo,
+} from "./analytics.types";
 
 const fmtUsd = (v: number) =>
   `${v < 0 ? "-" : ""}$ ${Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -26,12 +29,13 @@ const GOLD = "#d4a843";
 const MUTED = "#7a7068";
 const TICK = { fill: MUTED, fontSize: 10 };
 
-/* ── Section label ────────────────────────────────────────────────────────── */
-
 function SectionLabel({ index, title }: { index: string; title: string }) {
   return (
     <div className="flex items-baseline gap-3 mb-4">
-      <span className="font-data text-[10px] tracking-[0.3em]" style={{ color: GOLD }}>
+      <span
+        className="font-data text-[10px] tracking-[0.3em]"
+        style={{ color: GOLD }}
+      >
         {index}
       </span>
       <span
@@ -40,12 +44,14 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
       >
         {title}
       </span>
-      <span className="flex-1 h-px" style={{ background: "var(--border)" }} aria-hidden />
+      <span
+        className="flex-1 h-px"
+        style={{ background: "var(--border)" }}
+        aria-hidden
+      />
     </div>
   );
 }
-
-/* ── Curve tooltip ────────────────────────────────────────────────────────── */
 
 type TooltipProps = {
   active?: boolean;
@@ -68,7 +74,10 @@ function CurveTooltip({ active, payload, label }: TooltipProps) {
       <p className="font-data text-[11px]" style={{ color: MUTED }}>
         {label}
       </p>
-      <p className="font-data text-sm font-semibold" style={{ color: balance >= 0 ? SUCCESS : DANGER }}>
+      <p
+        className="font-data text-sm font-semibold"
+        style={{ color: balance >= 0 ? SUCCESS : DANGER }}
+      >
         {fmtUsd(balance)}
       </p>
     </div>
@@ -90,14 +99,15 @@ function HeatmapTooltip({ active, payload, label }: TooltipProps) {
       <p className="font-data text-[11px]" style={{ color: MUTED }}>
         {label}
       </p>
-      <p className="font-data text-sm font-semibold" style={{ color: avg >= 0 ? SUCCESS : DANGER }}>
+      <p
+        className="font-data text-sm font-semibold"
+        style={{ color: avg >= 0 ? SUCCESS : DANGER }}
+      >
         Méd: {fmtUsd(avg)}
       </p>
     </div>
   );
 }
-
-/* ── Section 01 — Bankroll Curve ──────────────────────────────────────────── */
 
 function BankrollCurve({
   curve,
@@ -113,7 +123,10 @@ function BankrollCurve({
       <SectionLabel index="01" title="Evolução da banca" />
       <div className="glass-panel px-4 pt-5 pb-3">
         <div className="flex items-end justify-between mb-5 px-2">
-          <p className="font-data text-[10px] uppercase tracking-[0.2em]" style={{ color: MUTED }}>
+          <p
+            className="font-data text-[10px] uppercase tracking-[0.2em]"
+            style={{ color: MUTED }}
+          >
             Saldo acumulado
           </p>
           <p
@@ -124,14 +137,21 @@ function BankrollCurve({
           </p>
         </div>
         <ResponsiveContainer width="100%" height={260}>
-          <AreaChart data={curve} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+          <AreaChart
+            data={curve}
+            margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
+          >
             <defs>
               <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={GOLD} stopOpacity={0.22} />
                 <stop offset="95%" stopColor={GOLD} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(212,168,67,0.07)" vertical={false} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(212,168,67,0.07)"
+              vertical={false}
+            />
             <XAxis
               dataKey="label"
               tick={TICK}
@@ -146,7 +166,10 @@ function BankrollCurve({
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={CurveTooltip} cursor={{ stroke: "rgba(212,168,67,0.2)", strokeWidth: 1 }} />
+            <Tooltip
+              content={CurveTooltip}
+              cursor={{ stroke: "rgba(212,168,67,0.2)", strokeWidth: 1 }}
+            />
             <Area
               type="monotone"
               dataKey="balance"
@@ -163,8 +186,6 @@ function BankrollCurve({
   );
 }
 
-/* ── Section 02 — Period Comparison ──────────────────────────────────────── */
-
 function PeriodComparison({
   thisMonth,
   lastMonth,
@@ -178,7 +199,13 @@ function PeriodComparison({
 }) {
   const CELL_BORDER = "1px solid rgba(212,168,67,0.07)";
 
-  const rows: { label: string; this: string; last: string; positiveThis?: boolean; positiveLast?: boolean }[] = [
+  const rows: {
+    label: string;
+    this: string;
+    last: string;
+    positiveThis?: boolean;
+    positiveLast?: boolean;
+  }[] = [
     {
       label: "Lucro",
       this: fmtUsd(thisMonth.profit),
@@ -224,7 +251,11 @@ function PeriodComparison({
           >
             <div className="px-5 py-3" />
             {[thisMonthName, lastMonthName].map((name) => (
-              <div key={name} className="px-5 py-3" style={{ borderLeft: CELL_BORDER }}>
+              <div
+                key={name}
+                className="px-5 py-3"
+                style={{ borderLeft: CELL_BORDER }}
+              >
                 <span
                   className="font-data text-[10px] uppercase tracking-[0.2em]"
                   style={{ color: MUTED }}
@@ -240,7 +271,10 @@ function PeriodComparison({
               className="grid"
               style={{
                 gridTemplateColumns: "1fr 1fr 1fr",
-                borderBottom: i < rows.length - 1 ? "1px solid rgba(212,168,67,0.06)" : "none",
+                borderBottom:
+                  i < rows.length - 1
+                    ? "1px solid rgba(212,168,67,0.06)"
+                    : "none",
               }}
             >
               <div className="px-5 py-4">
@@ -289,17 +323,28 @@ function PeriodComparison({
   );
 }
 
-/* ── Section 03 — Heatmap ─────────────────────────────────────────────────── */
-
 function DowHeatmap({ heatmap }: { heatmap: HeatmapEntry[] }) {
   return (
     <section>
       <SectionLabel index="03" title="Lucro médio por dia da semana" />
       <div className="glass-panel px-4 pt-5 pb-3">
         <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={heatmap} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barCategoryGap="28%">
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(212,168,67,0.07)" vertical={false} />
-            <XAxis dataKey="day" tick={TICK} axisLine={false} tickLine={false} />
+          <BarChart
+            data={heatmap}
+            margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
+            barCategoryGap="28%"
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(212,168,67,0.07)"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="day"
+              tick={TICK}
+              axisLine={false}
+              tickLine={false}
+            />
             <YAxis
               width={80}
               tickFormatter={(v) => `$${Number(v).toFixed(0)}`}
@@ -307,17 +352,28 @@ function DowHeatmap({ heatmap }: { heatmap: HeatmapEntry[] }) {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={HeatmapTooltip} cursor={{ fill: "rgba(212,168,67,0.05)" }} />
+            <Tooltip
+              content={HeatmapTooltip}
+              cursor={{ fill: "rgba(212,168,67,0.05)" }}
+            />
             <Bar dataKey="avg" name="Méd. lucro" radius={[2, 2, 0, 0]}>
               {heatmap.map((entry, i) => (
-                <Cell key={`dow-${i}`} fill={entry.avg >= 0 ? SUCCESS : DANGER} fillOpacity={0.75} />
+                <Cell
+                  key={`dow-${i}`}
+                  fill={entry.avg >= 0 ? SUCCESS : DANGER}
+                  fillOpacity={0.75}
+                />
               ))}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
         <div className="flex gap-6 justify-end mt-2 px-2">
           {heatmap.map((e) => (
-            <span key={e.day} className="font-data text-[9px]" style={{ color: MUTED }}>
+            <span
+              key={e.day}
+              className="font-data text-[9px]"
+              style={{ color: MUTED }}
+            >
               {e.day}: {e.count}t
             </span>
           ))}
@@ -326,8 +382,6 @@ function DowHeatmap({ heatmap }: { heatmap: HeatmapEntry[] }) {
     </section>
   );
 }
-
-/* ── Section 04 — Streaks ─────────────────────────────────────────────────── */
 
 function StreakCards({ streaks }: { streaks: StreakInfo }) {
   const currentColor =
@@ -371,12 +425,18 @@ function StreakCards({ streaks }: { streaks: StreakInfo }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {cards.map((c) => (
           <div key={c.tag} className="glass-panel py-6 px-6">
-            <p className="font-data text-[9px] tracking-[0.22em] mb-4" style={{ color: c.color }}>
+            <p
+              className="font-data text-[9px] tracking-[0.22em] mb-4"
+              style={{ color: c.color }}
+            >
               {c.tag}
             </p>
             <p
               className="font-data font-semibold leading-none"
-              style={{ fontSize: "clamp(36px,5vw,52px)", color: "var(--foreground)" }}
+              style={{
+                fontSize: "clamp(36px,5vw,52px)",
+                color: "var(--foreground)",
+              }}
             >
               {c.value}
             </p>
@@ -389,8 +449,6 @@ function StreakCards({ streaks }: { streaks: StreakInfo }) {
     </section>
   );
 }
-
-/* ── Main view ────────────────────────────────────────────────────────────── */
 
 export function AnalyticsView() {
   const {
@@ -409,7 +467,10 @@ export function AnalyticsView() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="font-data text-sm tracking-[0.1em] uppercase animate-pulse" style={{ color: MUTED }}>
+        <p
+          className="font-data text-sm tracking-[0.1em] uppercase animate-pulse"
+          style={{ color: MUTED }}
+        >
           Carregando análise…
         </p>
       </div>
@@ -419,7 +480,10 @@ export function AnalyticsView() {
   if (!hasCurveData) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="font-data text-sm tracking-[0.1em] uppercase" style={{ color: MUTED }}>
+        <p
+          className="font-data text-sm tracking-[0.1em] uppercase"
+          style={{ color: MUTED }}
+        >
           Sem dados suficientes para análise
         </p>
       </div>
@@ -446,7 +510,10 @@ export function AnalyticsView() {
             Evolução
           </h1>
         </div>
-        <p className="font-data text-[11px] uppercase tracking-[0.2em]" style={{ color: MUTED }}>
+        <p
+          className="font-data text-[11px] uppercase tracking-[0.2em]"
+          style={{ color: MUTED }}
+        >
           Todos os registros
         </p>
       </header>

@@ -26,11 +26,6 @@ export const convertBrDateToUs = (brDate: string): string => {
   }
 };
 
-/**
- * Interpreta a data do torneio no calendário local.
- * Strings só com `YYYY-MM-DD` viram meia-noite **local** — evita o bug de
- * `new Date("2025-03-15")` (UTC) cair no dia anterior no Brasil.
- */
 export function parseTournamentDateLocal(dateInput: string | number): Date {
   if (typeof dateInput === "number") {
     return new Date(dateInput);
@@ -43,7 +38,7 @@ export function parseTournamentDateLocal(dateInput: string | number): Date {
     const d = Number(onlyDate[3]);
     return new Date(y, m - 1, d);
   }
-  /** DD/MM/YYYY (sem hora) — alguns payloads usam só parte da data. */
+
   const brOnly = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
   if (brOnly) {
     const d = Number(brOnly[1]);
@@ -54,7 +49,6 @@ export function parseTournamentDateLocal(dateInput: string | number): Date {
   return new Date(s);
 }
 
-/** Mesmo dia civil que `ref` (padrão: hoje), no fuso local. */
 export function isSameCalendarDayLocal(
   dateInput: string | number,
   ref: Date = new Date(),
@@ -75,7 +69,7 @@ export const convertIsoDateToBr = (isoDate: string): string => {
     const date = new Date(isoDate);
 
     const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // +1 because months are 0-based
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
 
     return `${day}/${month}/${year} - ${date

@@ -1,10 +1,3 @@
-/**
- * src/app/(auth)/signup/signup.viewmodel.ts
- * ---------------------------------------------------------------------------
- * ViewModel do signup. Mesma estrutura do signin — useActionState +
- * useForm + zodResolver. O signUpAction já cria o cookie de sessão e
- * redireciona pra "/".
- */
 "use client";
 
 import { useActionState } from "react";

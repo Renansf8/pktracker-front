@@ -1,12 +1,3 @@
-/**
- * deleteScheduleModal.tsx
- * ---------------------------------------------------------------------------
- * Modal de confirmação para remover um torneio da grade.
- *
- * Migrado de `react-modal` para o Radix Dialog (`ui/dialog`).
- * Mantém a mesma API do componente antigo (`isOpen`, `onRequestClose`,
- * `onDelete`) para que a View não precise mudar.
- */
 "use client";
 
 import {

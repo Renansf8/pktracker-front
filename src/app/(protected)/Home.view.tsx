@@ -52,7 +52,6 @@ export function HomeView() {
         version={version}
       />
       <div className="flex flex-col w-[90%] mx-auto mt-10 gap-10">
-        {/* ── Header: greeting + banca ─────────────────────────────────────── */}
         <header
           className="flex items-end justify-between pb-6"
           style={{ borderBottom: "1px solid var(--border)" }}

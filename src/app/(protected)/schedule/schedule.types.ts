@@ -17,17 +17,14 @@ export interface PlatformSummaryRow {
 }
 
 export interface ScheduleViewProps {
-  // Tabs
   activeTab: ScheduleType;
   onTabChange: (tab: ScheduleType) => void;
 
-  // Schedule list
   isLoadingSchedules: boolean;
   schedules: TournamentSchedule[];
   activeScheduleId: string | null;
   onSelectSchedule: (id: string) => void;
 
-  // Create schedule
   newScheduleName: string;
   isCreatingScheduleForm: boolean;
   isCreatingSchedule: boolean;
@@ -36,12 +33,10 @@ export interface ScheduleViewProps {
   onCancelCreateSchedule: () => void;
   onConfirmCreateSchedule: () => void;
 
-  // Delete schedule
   scheduleToDelete: TournamentSchedule | null;
   onSelectScheduleToDelete: (schedule: TournamentSchedule | null) => void;
   onConfirmDeleteSchedule: () => void;
 
-  // Items
   isLoadingItems: boolean;
   total: number;
   totalBuyIns: number;
@@ -50,7 +45,6 @@ export interface ScheduleViewProps {
   buyInSummary: BuyInSummaryRow[];
   platformSummary: PlatformSummaryRow[];
 
-  // Item editing / deleting
   selectedItemId: string | null;
   editingItemId: string | null;
   savingItemId: string | null;

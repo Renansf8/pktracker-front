@@ -7,17 +7,27 @@ import type {
   StatsMostTournamentsInADay,
   Tournament,
 } from "@/services/hooks/types";
-import type { BucketCardData, PodiumByPosition, StatsPlatformEntry } from "./stats.types";
+import type {
+  BucketCardData,
+  PodiumByPosition,
+  StatsPlatformEntry,
+} from "./stats.types";
 import { getTournamentProfitNative } from "@/utils/tournamentLucro";
 import { useStatsViewModel } from "./stats.viewmodel";
 
-/* ─────────────────────────────────────────────────────────────────────────
- * Date helpers
- * ────────────────────────────────────────────────────────────────────────*/
-
 const MONTH_NAMES_PT = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
 ];
 
 function parseUtcParts(iso: string) {
@@ -85,16 +95,16 @@ function formatCurrency(value: number): string {
 function formatBucketPeriod(data: BucketCardData): string {
   if (!data.record) return "Sem registro";
   switch (data.range) {
-    case "day":   return formatDayFull(data.record.bucketStart);
-    case "week":  return formatWeek(data.record.bucketStart);
-    case "month": return formatMonth(data.record.bucketStart);
-    case "year":  return formatYear(data.record.bucketStart);
+    case "day":
+      return formatDayFull(data.record.bucketStart);
+    case "week":
+      return formatWeek(data.record.bucketStart);
+    case "month":
+      return formatMonth(data.record.bucketStart);
+    case "year":
+      return formatYear(data.record.bucketStart);
   }
 }
-
-/* ─────────────────────────────────────────────────────────────────────────
- * Animation helper
- * ────────────────────────────────────────────────────────────────────────*/
 
 function revealed(delayMs: number): React.CSSProperties {
   return {
@@ -102,10 +112,6 @@ function revealed(delayMs: number): React.CSSProperties {
     animationDelay: `${delayMs}ms`,
   };
 }
-
-/* ─────────────────────────────────────────────────────────────────────────
- * SectionLabel
- * ────────────────────────────────────────────────────────────────────────*/
 
 function SectionLabel({ index, title }: { index: string; title: string }) {
   return (
@@ -130,10 +136,6 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
     </div>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────
- * Stat Strip — aggregate overview line under the header
- * ────────────────────────────────────────────────────────────────────────*/
 
 function StatStrip({
   totalTournaments,
@@ -181,10 +183,6 @@ function StatStrip({
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
- * Section 01 — Records Hero
- * ────────────────────────────────────────────────────────────────────────*/
-
 function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
   return (
     <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex flex-col h-full min-h-[220px] py-7 px-8">
@@ -208,7 +206,7 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
               letterSpacing: "-0.02em",
             }}
           >
-            ${" "}{data.value.toFixed(2)}
+            $ {data.value.toFixed(2)}
           </p>
           <div
             className="mt-auto pt-5 flex items-end justify-between"
@@ -225,7 +223,8 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
                 className="font-data text-[11px] mt-1.5"
                 style={{ color: "var(--muted-foreground)" }}
               >
-                {data.tournament.platform} · {formatDateTime(data.tournament.date)}
+                {data.tournament.platform} ·{" "}
+                {formatDateTime(data.tournament.date)}
               </p>
             </div>
           </div>
@@ -234,11 +233,18 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
         <div className="mt-5">
           <p
             className="font-data font-semibold leading-none"
-            style={{ fontSize: "60px", color: "var(--pk-deep-dim)", letterSpacing: "-0.02em" }}
+            style={{
+              fontSize: "60px",
+              color: "var(--pk-deep-dim)",
+              letterSpacing: "-0.02em",
+            }}
           >
             —
           </p>
-          <p className="font-data text-[11px] mt-4" style={{ color: "var(--pk-text-hint)" }}>
+          <p
+            className="font-data text-[11px] mt-4"
+            style={{ color: "var(--pk-text-hint)" }}
+          >
             Nenhum torneio registrado ainda
           </p>
         </div>
@@ -247,7 +253,11 @@ function BiggestBuyInHero({ data }: { data: StatsBiggestBuyIn | null }) {
   );
 }
 
-function MostTournamentsCompact({ data }: { data: StatsMostTournamentsInADay | null }) {
+function MostTournamentsCompact({
+  data,
+}: {
+  data: StatsMostTournamentsInADay | null;
+}) {
   return (
     <Card className="glass-panel border-0 bg-transparent shadow-none text-text-primary flex-1 py-5 px-6">
       <div className="flex items-center justify-between">
@@ -309,7 +319,10 @@ function TicketCountCompact({ count }: { count: number }) {
       <div className="mt-3 flex items-baseline gap-3">
         <p
           className="font-data font-semibold leading-none"
-          style={{ fontSize: "34px", color: count > 0 ? "var(--pk-success)" : "var(--pk-deep-dim)" }}
+          style={{
+            fontSize: "34px",
+            color: count > 0 ? "var(--pk-success)" : "var(--pk-deep-dim)",
+          }}
         >
           {count}
         </p>
@@ -371,10 +384,6 @@ function HighestAbiCompact({ data }: { data: StatsHighestAbiDay | null }) {
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
- * Section 02+03 — Period Comparison Matrix
- * ────────────────────────────────────────────────────────────────────────*/
-
 const PERIOD_HEADERS = ["DIA", "SEMANA", "MÊS", "ANO"];
 
 function PeriodMatrix({
@@ -401,7 +410,11 @@ function PeriodMatrix({
           >
             <div className="px-5 py-3" />
             {PERIOD_HEADERS.map((h) => (
-              <div key={h} className="px-5 py-3" style={{ borderLeft: CELL_BORDER }}>
+              <div
+                key={h}
+                className="px-5 py-3"
+                style={{ borderLeft: CELL_BORDER }}
+              >
                 <span
                   className="font-data text-[10px] uppercase tracking-[0.25em]"
                   style={{ color: "var(--muted-foreground)" }}
@@ -429,7 +442,11 @@ function PeriodMatrix({
               </span>
             </div>
             {profitBuckets.map((bucket) => (
-              <div key={bucket.range} className="px-5 py-5" style={{ borderLeft: CELL_BORDER }}>
+              <div
+                key={bucket.range}
+                className="px-5 py-5"
+                style={{ borderLeft: CELL_BORDER }}
+              >
                 {bucket.record ? (
                   <>
                     <p
@@ -457,7 +474,6 @@ function PeriodMatrix({
             ))}
           </div>
 
-          {/* Loss row */}
           <div
             className="grid"
             style={{ gridTemplateColumns: "64px 1fr 1fr 1fr 1fr" }}
@@ -471,7 +487,11 @@ function PeriodMatrix({
               </span>
             </div>
             {lossBuckets.map((bucket) => (
-              <div key={bucket.range} className="px-5 py-5" style={{ borderLeft: CELL_BORDER }}>
+              <div
+                key={bucket.range}
+                className="px-5 py-5"
+                style={{ borderLeft: CELL_BORDER }}
+              >
                 {bucket.record ? (
                   <>
                     <p
@@ -504,10 +524,6 @@ function PeriodMatrix({
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
- * Section 04 — Platform Bar Chart
- * ────────────────────────────────────────────────────────────────────────*/
-
 function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
   if (!platforms.length) return null;
 
@@ -520,8 +536,12 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
         {platforms.map((p, i) => {
           const pct = (Math.abs(p.profit) / maxAbs) * 100;
           const isPositive = p.profit >= 0;
-          const accentColor = isPositive ? "var(--pk-success)" : "var(--destructive)";
-          const barHex = isPositive ? "var(--pk-success)" : "var(--destructive)";
+          const accentColor = isPositive
+            ? "var(--pk-success)"
+            : "var(--destructive)";
+          const barHex = isPositive
+            ? "var(--pk-success)"
+            : "var(--destructive)";
           const isLast = i === platforms.length - 1;
 
           return (
@@ -559,7 +579,10 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
                 </span>
                 <div
                   className="flex-1 rounded-none overflow-hidden"
-                  style={{ height: "4px", background: "rgba(255,255,255,0.04)" }}
+                  style={{
+                    height: "4px",
+                    background: "rgba(255,255,255,0.04)",
+                  }}
                 >
                   <div
                     style={{
@@ -592,10 +615,6 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
- * Section 05 — Podium
- * ────────────────────────────────────────────────────────────────────────*/
-
 const PODIUM_CONFIG = [
   {
     key: "silver" as const,
@@ -626,7 +645,13 @@ const PODIUM_CONFIG = [
   },
 ] as const;
 
-function PodiumItem({ t, accentColor: _accentColor }: { t: Tournament; accentColor: string }) {
+function PodiumItem({
+  t,
+  accentColor: _accentColor,
+}: {
+  t: Tournament;
+  accentColor: string;
+}) {
   const profit = getTournamentProfitNative(t);
   const isPos = profit >= 0;
   const profitColor = isPos ? "var(--pk-success)" : "var(--destructive)";
@@ -686,7 +711,6 @@ function PodiumColumn({
         className="overflow-hidden rounded-2xl flex flex-col"
         style={{ border: `1px solid ${border}` }}
       >
-        {/* Column header */}
         <div
           className="px-5 py-5 flex flex-col items-center gap-2 text-center"
           style={{
@@ -711,7 +735,6 @@ function PodiumColumn({
           </div>
         </div>
 
-        {/* Tournament list */}
         {count === 0 ? (
           <div
             className="flex items-center justify-center py-10 px-5"
@@ -733,7 +756,11 @@ function PodiumColumn({
             }}
           >
             {tournaments.map((t) => (
-              <PodiumItem key={t.id ?? `${t.date}-${t.name}`} t={t} accentColor={color} />
+              <PodiumItem
+                key={t.id ?? `${t.date}-${t.name}`}
+                t={t}
+                accentColor={color}
+              />
             ))}
           </div>
         )}
@@ -743,7 +770,8 @@ function PodiumColumn({
 }
 
 function PodiumSection({ podium }: { podium: PodiumByPosition }) {
-  const total = podium.gold.length + podium.silver.length + podium.bronze.length;
+  const total =
+    podium.gold.length + podium.silver.length + podium.bronze.length;
 
   return (
     <section>
@@ -779,10 +807,6 @@ function PodiumSection({ podium }: { podium: PodiumByPosition }) {
     </section>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────
- * Main view
- * ────────────────────────────────────────────────────────────────────────*/
 
 export function StatsView() {
   const {
@@ -837,7 +861,6 @@ export function StatsView() {
 
   return (
     <div className="flex flex-col w-[90%] mx-auto mt-10 gap-12 pb-16">
-      {/* ── Header ──────────────────────────────────────────────────────── */}
       <div style={revealed(0)}>
         <header
           className="flex items-end justify-between pb-6"
@@ -875,7 +898,6 @@ export function StatsView() {
         )}
       </div>
 
-      {/* ── 01 — Records Hero ───────────────────────────────────────────── */}
       <div style={revealed(80)}>
         <SectionLabel index="01" title="Recordes pessoais" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -890,19 +912,16 @@ export function StatsView() {
         </div>
       </div>
 
-      {/* ── 02+03 — Period Matrix ────────────────────────────────────────── */}
       <div style={revealed(160)}>
         <PeriodMatrix profitBuckets={profitBuckets} lossBuckets={lossBuckets} />
       </div>
 
-      {/* ── 04 — Platform Bars ──────────────────────────────────────────── */}
       {allPlatforms.length > 0 && (
         <div style={revealed(240)}>
           <PlatformBars platforms={allPlatforms} />
         </div>
       )}
 
-      {/* ── 05 — Podium ─────────────────────────────────────────────────── */}
       <div style={revealed(320)}>
         <PodiumSection podium={podiumByPosition} />
       </div>

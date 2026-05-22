@@ -68,14 +68,6 @@ function EurTooltip({
   );
 }
 
-/**
- * View da página Tournaments.
- *
- * Padrão MVVM: a View chama internamente o ViewModel (hook client-side).
- * O `page.tsx` (Server Component) apenas renderiza esta View — ele não
- * consegue invocar hooks, por isso a View é quem orquestra a integração
- * com o ViewModel.
- */
 export function TournamentsView() {
   const {
     isLoading,
@@ -120,9 +112,6 @@ export function TournamentsView() {
     onSaveEditTournament,
   } = useTournamentsViewModel();
 
-  // Estado local de UI (qual date picker está aberto na linha em edição).
-  // IMPORTANTE: declarado ANTES de qualquer early-return para respeitar
-  // as regras dos hooks do React.
   const [openDatePickerId, setOpenDatePickerId] = useState<string | null>(null);
 
   if (isLoading) {
@@ -203,16 +192,24 @@ export function TournamentsView() {
                             {tournament.name}
                           </TableCell>
                           <TableCell className="text-text-primary text-center">
-                            {String(tournament.buyIn).toLowerCase() === "ticket"
-                              ? "ticket"
-                              : tournament.currency === "EUR"
-                                ? <EurTooltip value={Number(tournament.buyIn)} eurToUsdRate={eurToUsdRate} />
-                                : `$ ${Number(tournament.buyIn).toFixed(2)}`}
+                            {String(tournament.buyIn).toLowerCase() ===
+                            "ticket" ? (
+                              "ticket"
+                            ) : tournament.currency === "EUR" ? (
+                              <EurTooltip
+                                value={Number(tournament.buyIn)}
+                                eurToUsdRate={eurToUsdRate}
+                              />
+                            ) : (
+                              `$ ${Number(tournament.buyIn).toFixed(2)}`
+                            )}
                           </TableCell>
                           <TableCell className="text-center">
                             <Button
                               size="sm"
-                              onClick={() => onOpenFinalizeDay2Modal(tournament)}
+                              onClick={() =>
+                                onOpenFinalizeDay2Modal(tournament)
+                              }
                               className="bg-success/90 hover:bg-success/80 text-white h-8 px-4 text-xs"
                             >
                               Finalizar
@@ -328,11 +325,9 @@ export function TournamentsView() {
                 ) : (
                   currentPageData.map((tournament: Tournament) => {
                     const id = tournament.id ?? "";
-                    const isEditing =
-                      Boolean(id) && editingTournamentId === id;
+                    const isEditing = Boolean(id) && editingTournamentId === id;
                     const draft = id ? editDraftById[id] : undefined;
-                    const isSaving =
-                      Boolean(id) && savingTournamentId === id;
+                    const isSaving = Boolean(id) && savingTournamentId === id;
                     const disabled = isSaving;
 
                     return (
@@ -431,7 +426,9 @@ export function TournamentsView() {
                               value={draft.currency}
                               disabled={disabled}
                               onValueChange={(newCurrency) => {
-                                onChangeEditDraft(id, { currency: newCurrency });
+                                onChangeEditDraft(id, {
+                                  currency: newCurrency,
+                                });
                               }}
                             >
                               <SelectTrigger className="h-9 w-20">
@@ -459,10 +456,14 @@ export function TournamentsView() {
                               disabled={disabled}
                               className="h-9 text-text-primary"
                             />
-                          ) : String(tournament.buyIn).toLowerCase() === "ticket" ? (
+                          ) : String(tournament.buyIn).toLowerCase() ===
+                            "ticket" ? (
                             <>ticket</>
                           ) : tournament.currency === "EUR" ? (
-                            <EurTooltip value={Number(tournament.buyIn)} eurToUsdRate={eurToUsdRate} />
+                            <EurTooltip
+                              value={Number(tournament.buyIn)}
+                              eurToUsdRate={eurToUsdRate}
+                            />
                           ) : (
                             <>$ {Number(tournament.buyIn).toFixed(2)}</>
                           )}
@@ -480,10 +481,14 @@ export function TournamentsView() {
                               disabled={disabled}
                               className="h-9 text-text-primary"
                             />
-                          ) : String(tournament.result).toLowerCase() === "ticket" ? (
+                          ) : String(tournament.result).toLowerCase() ===
+                            "ticket" ? (
                             <>ticket</>
                           ) : tournament.currency === "EUR" ? (
-                            <EurTooltip value={Number(tournament.result)} eurToUsdRate={eurToUsdRate} />
+                            <EurTooltip
+                              value={Number(tournament.result)}
+                              eurToUsdRate={eurToUsdRate}
+                            />
                           ) : (
                             <>$ {Number(tournament.result).toFixed(2)}</>
                           )}
@@ -495,9 +500,14 @@ export function TournamentsView() {
                               : "text-red-500"
                           } text-center`}
                         >
-                          {tournament.currency === "EUR"
-                            ? <EurTooltip value={getTournamentProfitNative(tournament)} eurToUsdRate={eurToUsdRate} />
-                            : `$ ${getTournamentProfitNative(tournament).toFixed(2)}`}
+                          {tournament.currency === "EUR" ? (
+                            <EurTooltip
+                              value={getTournamentProfitNative(tournament)}
+                              eurToUsdRate={eurToUsdRate}
+                            />
+                          ) : (
+                            `$ ${getTournamentProfitNative(tournament).toFixed(2)}`
+                          )}
                         </TableCell>
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (
@@ -569,7 +579,7 @@ export function TournamentsView() {
                               className="h-9 text-text-primary w-20 mx-auto"
                             />
                           ) : (
-                            tournament.position ?? "-"
+                            (tournament.position ?? "-")
                           )}
                         </TableCell>
                         <TableCell className="text-text-primary text-center flex gap-2 justify-around">
@@ -579,9 +589,7 @@ export function TournamentsView() {
                                 type="button"
                                 className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                                 disabled={disabled}
-                                onClick={() =>
-                                  onSaveEditTournament(tournament)
-                                }
+                                onClick={() => onSaveEditTournament(tournament)}
                                 aria-label="Salvar edição do torneio"
                               >
                                 <Check className="size-4" />

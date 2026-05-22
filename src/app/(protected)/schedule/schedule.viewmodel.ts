@@ -20,13 +20,11 @@ export function useScheduleViewModel(): ScheduleViewProps {
   const [activeTab, setActiveTab] = useState<ScheduleType>("WEEKLY");
   const [activeScheduleId, setActiveScheduleId] = useState<string | null>(null);
 
-  // Schedule CRUD
   const [isCreatingScheduleForm, setIsCreatingScheduleForm] = useState(false);
   const [newScheduleName, setNewScheduleName] = useState("");
   const [scheduleToDelete, setScheduleToDelete] =
     useState<TournamentSchedule | null>(null);
 
-  // Item editing / deleting
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [savingItemId, setSavingItemId] = useState<string | null>(null);
@@ -61,7 +59,6 @@ export function useScheduleViewModel(): ScheduleViewProps {
     setSelectedItemId(null);
   };
 
-  // Create schedule
   const onConfirmCreateSchedule = () => {
     const name = newScheduleName.trim();
     if (!name) return;
@@ -76,7 +73,6 @@ export function useScheduleViewModel(): ScheduleViewProps {
     );
   };
 
-  // Delete schedule
   const onConfirmDeleteSchedule = () => {
     if (!scheduleToDelete) return;
     deleteSchedule.mutate(scheduleToDelete.id, {
@@ -89,7 +85,6 @@ export function useScheduleViewModel(): ScheduleViewProps {
     });
   };
 
-  // Item editing
   const onStartEditItem = (row: TournamentScheduleItem) => {
     if (!row.id) return;
     setEditingItemId(row.id);
@@ -105,10 +100,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
     }));
   };
 
-  const onChangeEditDraft = (
-    id: string,
-    patch: Partial<ScheduleEditDraft>,
-  ) => {
+  const onChangeEditDraft = (id: string, patch: Partial<ScheduleEditDraft>) => {
     setEditDraftById((prev) => ({
       ...prev,
       [id]: {
@@ -148,30 +140,25 @@ export function useScheduleViewModel(): ScheduleViewProps {
     updateItem.mutate(
       { id, data: patch },
       {
-        onSettled: () =>
-          setSavingItemId((cur) => (cur === id ? null : cur)),
+        onSettled: () => setSavingItemId((cur) => (cur === id ? null : cur)),
         onSuccess: () => onCancelEditItem(id),
       },
     );
   };
 
-  // Item delete
   const onConfirmDeleteItem = () => {
     if (selectedItemId) {
       deleteItem.mutate(selectedItemId);
     }
   };
 
-  // Derived
   const total = items.length;
   const totalBuyIns = items.reduce(
     (acc, item) => acc + Number(item.buyIn ?? 0),
     0,
   );
   const totalBuyInsBrl =
-    brlRate !== undefined
-      ? convertUsdToBrl(brlRate * totalBuyIns)
-      : undefined;
+    brlRate !== undefined ? convertUsdToBrl(brlRate * totalBuyIns) : undefined;
 
   const buyInSummary = useMemo(() => {
     const map = new Map<number, number>();
@@ -195,7 +182,11 @@ export function useScheduleViewModel(): ScheduleViewProps {
       });
     }
     return Array.from(map.entries())
-      .map(([platform, { count, totalBuyIn }]) => ({ platform, count, totalBuyIn }))
+      .map(([platform, { count, totalBuyIn }]) => ({
+        platform,
+        count,
+        totalBuyIn,
+      }))
       .sort((a, b) => b.count - a.count);
   }, [items]);
 

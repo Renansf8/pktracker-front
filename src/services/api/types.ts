@@ -52,7 +52,6 @@ export interface LoginResponse {
   accessToken: string;
 }
 
-// Generic API response
 export interface ApiResponse<T> {
   data: T;
   message?: string;

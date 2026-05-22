@@ -65,7 +65,6 @@ export function ScheduleView() {
   return (
     <div>
       <div className="flex flex-col justify-center w-[80%] mx-auto mt-8">
-        {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex flex-col gap-3">
             <h2 className="text-text-primary text-2xl font-bold">Grade</h2>
@@ -100,7 +99,8 @@ export function ScheduleView() {
                 Total Buy-ins: $ {totalBuyIns.toFixed(2)}
                 {totalBuyInsBrl && (
                   <span className="text-text-secondary/70">
-                    {" "}({totalBuyInsBrl})
+                    {" "}
+                    ({totalBuyInsBrl})
                   </span>
                 )}
               </p>
@@ -108,7 +108,6 @@ export function ScheduleView() {
           )}
         </div>
 
-        {/* Schedule selector */}
         <div className="glass-panel rounded-3xl p-4 mb-6">
           {isLoadingSchedules ? (
             <p className="text-text-secondary text-sm animate-pulse">
@@ -190,7 +189,6 @@ export function ScheduleView() {
           )}
         </div>
 
-        {/* Schedule detail */}
         {!activeScheduleId ? (
           <div className="text-center text-text-secondary text-sm py-12">
             {schedules.length === 0
@@ -252,11 +250,9 @@ export function ScheduleView() {
                       ) : (
                         list.map((row: TournamentScheduleItem) => {
                           const id = row.id ?? "";
-                          const isEditing =
-                            Boolean(id) && editingItemId === id;
+                          const isEditing = Boolean(id) && editingItemId === id;
                           const draft = id ? editDraftById[id] : undefined;
-                          const isSaving =
-                            Boolean(id) && savingItemId === id;
+                          const isSaving = Boolean(id) && savingItemId === id;
                           const disabled = isSaving;
 
                           return (
@@ -451,19 +447,21 @@ export function ScheduleView() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {platformSummary.map(({ platform, count, totalBuyIn }) => (
-                          <TableRow key={platform}>
-                            <TableCell className="text-text-primary text-center">
-                              {platform}
-                            </TableCell>
-                            <TableCell className="text-text-primary text-center">
-                              {count}
-                            </TableCell>
-                            <TableCell className="text-text-primary text-center">
-                              $ {totalBuyIn.toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {platformSummary.map(
+                          ({ platform, count, totalBuyIn }) => (
+                            <TableRow key={platform}>
+                              <TableCell className="text-text-primary text-center">
+                                {platform}
+                              </TableCell>
+                              <TableCell className="text-text-primary text-center">
+                                {count}
+                              </TableCell>
+                              <TableCell className="text-text-primary text-center">
+                                $ {totalBuyIn.toFixed(2)}
+                              </TableCell>
+                            </TableRow>
+                          ),
+                        )}
                       </TableBody>
                     </Table>
                   </div>
@@ -473,14 +471,12 @@ export function ScheduleView() {
           </>
         )}
 
-        {/* Delete item modal */}
         <DeleteScheduleModal
           isOpen={selectedItemId !== null}
           onRequestClose={onCloseDeleteItemModal}
           onDelete={onConfirmDeleteItem}
         />
 
-        {/* Delete schedule modal */}
         <DeleteScheduleModal
           isOpen={scheduleToDelete !== null}
           description={`Deletar a grade "${scheduleToDelete?.name}" também remove todos os torneios cadastrados nela.`}

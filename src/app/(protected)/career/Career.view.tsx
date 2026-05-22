@@ -171,7 +171,6 @@ function StakesProgressionSection({
       )}
       <div className="glass-panel py-7 px-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {/* Nível atual */}
           <div>
             <p
               className="font-data text-[9px] uppercase tracking-[0.22em] mb-3"
@@ -201,7 +200,6 @@ function StakesProgressionSection({
             </p>
           </div>
 
-          {/* Stake intercalado */}
           <div>
             <p
               className="font-data text-[9px] uppercase tracking-[0.22em] mb-3"
@@ -234,7 +232,6 @@ function StakesProgressionSection({
             )}
           </div>
 
-          {/* Stats */}
           <div className="flex flex-col gap-4">
             <div>
               <p
@@ -267,7 +264,6 @@ function StakesProgressionSection({
           </div>
         </div>
 
-        {/* Progress bar — toward next primary stake */}
         {prog.nextLowStake && (
           <div className="mt-8">
             <div className="flex justify-between mb-2">
@@ -304,8 +300,6 @@ function StakesProgressionSection({
     </section>
   );
 }
-
-/* ── Section 02 — Milestones timeline ────────────────────────────────────── */
 
 function MilestonesTimeline({ milestones }: { milestones: Milestone[] }) {
   if (!milestones.length) return null;
@@ -367,8 +361,6 @@ function MilestonesTimeline({ milestones }: { milestones: Milestone[] }) {
     </section>
   );
 }
-
-/* ── Section 03 — Staking tracker ────────────────────────────────────────── */
 
 function StakingTracker({
   deals,
@@ -479,7 +471,6 @@ function StakingTracker({
         </div>
       )}
 
-      {/* Add new deal */}
       <div className="glass-panel py-5 px-6">
         <p
           className="font-data text-[10px] uppercase tracking-[0.2em] mb-4"
@@ -574,8 +565,6 @@ function StakingTracker({
     </section>
   );
 }
-
-/* ── Main view ────────────────────────────────────────────────────────────── */
 
 export function CareerView() {
   const {

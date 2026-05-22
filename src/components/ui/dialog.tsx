@@ -1,20 +1,3 @@
-/**
- * src/components/ui/dialog.tsx
- * ---------------------------------------------------------------------------
- * Wrapper do Radix Dialog, substitui o antigo `react-modal`.
- *
- * Por que trocar?
- *   - `react-modal` exige `Modal.setAppElement()` no bootstrap pra
- *     acessibilidade, manipula o DOM no mount inicial, e portanto quebra
- *     no SSR do App Router (erro "document is not defined" durante a
- *     renderização server).
- *   - Radix Dialog foi feito pensando em SSR (é o primitivo usado pelo
- *     shadcn/ui) e já cuida de foco, escape, scroll lock, portal, ARIA.
- *
- * Este arquivo segue o shape de todos os outros componentes de `ui/` — é
- * um re-export estilizado dos primitivos do Radix, com `"use client"` no
- * topo (Dialog usa state).
- */
 "use client";
 
 import * as React from "react";

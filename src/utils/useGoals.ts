@@ -89,10 +89,11 @@ export function useGoals(
 ): GoalsState {
   const [monthlyGoal, setMonthlyGoalState] = useState<number | null>(null);
   const [annualGoal, setAnnualGoalState] = useState<number | null>(null);
-  const [prevMonthSummary, setPrevMonthSummary] = useState<PrevMonthSummary | null>(null);
-  const [prevYearSummary, setPrevYearSummary] = useState<PrevYearSummary | null>(null);
+  const [prevMonthSummary, setPrevMonthSummary] =
+    useState<PrevMonthSummary | null>(null);
+  const [prevYearSummary, setPrevYearSummary] =
+    useState<PrevYearSummary | null>(null);
 
-  // Initialize from localStorage and detect period roll-overs
   useEffect(() => {
     const curMonth = getMonthKey();
     const curYear = getYear();
@@ -102,7 +103,6 @@ export function useGoals(
       if (storedMonthly.month === curMonth) {
         setMonthlyGoalState(storedMonthly.value);
       } else {
-        // New month: build summary from last known snapshot
         const snap = readLS<StoredMonthlySnapshot>(KEYS.MONTHLY_SNAPSHOT);
         const achieved = snap?.month === storedMonthly.month ? snap.profit : 0;
         const summary: PrevMonthSummary = {
@@ -143,7 +143,6 @@ export function useGoals(
     if (py) setPrevYearSummary(py);
   }, []);
 
-  // Keep snapshots updated so the rollover logic has fresh data
   useEffect(() => {
     const curMonth = getMonthKey();
     const curYear = getYear();

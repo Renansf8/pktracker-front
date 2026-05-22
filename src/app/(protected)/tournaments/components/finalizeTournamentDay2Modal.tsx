@@ -96,13 +96,12 @@ export function FinalizeTournamentDay2Modal({
         <DialogHeader>
           <DialogTitle>Finalizar Dia 2</DialogTitle>
           <DialogDescription>
-            Registre o resultado de{" "}
-            <strong>{tournament.name}</strong> e a data de finalização.
+            Registre o resultado de <strong>{tournament.name}</strong> e a data
+            de finalização.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
-          {/* Data de finalização */}
           <div className="flex flex-col gap-1">
             <span className="text-sm text-text-primary font-medium">
               Data de finalização
@@ -144,7 +143,6 @@ export function FinalizeTournamentDay2Modal({
             </Popover>
           </div>
 
-          {/* Resultado */}
           <div className="flex flex-col gap-1">
             <span className="text-sm text-text-primary font-medium">
               Resultado
@@ -163,9 +161,7 @@ export function FinalizeTournamentDay2Modal({
             )}
           </div>
 
-          {/* ITM · FT · Posição */}
           <div className="flex gap-3 items-start">
-            {/* ITM */}
             <div className="flex flex-col gap-1">
               <span className="text-sm text-text-primary font-medium">ITM</span>
               <button
@@ -182,7 +178,6 @@ export function FinalizeTournamentDay2Modal({
               </button>
             </div>
 
-            {/* FT */}
             <div className="flex flex-col gap-1">
               <span className="text-sm text-text-primary font-medium">FT</span>
               <button
@@ -199,7 +194,6 @@ export function FinalizeTournamentDay2Modal({
               </button>
             </div>
 
-            {/* Posição */}
             <div className="flex flex-col gap-1 flex-1">
               <span className="text-sm text-text-primary font-medium">
                 Posição

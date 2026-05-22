@@ -1,10 +1,3 @@
-/**
- * buttonFilter.tsx
- * ---------------------------------------------------------------------------
- * Botão de filtro de plataforma. Renomeado de `buttonFIlter.tsx` (com typo
- * maiúsculo na fonte) para `buttonFilter.tsx` na migração — o filesystem
- * case-sensitive dos servidores do Vercel não perdoa o typo.
- */
 "use client";
 
 import { Button } from "@/components/ui/button";

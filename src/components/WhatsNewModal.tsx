@@ -9,9 +9,9 @@ const TYPE_CONFIG: Record<
   ChangelogEntry["type"],
   { label: string; color: string }
 > = {
-  feature:     { label: "FEAT", color: "var(--primary)" },
-  fix:         { label: "FIX",  color: "var(--pk-success)" },
-  improvement: { label: "UPD",  color: "#5b8dd9" },
+  feature: { label: "FEAT", color: "var(--primary)" },
+  fix: { label: "FIX", color: "var(--pk-success)" },
+  improvement: { label: "UPD", color: "#5b8dd9" },
 };
 
 function versionToLabel(version: string): string {
@@ -66,16 +66,18 @@ export function WhatsNewModal({
             "data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-top-[48%]",
           )}
         >
-          {/* Decorative watermark */}
           <div
             aria-hidden
             className="pointer-events-none absolute -right-4 -top-4 select-none text-[110px] leading-none"
-            style={{ color: "var(--primary)", opacity: 0.04, fontFamily: "serif" }}
+            style={{
+              color: "var(--primary)",
+              opacity: 0.04,
+              fontFamily: "serif",
+            }}
           >
             ◆
           </div>
 
-          {/* Header */}
           <div
             className="relative px-6 pt-6 pb-4"
             style={{ borderBottom: "1px solid var(--border)" }}
@@ -140,7 +142,6 @@ export function WhatsNewModal({
                     </span>
                   </div>
 
-                  {/* Content */}
                   <div className="flex flex-col gap-1">
                     <p
                       className="font-display text-sm font-semibold leading-snug"
@@ -160,7 +161,6 @@ export function WhatsNewModal({
             })}
           </div>
 
-          {/* Footer */}
           <div className="px-6 pb-6 pt-2">
             <button
               onClick={onClose}

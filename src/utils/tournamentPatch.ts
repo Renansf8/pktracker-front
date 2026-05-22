@@ -28,11 +28,6 @@ function normTicketOrNum(v: unknown): number | "ticket" {
   return Number.isFinite(n) ? n : 0;
 }
 
-/**
- * Gera um PATCH parcial com apenas os campos alterados.
- * - Normaliza `buyIn` e `result` como número.
- * - Trata strings com trim.
- */
 export function buildTournamentPatch(
   original: Tournament,
   draft: TournamentEditDraft,
@@ -92,4 +87,3 @@ export function buildTournamentPatch(
 
   return patch;
 }
-

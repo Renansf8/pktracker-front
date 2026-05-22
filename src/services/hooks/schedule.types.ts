@@ -16,5 +16,4 @@ export interface TournamentScheduleItem {
   buyIn: number | string;
 }
 
-// backward compat alias
 export type ScheduleTournament = TournamentScheduleItem;

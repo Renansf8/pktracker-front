@@ -14,13 +14,19 @@ import type { Tournament } from "@/services/hooks/types";
 import { useCurrency } from "@/services/hooks/useCurrency";
 import { useGetUser } from "@/services/hooks/useGetUser";
 import { useTournaments } from "@/services/hooks/useTournaments";
-import { convertUsdToBrl, getEurToUsdRate, toUsd } from "@/utils/currencyConvert";
+import {
+  convertUsdToBrl,
+  getEurToUsdRate,
+  toUsd,
+} from "@/utils/currencyConvert";
 import { getTournamentLucroUsd } from "@/utils/tournamentLucro";
-import { convertIsoDateToBr, isSameCalendarDayLocal } from "@/utils/dateConvert";
+import {
+  convertIsoDateToBr,
+  isSameCalendarDayLocal,
+} from "@/utils/dateConvert";
 import { useMemo, useState } from "react";
 import type { HomeViewProps } from "./home.types";
 
-/** Converte buyIn/result para número, ignorando "ticket" (retorna 0). */
 function toNum(v: unknown): number {
   if (typeof v === "string" && v.toLowerCase() === "ticket") return 0;
   const n = Number(v);
@@ -65,10 +71,11 @@ export function useHomeViewModel(): HomeViewProps {
   }, [tournaments, todayBr]);
 
   const todayTotalBuyIn = useMemo(
-    () => todayTournaments.reduce(
-      (acc, t) => acc + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
-      0,
-    ),
+    () =>
+      todayTournaments.reduce(
+        (acc, t) => acc + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
+        0,
+      ),
     [todayTournaments, eurToUsdRate],
   );
 
@@ -85,9 +92,12 @@ export function useHomeViewModel(): HomeViewProps {
     };
     const reduced = tournaments.reduce<StatsAcc>(
       (acc, t) => ({
-        totalBuyIn: acc.totalBuyIn + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
-        totalProfit: acc.totalProfit + toUsd(toNum(t.result), t.currency, eurToUsdRate),
-        totalWinnings: acc.totalWinnings + getTournamentLucroUsd(t, eurToUsdRate),
+        totalBuyIn:
+          acc.totalBuyIn + toUsd(toNum(t.buyIn), t.currency, eurToUsdRate),
+        totalProfit:
+          acc.totalProfit + toUsd(toNum(t.result), t.currency, eurToUsdRate),
+        totalWinnings:
+          acc.totalWinnings + getTournamentLucroUsd(t, eurToUsdRate),
       }),
       initial,
     );
@@ -98,13 +108,14 @@ export function useHomeViewModel(): HomeViewProps {
     const silverCount = tournaments.filter((t) => t.position === 2).length;
     const bronzeCount = tournaments.filter((t) => t.position === 3).length;
     const distinctDays = new Set(
-      tournaments.map((t) => String(t.date).split("T")[0])
+      tournaments.map((t) => String(t.date).split("T")[0]),
     ).size;
     return {
       ...reduced,
       totalTournaments,
       abi: totalTournaments > 0 ? reduced.totalBuyIn / totalTournaments : 0,
-      itmPercentage: totalTournaments > 0 ? (itmCount / totalTournaments) * 100 : 0,
+      itmPercentage:
+        totalTournaments > 0 ? (itmCount / totalTournaments) * 100 : 0,
       itmCount,
       ftCount,
       avgDailyBuyIn: distinctDays > 0 ? reduced.totalBuyIn / distinctDays : 0,

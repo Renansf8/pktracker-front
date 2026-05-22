@@ -42,10 +42,9 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     z
       .string()
       .nonempty({ message: msg })
-      .refine(
-        (v) => v.toLowerCase() === "ticket" || !isNaN(Number(v)),
-        { message: "Informe um valor numérico ou 'ticket'" },
-      );
+      .refine((v) => v.toLowerCase() === "ticket" || !isNaN(Number(v)), {
+        message: "Informe um valor numérico ou 'ticket'",
+      });
 
   const schema = z.object({
     date: z.string().nonempty({ message: "Data é obrigatória" }),
@@ -108,7 +107,6 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-3 text-text-primary">
-            {/* Linha 1: dados do torneio */}
             <div className="flex gap-3 items-start">
               <FormField
                 control={form.control}
@@ -182,7 +180,10 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                           </SelectTrigger>
                           <SelectContent>
                             {platforms.map((platform) => (
-                              <SelectItem key={platform.id} value={platform.name}>
+                              <SelectItem
+                                key={platform.id}
+                                value={platform.name}
+                              >
                                 {platform.name}
                               </SelectItem>
                             ))}
@@ -279,7 +280,6 @@ export function TournamentForm({ platform }: TournamentFormProps) {
               />
             </div>
 
-            {/* Linha 2: booleans + posição + botão */}
             <div className="flex gap-3 items-start">
               <FormField
                 control={form.control}

@@ -1,9 +1,3 @@
-/**
- * src/app/(protected)/profile/profile.viewmodel.ts
- * ---------------------------------------------------------------------------
- * Sem mudanças em relação à versão SPA além do "use client" (necessário para
- * chamar o hook `useGetUser`).
- */
 "use client";
 
 import { useGetUser } from "@/services/hooks/useGetUser";

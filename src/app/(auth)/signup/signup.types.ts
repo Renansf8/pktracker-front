@@ -1,9 +1,3 @@
-/**
- * src/app/(auth)/signup/signup.types.ts
- * ---------------------------------------------------------------------------
- * Types da rota /signup. Mesmo padrão do signin — `form`, `formAction`,
- * `state`, `isPending`.
- */
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import type { AuthFormState } from "@/lib/auth/actions";

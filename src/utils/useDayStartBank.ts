@@ -9,20 +9,17 @@ function getTodayKey(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-/**
- * Retorna o saldo da banca no início do dia corrente.
- *
- * Na primeira vez que o banco carrega em um novo dia, salva o valor como
- * snapshot e o usa como denominador fixo para o cálculo de exposição.
- * Mudanças intraday (buy-ins, etc.) não alteram esse valor.
- */
 export function useDayStartBank(currentBankUsd: number): number | null {
   const [dayStartBank, setDayStartBank] = useState<number | null>(() => {
     try {
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw) as { date: string; bankUsd: number };
-      if (parsed.date === getTodayKey() && Number.isFinite(parsed.bankUsd) && parsed.bankUsd > 0) {
+      if (
+        parsed.date === getTodayKey() &&
+        Number.isFinite(parsed.bankUsd) &&
+        parsed.bankUsd > 0
+      ) {
         return parsed.bankUsd;
       }
     } catch {}
@@ -40,7 +37,10 @@ export function useDayStartBank(currentBankUsd: number): number | null {
         // Atualiza snapshot se: novo dia OU banca aumentou (depósito/correção manual)
         if (parsed.date === today && currentBankUsd <= parsed.bankUsd) return;
       }
-      localStorage.setItem(LS_KEY, JSON.stringify({ date: today, bankUsd: currentBankUsd }));
+      localStorage.setItem(
+        LS_KEY,
+        JSON.stringify({ date: today, bankUsd: currentBankUsd }),
+      );
       setDayStartBank(currentBankUsd);
     } catch {}
   }, [currentBankUsd]);

@@ -5,7 +5,6 @@ import type { User } from "../api/types";
 
 export const useGetUser = () => {
   return useQuery<User, Error>({
-    // Good practice to type the expected data and error
     queryKey: ["user"],
     queryFn: async () => {
       const user = await apiClient.get<User>(API_ENDPOINTS.USERS.ME);
@@ -15,6 +14,6 @@ export const useGetUser = () => {
       return user.data;
     },
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };

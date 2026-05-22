@@ -6,7 +6,7 @@ export const useCurrency = () => {
   const { data: currencies } = useQuery({
     queryKey: ["currencies"],
     queryFn: () => apiClient.get(API_ENDPOINTS.CURRENCIES.GET_ALL),
-    // Cotação é válida por 1 hora — sem necessidade de refetch frequente
+
     staleTime: 60 * 60 * 1000,
     gcTime: 2 * 60 * 60 * 1000,
   });
