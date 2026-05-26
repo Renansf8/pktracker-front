@@ -13,6 +13,7 @@ import type {
   StatsPlatformEntry,
 } from "./stats.types";
 import { getTournamentProfitNative } from "@/utils/tournamentLucro";
+import { PlatformTag } from "@/components/PlatformTag";
 import { useStatsViewModel } from "./stats.viewmodel";
 
 const MONTH_NAMES_PT = [
@@ -571,12 +572,7 @@ function PlatformBars({ platforms }: { platforms: StatsPlatformEntry[] }) {
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span
-                  className="font-display text-sm font-semibold shrink-0"
-                  style={{ color: "var(--foreground)", minWidth: "100px" }}
-                >
-                  {p.platform}
-                </span>
+                <PlatformTag platform={p.platform} className="shrink-0" />
                 <div
                   className="flex-1 rounded-none overflow-hidden"
                   style={{

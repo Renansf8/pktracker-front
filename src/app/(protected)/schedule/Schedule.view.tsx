@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { TournamentScheduleItem } from "@/services/hooks/schedule.types";
 import { Check, Plus, Trash, Edit, X } from "lucide-react";
+import { PlatformTag } from "@/components/PlatformTag";
 import { ScheduleForm } from "./components/scheduleForm";
 import { DeleteScheduleModal } from "./components/deleteScheduleModal";
 import { useScheduleViewModel } from "./schedule.viewmodel";
@@ -274,7 +275,7 @@ export function ScheduleView() {
                                   row.time
                                 )}
                               </TableCell>
-                              <TableCell className="text-text-primary text-center">
+                              <TableCell className="text-center">
                                 {isEditing && draft ? (
                                   <Input
                                     value={draft.platform}
@@ -287,7 +288,7 @@ export function ScheduleView() {
                                     className="h-9 text-text-primary"
                                   />
                                 ) : (
-                                  row.platform
+                                  <PlatformTag platform={row.platform} />
                                 )}
                               </TableCell>
                               <TableCell className="text-text-primary text-center">
@@ -450,8 +451,8 @@ export function ScheduleView() {
                         {platformSummary.map(
                           ({ platform, count, totalBuyIn }) => (
                             <TableRow key={platform}>
-                              <TableCell className="text-text-primary text-center">
-                                {platform}
+                              <TableCell className="text-center">
+                                <PlatformTag platform={platform} />
                               </TableCell>
                               <TableCell className="text-text-primary text-center">
                                 {count}

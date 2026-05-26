@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
+import { PlatformTag } from "@/components/PlatformTag";
 import type { BankDeposit, BankRake, BankWithdrawal } from "./bank.types";
 import { useBankViewModel } from "./bank.viewmodel";
 import {
@@ -267,8 +268,12 @@ export function BankView() {
                   <TableCell className="text-text-primary text-center">
                     {convertIsoDateToBr(rake.date)}
                   </TableCell>
-                  <TableCell className="text-text-primary text-center">
-                    {rake.platform ?? "—"}
+                  <TableCell className="text-center">
+                    {rake.platform ? (
+                      <PlatformTag platform={rake.platform} />
+                    ) : (
+                      "—"
+                    )}
                   </TableCell>
                   <TableCell className="text-center font-data text-sm font-medium text-purple-400">
                     $ {Number(rake.amount).toFixed(2)}

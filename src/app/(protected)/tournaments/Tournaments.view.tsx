@@ -11,6 +11,7 @@ import {
 import type { Tournament } from "@/services/hooks/types";
 import { TournamentForm } from "./components/tournamentForm";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
+import { PlatformTag } from "@/components/PlatformTag";
 import {
   Check,
   ChevronDownIcon,
@@ -185,8 +186,8 @@ export function TournamentsView() {
                           <TableCell className="text-text-primary text-center">
                             {convertIsoDateToBr(tournament.date)}
                           </TableCell>
-                          <TableCell className="text-text-primary text-center">
-                            {tournament.platform}
+                          <TableCell className="text-center">
+                            <PlatformTag platform={tournament.platform} />
                           </TableCell>
                           <TableCell className="text-text-primary text-center">
                             {tournament.name}
@@ -390,7 +391,7 @@ export function TournamentsView() {
                             convertIsoDateToBr(tournament.date)
                           )}
                         </TableCell>
-                        <TableCell className="text-text-primary text-center">
+                        <TableCell className="text-center">
                           {isEditing && draft ? (
                             <Input
                               value={draft.platform}
@@ -403,7 +404,7 @@ export function TournamentsView() {
                               className="h-9 text-text-primary"
                             />
                           ) : (
-                            tournament.platform
+                            <PlatformTag platform={tournament.platform} />
                           )}
                         </TableCell>
                         <TableCell className="text-text-primary text-center">
