@@ -29,6 +29,10 @@ export async function signInAction(
       cache: "no-store",
     });
 
+    if (res.status === 429) {
+      return { error: "Servidor sobrecarregado. Aguarde alguns segundos e tente novamente." };
+    }
+
     if (!res.ok) {
       return { error: "Email ou senha inválidos" };
     }
