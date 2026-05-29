@@ -18,7 +18,11 @@ export default async function ProtectedLayout({
       await clearSession();
       redirect("/signin");
     }
-    throw err;
+    // 429 e outros erros transitórios: renderiza sem dados do user.
+    // O client-side (TanStack Query via /api/proxy) carrega por conta própria.
+    if (!(err instanceof ServerFetchError) || err.status !== 429) {
+      throw err;
+    }
   }
 
   return (
