@@ -9,6 +9,18 @@ export type AuthFormState = {
 
 const API_URL = process.env.API_BASE_URL;
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchWithColdStartRetry(url: string, init: RequestInit, retries = 3, delayMs = 8000): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const res = await fetch(url, init);
+    if (res.status !== 429 || attempt === retries) return res;
+    await sleep(delayMs);
+  }
+  // nunca chega aqui, mas satisfaz o TypeScript
+  return fetch(url, init);
+}
+
 export async function signInAction(
   _prevState: AuthFormState,
   formData: FormData,
@@ -21,16 +33,15 @@ export async function signInAction(
   }
 
   try {
-    const res = await fetch(`${API_URL}/auth/signin`, {
+    const res = await fetchWithColdStartRetry(`${API_URL}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-
       cache: "no-store",
     });
 
     if (res.status === 429) {
-      return { error: "Servidor sobrecarregado. Aguarde alguns segundos e tente novamente." };
+      return { error: "Servidor sobrecarregado. Tente novamente em alguns instantes." };
     }
 
     if (!res.ok) {
