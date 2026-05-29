@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function GlobalError({
   error,
   reset,
@@ -23,12 +25,12 @@ export default function GlobalError({
             : "Ocorreu um erro inesperado. Tente novamente ou volte para a página inicial."}
         </p>
         <div className="flex gap-2 mt-2">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
           >
             Início
-          </a>
+          </Link>
           <button
             onClick={reset}
             className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90"
