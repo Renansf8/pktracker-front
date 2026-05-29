@@ -9,20 +9,13 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const isTooManyRequests =
-    error.message.includes("429") ||
-    error.message.includes("Too Many Requests");
-
   return (
     <html>
       <body className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background text-foreground text-center p-8 font-sans">
-        <h1 className="text-2xl font-semibold">
-          {isTooManyRequests ? "Muitas requisições" : "Algo deu errado"}
-        </h1>
+        <h1 className="text-2xl font-semibold">Algo deu errado</h1>
         <p className="text-muted-foreground max-w-sm text-sm">
-          {isTooManyRequests
-            ? "O servidor está sobrecarregado no momento. Aguarde alguns segundos e tente novamente."
-            : "Ocorreu um erro inesperado. Tente novamente ou volte para a página inicial."}
+          O servidor demorou para responder. Aguarde alguns segundos e tente
+          novamente.
         </p>
         <div className="flex gap-2 mt-2">
           <Link

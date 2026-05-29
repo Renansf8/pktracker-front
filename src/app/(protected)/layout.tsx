@@ -12,7 +12,7 @@ export default async function ProtectedLayout({
   let user: User | null = null;
 
   try {
-    user = await serverFetch<User>("/users/me");
+    user = await serverFetch<User>("/users/me", { next: { revalidate: 60 } });
   } catch (err) {
     if (err instanceof ServerFetchError && err.status === 401) {
       await clearSession();
