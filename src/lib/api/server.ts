@@ -26,6 +26,8 @@ export async function serverFetch<T = unknown>(
   const url = path.startsWith("http") ? path : `${API_URL}${path}`;
   const token = auth ? await getSessionToken() : undefined;
 
+  const hasRevalidate = (init as { next?: { revalidate?: unknown } }).next?.revalidate !== undefined;
+
   const requestInit: RequestInit = {
     ...init,
     headers: {
@@ -33,7 +35,7 @@ export async function serverFetch<T = unknown>(
       ...(token && { Authorization: `Bearer ${token}` }),
       ...headers,
     },
-    cache: init.cache ?? "no-store",
+    ...(hasRevalidate ? {} : { cache: init.cache ?? "no-store" }),
   };
 
   const MAX_RETRIES = 2;
