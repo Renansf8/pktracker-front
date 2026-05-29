@@ -24,28 +24,43 @@ export async function serverFetch<T = unknown>(
   }
 
   const url = path.startsWith("http") ? path : `${API_URL}${path}`;
-
   const token = auth ? await getSessionToken() : undefined;
 
-  const res = await fetch(url, {
+  const requestInit: RequestInit = {
     ...init,
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
       ...headers,
     },
-
     cache: init.cache ?? "no-store",
-  });
+  };
 
-  if (!res.ok) {
-    throw new ServerFetchError(
-      `Request failed: ${res.status} ${res.statusText}`,
-      res.status,
-    );
+  const MAX_RETRIES = 2;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const res = await fetch(url, requestInit);
+
+    if (res.status === 429 && attempt < MAX_RETRIES) {
+      const retryAfter = res.headers.get("Retry-After");
+      const waitMs = retryAfter
+        ? parseFloat(retryAfter) * 1000
+        : 1000 * 2 ** attempt;
+      await new Promise((r) => setTimeout(r, waitMs));
+      continue;
+    }
+
+    if (!res.ok) {
+      throw new ServerFetchError(
+        `Request failed: ${res.status} ${res.statusText}`,
+        res.status,
+      );
+    }
+
+    if (res.status === 204) return undefined as T;
+
+    return (await res.json()) as T;
   }
 
-  if (res.status === 204) return undefined as T;
-
-  return (await res.json()) as T;
+  throw new ServerFetchError("Request failed: 429 Too Many Requests", 429);
 }

@@ -3,7 +3,7 @@ const PLATFORM_STYLES: Record<
   { bg: string; color: string; border?: string }
 > = {
   "Poker Stars": { bg: "#9c0808", color: "#fff" },
-  "Party Poker": { bg: "#000", color: "#f97316" },
+  "Party Poker": { bg: "#000", color: "#f97316", border: "1px solid #444" },
   GG: { bg: "#000", color: "#fff", border: "1px solid #444" },
   "888": { bg: "#7dd3fc", color: "#0c4a6e" },
   Champions: { bg: "#d4a843", color: "#1a0e00" },
