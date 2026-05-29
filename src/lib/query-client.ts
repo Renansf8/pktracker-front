@@ -8,12 +8,17 @@ export const queryClient = new QueryClient({
 
       retry: (failureCount, error: unknown) => {
         const status = (error as { response?: { status?: number } })?.response?.status;
-        if (status === 404) return false;
         if (status === 401) return false;
+        if (status === 404) return false;
+        if (status === 429) return failureCount < 2;
         return failureCount < 1;
       },
 
-      retryDelay: 1000,
+      retryDelay: (failureCount, error: unknown) => {
+        const status = (error as { response?: { status?: number } })?.response?.status;
+        if (status === 429) return 10000 * (failureCount + 1); // 10s, 20s
+        return 2000;
+      },
       refetchOnWindowFocus: false,
     },
     mutations: {
