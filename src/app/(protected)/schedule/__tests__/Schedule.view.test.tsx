@@ -56,6 +56,7 @@ function baseProps(overrides: Partial<ScheduleViewProps> = {}): ScheduleViewProp
     isCreatingSchedule: false,
     onNewScheduleNameChange: jest.fn(),
     onStartCreateSchedule: jest.fn(),
+    onStartDuplicateSchedule: jest.fn(),
     onCancelCreateSchedule: jest.fn(),
     onConfirmCreateSchedule: jest.fn(),
 

@@ -1,15 +1,24 @@
 "use client";
 
 import { GoalProgress } from "@/components/GoalProgress";
+import { MonthlyRecapModal } from "@/components/MonthlyRecapModal";
 import { PlayerSuggestions } from "@/components/PlayerSuggestions";
 import { SummarizeCards } from "@/components/Summarize Cards";
 import { SummarizeResults } from "@/components/SummarizeResults";
 import { WhatsNewModal } from "@/components/WhatsNewModal";
+import { useMonthlyRecap } from "@/utils/useMonthlyRecap";
 import { useWhatsNew } from "@/utils/useWhatsNew";
 import { useHomeViewModel } from "./home.viewmodel";
 
 export function HomeView() {
   const { open, dismiss, changelog, version } = useWhatsNew();
+  const {
+    open: recapOpen,
+    dismiss: recapDismiss,
+    bigWins,
+    prevMonth,
+    prevYear,
+  } = useMonthlyRecap();
   const {
     isLoading,
     userName,
@@ -50,6 +59,13 @@ export function HomeView() {
         onClose={dismiss}
         changelog={changelog}
         version={version}
+      />
+      <MonthlyRecapModal
+        open={recapOpen}
+        onClose={recapDismiss}
+        tournaments={bigWins}
+        prevMonth={prevMonth}
+        prevYear={prevYear}
       />
       <div className="flex flex-col w-[90%] mx-auto mt-10 gap-10">
         <header

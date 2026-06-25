@@ -39,6 +39,7 @@ beforeEach(() => {
     getSchedules: { isLoading: false } as any,
     schedules: [],
     createSchedule: { mutate: mockCreateMutate, isPending: false } as any,
+    duplicateSchedule: { mutate: jest.fn(), isPending: false } as any,
     deleteSchedule: { mutate: mockDeleteScheduleMutate } as any,
   });
   mockUseScheduleItems.mockReturnValue({

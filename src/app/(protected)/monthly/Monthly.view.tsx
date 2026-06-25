@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMonthlyViewModel } from "./monthly.viewmodel";
+import { convertUsdToBrl } from "@/utils/currencyConvert";
 import type { MonthlyStats } from "./monthly.types";
 
 const MONTH_NAMES = [
@@ -35,9 +36,10 @@ interface MonthCardProps {
   stats: MonthlyStats;
   maxAbsProfit: number;
   isCurrentMonth: boolean;
+  brlRate: number | undefined;
 }
 
-function MonthCard({ stats, maxAbsProfit, isCurrentMonth }: MonthCardProps) {
+function MonthCard({ stats, maxAbsProfit, isCurrentMonth, brlRate }: MonthCardProps) {
   const empty = stats.count === 0;
   const barWidth =
     maxAbsProfit > 0 ? Math.abs(stats.profit) / maxAbsProfit : 0;
@@ -63,14 +65,24 @@ function MonthCard({ stats, maxAbsProfit, isCurrentMonth }: MonthCardProps) {
             >
               {MONTH_SHORT[stats.month]}
             </p>
-            <p
-              className="font-data text-lg font-semibold leading-tight mt-0.5"
-              style={{ color: profitColor(stats.profit) }}
-            >
-              {empty
-                ? "—"
-                : `${profitSign(stats.profit)}$${fmt(stats.profit)}`}
-            </p>
+            <div className="flex items-baseline gap-1.5 mt-0.5 flex-wrap">
+              <p
+                className="font-data text-lg font-semibold leading-tight"
+                style={{ color: profitColor(stats.profit) }}
+              >
+                {empty
+                  ? "—"
+                  : `${profitSign(stats.profit)}$${fmt(stats.profit)}`}
+              </p>
+              {!empty && brlRate !== undefined && (
+                <p
+                  className="font-data text-[10px]"
+                  style={{ color: profitColor(stats.profit), opacity: 0.7 }}
+                >
+                  ({convertUsdToBrl(brlRate * stats.profit)})
+                </p>
+              )}
+            </div>
           </div>
           {!empty && (
             <span
@@ -203,6 +215,7 @@ export function MonthlyView() {
     availableYears,
     months,
     yearTotals,
+    brlRate,
     onYearChange,
   } = useMonthlyViewModel();
 
@@ -341,6 +354,7 @@ export function MonthlyView() {
             key={m.month}
             stats={m}
             maxAbsProfit={maxAbsProfit}
+            brlRate={brlRate}
             isCurrentMonth={
               selectedYear === currentCalYear && m.month === currentCalMonth
             }

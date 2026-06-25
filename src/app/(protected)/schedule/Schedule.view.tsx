@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import type { TournamentScheduleItem } from "@/services/hooks/schedule.types";
-import { Check, Plus, Trash, Edit, X } from "lucide-react";
+import { Check, Plus, Trash, Edit, X, Copy } from "lucide-react";
 import { PlatformTag } from "@/components/PlatformTag";
 import { ScheduleForm } from "./components/scheduleForm";
 import { DeleteScheduleModal } from "./components/deleteScheduleModal";
@@ -31,6 +31,7 @@ export function ScheduleView() {
     isCreatingSchedule,
     onNewScheduleNameChange,
     onStartCreateSchedule,
+    onStartDuplicateSchedule,
     onCancelCreateSchedule,
     onConfirmCreateSchedule,
 
@@ -135,6 +136,14 @@ export function ScheduleView() {
                     onClick={() => onSelectSchedule(s.id)}
                   >
                     {s.name}
+                  </button>
+                  <button
+                    type="button"
+                    className="cursor-pointer text-text-secondary hover:text-foreground transition-colors"
+                    onClick={() => onStartDuplicateSchedule(s)}
+                    aria-label={`Duplicar grade ${s.name}`}
+                  >
+                    <Copy className="size-3" />
                   </button>
                   <button
                     type="button"

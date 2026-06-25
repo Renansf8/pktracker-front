@@ -30,6 +30,7 @@ export interface ScheduleViewProps {
   isCreatingSchedule: boolean;
   onNewScheduleNameChange: (name: string) => void;
   onStartCreateSchedule: () => void;
+  onStartDuplicateSchedule: (schedule: TournamentSchedule) => void;
   onCancelCreateSchedule: () => void;
   onConfirmCreateSchedule: () => void;
 

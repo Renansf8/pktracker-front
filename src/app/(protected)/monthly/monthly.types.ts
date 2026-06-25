@@ -29,5 +29,6 @@ export interface MonthlyViewProps {
   availableYears: number[];
   months: MonthlyStats[];
   yearTotals: MonthlyYearTotals;
+  brlRate: number | undefined;
   onYearChange: (year: number) => void;
 }

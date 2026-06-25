@@ -22,6 +22,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
 
   const [isCreatingScheduleForm, setIsCreatingScheduleForm] = useState(false);
   const [newScheduleName, setNewScheduleName] = useState("");
+  const [duplicatingFromId, setDuplicatingFromId] = useState<string | null>(null);
   const [scheduleToDelete, setScheduleToDelete] =
     useState<TournamentSchedule | null>(null);
 
@@ -35,7 +36,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
   const { currencies } = useCurrency();
   const brlRate: number | undefined = currencies?.data?.rates?.BRL;
 
-  const { getSchedules, schedules, createSchedule, deleteSchedule } =
+  const { getSchedules, schedules, createSchedule, duplicateSchedule, deleteSchedule } =
     useSchedules(activeTab);
   const { getItems, items, updateItem, deleteItem } =
     useScheduleItems(activeScheduleId);
@@ -59,18 +60,37 @@ export function useScheduleViewModel(): ScheduleViewProps {
     setSelectedItemId(null);
   };
 
+  const onStartDuplicateSchedule = (schedule: TournamentSchedule) => {
+    setDuplicatingFromId(schedule.id);
+    setNewScheduleName(`Cópia de ${schedule.name}`);
+    setIsCreatingScheduleForm(true);
+  };
+
   const onConfirmCreateSchedule = () => {
     const name = newScheduleName.trim();
     if (!name) return;
-    createSchedule.mutate(
-      { name, type: activeTab },
-      {
-        onSuccess: () => {
-          setIsCreatingScheduleForm(false);
-          setNewScheduleName("");
+    if (duplicatingFromId) {
+      duplicateSchedule.mutate(
+        { sourceId: duplicatingFromId, newName: name, type: activeTab },
+        {
+          onSuccess: () => {
+            setIsCreatingScheduleForm(false);
+            setNewScheduleName("");
+            setDuplicatingFromId(null);
+          },
         },
-      },
-    );
+      );
+    } else {
+      createSchedule.mutate(
+        { name, type: activeTab },
+        {
+          onSuccess: () => {
+            setIsCreatingScheduleForm(false);
+            setNewScheduleName("");
+          },
+        },
+      );
+    }
   };
 
   const onConfirmDeleteSchedule = () => {
@@ -202,12 +222,14 @@ export function useScheduleViewModel(): ScheduleViewProps {
 
     newScheduleName,
     isCreatingScheduleForm,
-    isCreatingSchedule: createSchedule.isPending,
+    isCreatingSchedule: createSchedule.isPending || duplicateSchedule.isPending,
     onNewScheduleNameChange: setNewScheduleName,
     onStartCreateSchedule: () => setIsCreatingScheduleForm(true),
+    onStartDuplicateSchedule,
     onCancelCreateSchedule: () => {
       setIsCreatingScheduleForm(false);
       setNewScheduleName("");
+      setDuplicatingFromId(null);
     },
     onConfirmCreateSchedule,
 

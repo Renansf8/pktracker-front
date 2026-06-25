@@ -19,6 +19,7 @@ export function useMonthlyViewModel(): MonthlyViewProps {
   const { data: tournamentsResponse, isLoading } = getAllTournaments;
   const { currencies } = useCurrency();
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
+  const brlRate: number | undefined = currencies?.data?.rates?.BRL;
 
   const tournaments: Tournament[] = useMemo(
     () => tournamentsResponse?.data?.data ?? [],
@@ -105,6 +106,7 @@ export function useMonthlyViewModel(): MonthlyViewProps {
     availableYears,
     months,
     yearTotals,
+    brlRate,
     onYearChange: setSelectedYear,
   };
 }
