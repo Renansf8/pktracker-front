@@ -67,6 +67,7 @@ function baseProps(overrides: Partial<ScheduleViewProps> = {}): ScheduleViewProp
     total: 0,
     totalBuyIns: 0,
     totalBuyInsBrl: undefined,
+    abi: 0,
     list: [],
     buyInSummary: [],
     platformSummary: [],

@@ -157,6 +157,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
     (acc, item) => acc + Number(item.buyIn ?? 0),
     0,
   );
+  const abi = total > 0 ? totalBuyIns / total : 0;
   const totalBuyInsBrl =
     brlRate !== undefined ? convertUsdToBrl(brlRate * totalBuyIns) : undefined;
 
@@ -218,6 +219,7 @@ export function useScheduleViewModel(): ScheduleViewProps {
     total,
     totalBuyIns,
     totalBuyInsBrl,
+    abi,
     list: items,
     buyInSummary,
     platformSummary,

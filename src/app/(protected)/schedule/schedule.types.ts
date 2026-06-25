@@ -41,6 +41,7 @@ export interface ScheduleViewProps {
   total: number;
   totalBuyIns: number;
   totalBuyInsBrl: string | undefined;
+  abi: number;
   list: TournamentScheduleItem[];
   buyInSummary: BuyInSummaryRow[];
   platformSummary: PlatformSummaryRow[];

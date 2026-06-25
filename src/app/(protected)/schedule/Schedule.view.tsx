@@ -42,6 +42,7 @@ export function ScheduleView() {
     total,
     totalBuyIns,
     totalBuyInsBrl,
+    abi,
     list,
     buyInSummary,
     platformSummary,
@@ -104,6 +105,9 @@ export function ScheduleView() {
                     ({totalBuyInsBrl})
                   </span>
                 )}
+              </p>
+              <p className="text-text-secondary text-sm">
+                ABI: $ {abi.toFixed(2)}
               </p>
             </div>
           )}

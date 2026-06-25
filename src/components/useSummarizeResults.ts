@@ -55,6 +55,9 @@ function buildPeriodStats(list: Tournament[], rate: number) {
     itmPercentage,
     ftCount: calcFt(list),
     avgDailyBuyIn: calcAvgDailyBuyIn(list, rate),
+    goldCount: list.filter((t) => t.position === 1).length,
+    silverCount: list.filter((t) => t.position === 2).length,
+    bronzeCount: list.filter((t) => t.position === 3).length,
   };
 }
 

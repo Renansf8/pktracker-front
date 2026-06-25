@@ -32,8 +32,10 @@ export const API_ENDPOINTS = {
     CREATE: "/tournaments/schedules",
     UPDATE: (id: string) => `/tournaments/schedules/${id}`,
     DELETE: (id: string) => `/tournaments/schedules/${id}`,
-    APPLY: (scheduleId: string) =>
-      `/tournaments/apply-schedule?scheduleId=${scheduleId}`,
+    APPLY: (scheduleId: string) => {
+      const timezoneOffset = new Date().getTimezoneOffset();
+      return `/tournaments/apply-schedule?scheduleId=${scheduleId}&timezoneOffset=${timezoneOffset}`;
+    },
     ITEMS: {
       GET_ALL: (scheduleId: string) =>
         `/tournaments/schedules/${scheduleId}/items`,

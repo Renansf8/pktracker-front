@@ -11,7 +11,7 @@ const API_URL = process.env.API_BASE_URL;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchWithColdStartRetry(url: string, init: RequestInit, retries = 3, delayMs = 8000): Promise<Response> {
+async function fetchWithColdStartRetry(url: string, init: RequestInit, retries = 5, delayMs = 10000): Promise<Response> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     const res = await fetch(url, init);
     if (res.status !== 429 || attempt === retries) return res;
