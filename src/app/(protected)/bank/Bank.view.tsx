@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
+import { convertUsdToBrl } from "@/utils/currencyConvert";
+import { useCurrency } from "@/services/hooks/useCurrency";
 import { PlatformTag } from "@/components/PlatformTag";
 import type { BankDeposit, BankRake, BankWithdrawal } from "./bank.types";
 import { useBankViewModel } from "./bank.viewmodel";
@@ -24,6 +26,11 @@ import {
 import { platforms } from "@/utils/platforms";
 
 export function BankView() {
+  const { currencies } = useCurrency();
+  const brlRate = currencies?.data?.rates?.BRL;
+  const toBrl = (usd: number) =>
+    brlRate !== undefined ? convertUsdToBrl(brlRate * usd) : null;
+
   const {
     isLoading,
     amount,
@@ -168,13 +175,20 @@ export function BankView() {
 
         {/* Depósitos */}
         <div className="flex flex-col gap-3 flex-1">
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-start justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
               Depósitos
             </p>
-            <span className="font-data text-sm font-semibold" style={{ color: "var(--primary)" }}>
-              $ {totalDeposits.toFixed(2)}
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="font-data text-sm font-semibold" style={{ color: "var(--primary)" }}>
+                $ {totalDeposits.toFixed(2)}
+              </span>
+              {toBrl(totalDeposits) && (
+                <span className="font-data text-xs font-normal" style={{ color: "var(--muted-foreground)" }}>
+                  ({toBrl(totalDeposits)})
+                </span>
+              )}
+            </div>
           </div>
           <Table>
             <TableHeader>
@@ -207,13 +221,20 @@ export function BankView() {
 
         {/* Saques */}
         <div className="flex flex-col gap-3 flex-1">
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-start justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
               Saques
             </p>
-            <span className="font-data text-sm font-semibold text-green-400">
-              $ {totalWithdrawals.toFixed(2)}
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="font-data text-sm font-semibold text-green-400">
+                $ {totalWithdrawals.toFixed(2)}
+              </span>
+              {toBrl(totalWithdrawals) && (
+                <span className="font-data text-xs font-normal" style={{ color: "var(--muted-foreground)" }}>
+                  ({toBrl(totalWithdrawals)})
+                </span>
+              )}
+            </div>
           </div>
           <Table>
             <TableHeader>
@@ -246,13 +267,20 @@ export function BankView() {
 
         {/* Rake */}
         <div className="flex flex-col gap-3 flex-1">
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-start justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
               Rake
             </p>
-            <span className="font-data text-sm font-semibold text-purple-400">
-              $ {totalRake.toFixed(2)}
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="font-data text-sm font-semibold text-purple-400">
+                $ {totalRake.toFixed(2)}
+              </span>
+              {toBrl(totalRake) && (
+                <span className="font-data text-xs font-normal" style={{ color: "var(--muted-foreground)" }}>
+                  ({toBrl(totalRake)})
+                </span>
+              )}
+            </div>
           </div>
           <Table>
             <TableHeader>

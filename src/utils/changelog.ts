@@ -1,4 +1,4 @@
-export const CHANGELOG_VERSION = "2026-06-25-v1";
+export const CHANGELOG_VERSION = "2026-06-27-v1";
 
 export type ChangelogType = "feature" | "fix" | "improvement";
 
@@ -10,15 +10,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    type: "feature",
-    title: "Performance Mensal",
+    type: "improvement",
+    title: "Valores em real por toda a plataforma",
     description:
-      "Nova página /mensal com histórico mês a mês: profit, torneios, ITM%, ABI, buy-in total e dias jogados. Navegue entre anos pelas setas e veja o mês atual destacado. Cada card tem uma barra proporcional ao melhor mês do ano.",
+      "Os valores em BRL agora aparecem ao lado (ou abaixo) dos valores em dólar no Resumo Geral da home (Buy In total, Ganhos totais, Média de Buy-ins/dia) e na página de Banca (totais de Depósitos, Saques e Rake). A conversão foi corrigida para usar uma API de câmbio gratuita e confiável com o dólar como base.",
   },
   {
-    type: "fix",
-    title: "Importar grade — horário corrigido",
+    type: "feature",
+    title: "Hover em Final Tables e Pódios",
     description:
-      "Ao importar uma grade de torneios, o horário agora é registrado corretamente no fuso horário local (UTC-3), sem mais o deslocamento de 3 horas.",
+      "Passe o mouse sobre os cards de Final Tables ou Pódios no Resumo Geral para ver a lista dos últimos 10 torneios de cada categoria. No card de Pódios, alterne entre 🥇 🥈 🥉 pelas abas interativas.",
   },
 ];

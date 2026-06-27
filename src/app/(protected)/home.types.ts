@@ -1,3 +1,5 @@
+import type { Tournament } from "@/services/hooks/types";
+
 export interface HomeViewProps {
   isLoading: boolean;
   userName: string;
@@ -19,4 +21,8 @@ export interface HomeViewProps {
   bronzeCount: number;
   monthlyProfitUsd: number;
   yearlyProfitUsd: number;
+  ftTournaments: Tournament[];
+  goldTournaments: Tournament[];
+  silverTournaments: Tournament[];
+  bronzeTournaments: Tournament[];
 }

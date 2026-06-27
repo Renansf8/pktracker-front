@@ -42,7 +42,12 @@ export const ActivityCard = ({
           )}
         </p>
       ) : isCurrency ? (
-        <p className="activity-card-value">$ {value}</p>
+        <p className="activity-card-value">
+          $ {value}
+          {convertedValue && (
+            <span className="activity-card-converted">({convertedValue})</span>
+          )}
+        </p>
       ) : (
         <p className="activity-card-value">
           {value}

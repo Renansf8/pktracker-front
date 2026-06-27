@@ -48,7 +48,7 @@ export const API_ENDPOINTS = {
     },
   },
   CURRENCIES: {
-    GET_ALL: "https://api.fxratesapi.com/latest",
+    GET_ALL: "https://open.er-api.com/v6/latest/USD",
   },
   BANK: {
     CREATE_DEPOSIT: "/banks/deposits",

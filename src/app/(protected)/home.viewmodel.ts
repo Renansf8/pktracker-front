@@ -103,10 +103,17 @@ export function useHomeViewModel(): HomeViewProps {
     );
     const totalTournaments = tournaments.length;
     const itmCount = tournaments.filter((t) => t.itm === true).length;
-    const ftCount = tournaments.filter((t) => t.hasFt === true).length;
-    const goldCount = tournaments.filter((t) => t.position === 1).length;
-    const silverCount = tournaments.filter((t) => t.position === 2).length;
-    const bronzeCount = tournaments.filter((t) => t.position === 3).length;
+    const byDateDesc = [...tournaments].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+    const ftTournaments = byDateDesc.filter((t) => t.hasFt === true);
+    const ftCount = ftTournaments.length;
+    const goldTournaments = byDateDesc.filter((t) => t.position === 1);
+    const silverTournaments = byDateDesc.filter((t) => t.position === 2);
+    const bronzeTournaments = byDateDesc.filter((t) => t.position === 3);
+    const goldCount = goldTournaments.length;
+    const silverCount = silverTournaments.length;
+    const bronzeCount = bronzeTournaments.length;
     const distinctDays = new Set(
       tournaments.map((t) => String(t.date).split("T")[0]),
     ).size;
@@ -118,10 +125,14 @@ export function useHomeViewModel(): HomeViewProps {
         totalTournaments > 0 ? (itmCount / totalTournaments) * 100 : 0,
       itmCount,
       ftCount,
+      ftTournaments,
       avgDailyBuyIn: distinctDays > 0 ? reduced.totalBuyIn / distinctDays : 0,
       goldCount,
       silverCount,
       bronzeCount,
+      goldTournaments,
+      silverTournaments,
+      bronzeTournaments,
     };
   }, [tournaments, eurToUsdRate]);
 
@@ -171,10 +182,14 @@ export function useHomeViewModel(): HomeViewProps {
     itmPercentage: stats.itmPercentage,
     itmCount: stats.itmCount,
     ftCount: stats.ftCount,
+    ftTournaments: stats.ftTournaments,
     avgDailyBuyIn: stats.avgDailyBuyIn,
     goldCount: stats.goldCount,
     silverCount: stats.silverCount,
     bronzeCount: stats.bronzeCount,
+    goldTournaments: stats.goldTournaments,
+    silverTournaments: stats.silverTournaments,
+    bronzeTournaments: stats.bronzeTournaments,
     monthlyProfitUsd,
     yearlyProfitUsd,
   };

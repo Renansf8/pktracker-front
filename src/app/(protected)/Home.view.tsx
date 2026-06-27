@@ -34,10 +34,14 @@ export function HomeView() {
     itmPercentage,
     itmCount,
     ftCount,
+    ftTournaments,
     avgDailyBuyIn,
     goldCount,
     silverCount,
     bronzeCount,
+    goldTournaments,
+    silverTournaments,
+    bronzeTournaments,
     monthlyProfitUsd,
     yearlyProfitUsd,
   } = useHomeViewModel();
@@ -140,10 +144,14 @@ export function HomeView() {
             itmPercentage={itmPercentage}
             itmCount={itmCount}
             ftCount={ftCount}
+            ftTournaments={ftTournaments}
             avgDailyBuyIn={avgDailyBuyIn}
             goldCount={goldCount}
             silverCount={silverCount}
             bronzeCount={bronzeCount}
+            goldTournaments={goldTournaments}
+            silverTournaments={silverTournaments}
+            bronzeTournaments={bronzeTournaments}
             twoRows
           />
         </section>
