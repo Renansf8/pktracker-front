@@ -67,7 +67,15 @@ export function SignInView() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Senha</FormLabel>
+                      <Link
+                        href="/forgot-password"
+                        className="text-xs text-text-secondary"
+                      >
+                        Esqueceu sua senha?
+                      </Link>
+                    </div>
                     <FormControl>
                       <Input
                         className="border-input-border"

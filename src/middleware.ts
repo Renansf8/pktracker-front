@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const COOKIE_NAME = "auth_token";
 
-const PUBLIC_ROUTES = ["/signin", "/signup"];
+const PUBLIC_ROUTES = [
+  "/signin",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+];
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get(COOKIE_NAME)?.value;

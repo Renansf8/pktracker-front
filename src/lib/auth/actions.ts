@@ -111,3 +111,102 @@ export async function signOutAction(): Promise<void> {
   await clearSession();
   redirect("/signin");
 }
+
+export type ForgotPasswordFormState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function forgotPasswordAction(
+  _prevState: ForgotPasswordFormState,
+  formData: FormData,
+): Promise<ForgotPasswordFormState> {
+  const email = formData.get("email");
+
+  if (typeof email !== "string") {
+    return { error: "Formulário inválido" };
+  }
+
+  try {
+    const res = await fetchWithColdStartRetry(
+      `${API_URL}/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+        cache: "no-store",
+      },
+    );
+
+    if (res.status === 429) {
+      return {
+        error: "Servidor sobrecarregado. Tente novamente em alguns instantes.",
+      };
+    }
+
+    if (!res.ok) {
+      return {
+        error: "Não foi possível enviar o email de recuperação. Tente novamente.",
+      };
+    }
+  } catch (err) {
+    console.error("[forgotPasswordAction] unexpected error:", err);
+    return { error: "Falha ao conectar com o servidor" };
+  }
+
+  return { success: true };
+}
+
+export type ResetPasswordFormState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function resetPasswordAction(
+  _prevState: ResetPasswordFormState,
+  formData: FormData,
+): Promise<ResetPasswordFormState> {
+  const token = formData.get("token");
+  const newPassword = formData.get("newPassword");
+
+  if (typeof token !== "string" || !token) {
+    return { error: "Link inválido. Solicite uma nova recuperação de senha." };
+  }
+
+  if (typeof newPassword !== "string") {
+    return { error: "Formulário inválido" };
+  }
+
+  try {
+    const res = await fetchWithColdStartRetry(
+      `${API_URL}/auth/reset-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword }),
+        cache: "no-store",
+      },
+    );
+
+    if (res.status === 429) {
+      return {
+        error: "Servidor sobrecarregado. Tente novamente em alguns instantes.",
+      };
+    }
+
+    if (res.status === 400) {
+      return {
+        error: "Link expirado ou inválido. Solicite uma nova recuperação de senha.",
+      };
+    }
+
+    if (!res.ok) {
+      return { error: "Não foi possível redefinir a senha. Tente novamente." };
+    }
+  } catch (err) {
+    console.error("[resetPasswordAction] unexpected error:", err);
+    return { error: "Falha ao conectar com o servidor" };
+  }
+
+  return { success: true };
+}
