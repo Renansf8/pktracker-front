@@ -14,7 +14,7 @@ export const useStats = () => {
     queryKey: ["stats", "platform-tournaments"],
     queryFn: () =>
       apiClient.get<PaginatedTournamentsResponse>(
-        API_ENDPOINTS.TOURNAMENTS.GET_ALL("", 1, 9999),
+        API_ENDPOINTS.TOURNAMENTS.GET_ALL({ limit: 9999 }),
       ),
   });
 

@@ -15,7 +15,7 @@ function toNum(v: unknown): number {
 }
 
 export function useMonthlyViewModel(): MonthlyViewProps {
-  const { getAllTournaments } = useTournaments("", 1, 9999);
+  const { getAllTournaments } = useTournaments({ limit: 9999 });
   const { data: tournamentsResponse, isLoading } = getAllTournaments;
   const { currencies } = useCurrency();
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);

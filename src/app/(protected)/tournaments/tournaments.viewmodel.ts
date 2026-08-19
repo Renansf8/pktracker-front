@@ -5,7 +5,11 @@ import { useCurrency } from "@/services/hooks/useCurrency";
 import { useEffect, useMemo, useState } from "react";
 import { ITEMS_PER_PAGE } from "./tournaments.types";
 import type { TournamentsViewProps } from "./tournaments.types";
-import type { Tournament } from "@/services/hooks/types";
+import type {
+  Tournament,
+  TournamentSpeed,
+  TournamentType,
+} from "@/services/hooks/types";
 import {
   buildTournamentPatch,
   type TournamentEditDraft,
@@ -41,6 +45,12 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const [platform, setPlatform] = useState("");
   const [nameInput, setNameInput] = useState("");
   const [name, setName] = useState("");
+  const [type, setType] = useState<TournamentType | "">("");
+  const [speed, setSpeed] = useState<TournamentSpeed | "">("");
+  const [minBuyInInput, setMinBuyInInput] = useState("");
+  const [maxBuyInInput, setMaxBuyInInput] = useState("");
+  const [minBuyIn, setMinBuyIn] = useState<number | undefined>(undefined);
+  const [maxBuyIn, setMaxBuyIn] = useState<number | undefined>(undefined);
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingTournamentId, setEditingTournamentId] = useState<string | null>(
@@ -65,14 +75,23 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     deleteTournament,
     updateTournament,
     applySchedule,
-  } = useTournaments(platform, currentPage, ITEMS_PER_PAGE, name);
+  } = useTournaments({
+    platform,
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+    name,
+    type,
+    speed,
+    minBuyIn,
+    maxBuyIn,
+  });
   const { currencies } = useCurrency();
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
   const { data: tournaments, isLoading } = getAllTournaments;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [platform]);
+  }, [platform, type, speed]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -82,12 +101,30 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     return () => clearTimeout(timer);
   }, [nameInput]);
 
+  const applyBuyInFilter = () => {
+    const parsedMin = minBuyInInput.trim() === "" ? undefined : Number(minBuyInInput);
+    setMinBuyIn(
+      parsedMin !== undefined && !Number.isNaN(parsedMin) ? parsedMin : undefined,
+    );
+    const parsedMax = maxBuyInInput.trim() === "" ? undefined : Number(maxBuyInInput);
+    setMaxBuyIn(
+      parsedMax !== undefined && !Number.isNaN(parsedMax) ? parsedMax : undefined,
+    );
+    setCurrentPage(1);
+  };
+
   const responseData = tournaments?.data;
   const totalPages = responseData?.totalPages ?? 1;
   const total = responseData?.total ?? 0;
   const currentPageData = (responseData?.data ?? []) as Tournament[];
 
-  const hasActiveFilter = platform !== "" || name !== "";
+  const hasActiveFilter =
+    platform !== "" ||
+    name !== "" ||
+    type !== "" ||
+    speed !== "" ||
+    minBuyIn !== undefined ||
+    maxBuyIn !== undefined;
   const filteredProfit = hasActiveFilter
     ? (responseData?.totalProfit ??
         currentPageData.reduce(
@@ -111,6 +148,12 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     setPlatform("");
     setNameInput("");
     setName("");
+    setType("");
+    setSpeed("");
+    setMinBuyInInput("");
+    setMaxBuyInInput("");
+    setMinBuyIn(undefined);
+    setMaxBuyIn(undefined);
     setCurrentPage(1);
     setTimeout(() => {
       getAllTournaments.refetch();
@@ -129,6 +172,22 @@ export function useTournamentsViewModel(): TournamentsViewProps {
   const onPlatformChange = (newPlatform: string) => {
     setPlatform(newPlatform);
     setCurrentPage(1);
+  };
+
+  const onTypeChange = (newType: TournamentType | "") => {
+    setType(newType);
+  };
+
+  const onSpeedChange = (newSpeed: TournamentSpeed | "") => {
+    setSpeed(newSpeed);
+  };
+
+  const onMinBuyInChange = (value: string) => {
+    setMinBuyInInput(value);
+  };
+
+  const onMaxBuyInChange = (value: string) => {
+    setMaxBuyInInput(value);
   };
 
   const onConfirmDelete = () => {
@@ -153,6 +212,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
         hasFt: tournament.hasFt ?? false,
         hasSecondDay: tournament.hasSecondDay ?? false,
         position: tournament.position != null ? String(tournament.position) : "",
+        type: tournament.type ?? "",
+        speed: tournament.speed ?? "",
       },
     }));
   };
@@ -175,6 +236,8 @@ export function useTournamentsViewModel(): TournamentsViewProps {
           hasFt: false,
           hasSecondDay: false,
           position: "",
+          type: "",
+          speed: "",
         }),
         ...patch,
       },
@@ -262,6 +325,10 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     paginationPages,
     platform,
     nameInput,
+    type,
+    speed,
+    minBuyInInput,
+    maxBuyInInput,
     hasActiveFilter,
     filteredProfit,
     isOpenFilter,
@@ -282,6 +349,11 @@ export function useTournamentsViewModel(): TournamentsViewProps {
     onFilterToggle: () => setIsOpenFilter((prev) => !prev),
     onNameChange,
     onPlatformChange,
+    onTypeChange,
+    onSpeedChange,
+    onMinBuyInChange,
+    onMaxBuyInChange,
+    onApplyBuyInFilter: applyBuyInFilter,
     onClearFilter: clearFilter,
     onPageChange: handlePageChange,
     onSelectTournamentToDelete: setSelectedTournamentId,

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
 import { API_ENDPOINTS } from "../api/endpoints";
-import type { Tournament } from "./types";
+import type { Tournament, TournamentSpeed, TournamentType } from "./types";
 import { toast } from "sonner";
 import { useGetUser } from "./useGetUser";
 
@@ -12,22 +12,63 @@ type UpdateTournamentInput = {
 
 type BulkTournamentItem = Omit<Tournament, "id">;
 
-export const useTournaments = (
-  platform: string = "",
-  page: number = 1,
-  limit: number = 20,
-  name: string = "",
-) => {
+export interface UseTournamentsFilters {
+  platform?: string;
+  page?: number;
+  limit?: number;
+  name?: string;
+  type?: TournamentType | "";
+  speed?: TournamentSpeed | "";
+  minBuyIn?: number;
+  maxBuyIn?: number;
+}
+
+export const useTournaments = (filters: UseTournamentsFilters = {}) => {
+  const {
+    platform = "",
+    page = 1,
+    limit = 20,
+    name = "",
+    type = "",
+    speed = "",
+    minBuyIn,
+    maxBuyIn,
+  } = filters;
   const queryClient = useQueryClient();
   const { refetch } = useGetUser();
   const getAllTournaments = useQuery({
-    queryKey: ["tournaments", platform, page, limit, name],
-    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL(platform, page, limit, false, name)),
+    queryKey: [
+      "tournaments",
+      platform,
+      page,
+      limit,
+      name,
+      type,
+      speed,
+      minBuyIn,
+      maxBuyIn,
+    ],
+    queryFn: () =>
+      apiClient.get(
+        API_ENDPOINTS.TOURNAMENTS.GET_ALL({
+          platform,
+          page,
+          limit,
+          name,
+          type: type || undefined,
+          speed: speed || undefined,
+          minBuyIn,
+          maxBuyIn,
+        }),
+      ),
   });
 
   const getDay2Tournaments = useQuery({
     queryKey: ["tournaments", "day2"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.TOURNAMENTS.GET_ALL("", 1, 100, true)),
+    queryFn: () =>
+      apiClient.get(
+        API_ENDPOINTS.TOURNAMENTS.GET_ALL({ limit: 100, hasSecondDay: true }),
+      ),
   });
 
   const invalidateAll = async () => {

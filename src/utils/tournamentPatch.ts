@@ -11,6 +11,8 @@ export type TournamentEditDraft = {
   hasFt: boolean;
   hasSecondDay: boolean;
   position: string;
+  type: string;
+  speed: string;
 };
 
 function normStr(v: unknown): string {
@@ -83,6 +85,18 @@ export function buildTournamentPatch(
   const originalPosition = original.position ?? null;
   if (nextPosition !== originalPosition) {
     patch.position = nextPosition;
+  }
+
+  const nextType = draft.type ? (draft.type as Tournament["type"]) : null;
+  const originalType = original.type ?? null;
+  if (nextType !== originalType) {
+    patch.type = nextType;
+  }
+
+  const nextSpeed = draft.speed ? (draft.speed as Tournament["speed"]) : null;
+  const originalSpeed = original.speed ?? null;
+  if (nextSpeed !== originalSpeed) {
+    patch.speed = nextSpeed;
   }
 
   return patch;

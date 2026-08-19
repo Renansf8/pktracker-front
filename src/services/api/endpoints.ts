@@ -12,13 +12,38 @@ export const API_ENDPOINTS = {
     ME: "/users/me",
   },
   TOURNAMENTS: {
-    GET_ALL: (platform: string, page: number = 1, limit: number = 10, hasSecondDay?: boolean, name?: string) => {
+    GET_ALL: (filters: {
+      platform?: string;
+      page?: number;
+      limit?: number;
+      hasSecondDay?: boolean;
+      name?: string;
+      type?: string;
+      speed?: string;
+      minBuyIn?: number;
+      maxBuyIn?: number;
+    } = {}) => {
+      const {
+        platform,
+        page = 1,
+        limit = 10,
+        hasSecondDay,
+        name,
+        type,
+        speed,
+        minBuyIn,
+        maxBuyIn,
+      } = filters;
       const params = new URLSearchParams();
       if (platform) params.append("platform", platform);
       if (name) params.append("name", name);
       params.append("page", page.toString());
       params.append("limit", limit.toString());
       if (hasSecondDay !== undefined) params.append("hasSecondDay", String(hasSecondDay));
+      if (type) params.append("type", type);
+      if (speed) params.append("speed", speed);
+      if (minBuyIn !== undefined) params.append("minBuyIn", String(minBuyIn));
+      if (maxBuyIn !== undefined) params.append("maxBuyIn", String(maxBuyIn));
       return `/tournaments?${params.toString()}`;
     },
     CREATE: "/tournaments",

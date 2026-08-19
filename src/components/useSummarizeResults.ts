@@ -62,7 +62,7 @@ function buildPeriodStats(list: Tournament[], rate: number) {
 }
 
 export function useSummarizeResults() {
-  const { getAllTournaments } = useTournaments("", 1, 9999);
+  const { getAllTournaments } = useTournaments({ limit: 9999 });
   const { currencies } = useCurrency();
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);
   const [periodTab, setPeriodTab] = useState("dia");

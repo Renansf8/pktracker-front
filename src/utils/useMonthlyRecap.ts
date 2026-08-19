@@ -34,7 +34,7 @@ export function useMonthlyRecap() {
     return { prevMonth: month, prevYear: year, prevMonthKey: key };
   }, []);
 
-  const { getAllTournaments } = useTournaments("", 1, 9999);
+  const { getAllTournaments } = useTournaments({ limit: 9999 });
   const { data: tournamentsResponse } = getAllTournaments;
   const { currencies } = useCurrency();
   const eurToUsdRate = getEurToUsdRate(currencies?.data?.rates);

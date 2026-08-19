@@ -1,3 +1,6 @@
+export type TournamentType = "BOUNTY" | "VANILLA";
+export type TournamentSpeed = "REGULAR" | "TURBO" | "HYPER";
+
 export interface Tournament {
   id?: string;
   date: string;
@@ -11,6 +14,8 @@ export interface Tournament {
   hasFt?: boolean;
   hasSecondDay?: boolean;
   position?: number | null;
+  type?: TournamentType | null;
+  speed?: TournamentSpeed | null;
 }
 
 export interface PaginatedTournamentsResponse {

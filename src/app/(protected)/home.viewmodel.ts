@@ -36,7 +36,7 @@ function toNum(v: unknown): number {
 export function useHomeViewModel(): HomeViewProps {
   const { data: user, isLoading } = useGetUser();
   const { currencies } = useCurrency();
-  const { getAllTournaments } = useTournaments("", 1, 9999);
+  const { getAllTournaments } = useTournaments({ limit: 9999 });
   const { data: tournamentsResponse } = getAllTournaments;
 
   const bankUsd = user?.bank?.bank ?? 0;

@@ -51,6 +51,12 @@ import {
 } from "@/components/ui/select";
 import { useTournamentsViewModel } from "./tournaments.viewmodel";
 import { getTournamentProfitNative } from "@/utils/tournamentLucro";
+import {
+  tournamentSpeedLabel,
+  tournamentSpeeds,
+  tournamentTypeLabel,
+  tournamentTypes,
+} from "@/utils/tournamentOptions";
 
 function EurTooltip({
   value,
@@ -78,6 +84,10 @@ export function TournamentsView() {
     currentPageData,
     paginationPages,
     platform,
+    type,
+    speed,
+    minBuyInInput,
+    maxBuyInInput,
     hasActiveFilter,
     filteredProfit,
     isOpenFilter,
@@ -99,6 +109,11 @@ export function TournamentsView() {
     nameInput,
     onNameChange,
     onPlatformChange,
+    onTypeChange,
+    onSpeedChange,
+    onMinBuyInChange,
+    onMaxBuyInChange,
+    onApplyBuyInFilter,
     onClearFilter,
     onPageChange,
     onSelectTournamentToDelete,
@@ -251,6 +266,15 @@ export function TournamentsView() {
               selectedPlatform={platform}
               nameInput={nameInput}
               onNameChange={onNameChange}
+              type={type}
+              onTypeChange={onTypeChange}
+              speed={speed}
+              onSpeedChange={onSpeedChange}
+              minBuyInInput={minBuyInInput}
+              onMinBuyInChange={onMinBuyInChange}
+              onApplyBuyInFilter={onApplyBuyInFilter}
+              maxBuyInInput={maxBuyInInput}
+              onMaxBuyInChange={onMaxBuyInChange}
             />
           </div>
         )}
@@ -300,6 +324,12 @@ export function TournamentsView() {
                     Profit
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
+                    Tipo
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
+                    Velocidade
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
                     ITM
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
@@ -317,7 +347,7 @@ export function TournamentsView() {
                 {currentPageData.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={11}
+                      colSpan={13}
                       className="text-text-primary text-center"
                     >
                       Nenhum torneio encontrado
@@ -508,6 +538,66 @@ export function TournamentsView() {
                             />
                           ) : (
                             `$ ${getTournamentProfitNative(tournament).toFixed(2)}`
+                          )}
+                        </TableCell>
+                        <TableCell className="text-text-primary text-center">
+                          {isEditing && draft ? (
+                            <Select
+                              value={draft.type || "none"}
+                              disabled={disabled}
+                              onValueChange={(newType) => {
+                                onChangeEditDraft(id, {
+                                  type: newType === "none" ? "" : newType,
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="h-9 w-28 mx-auto">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">-</SelectItem>
+                                {tournamentTypes.map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            tournamentTypeLabel(tournament.type)
+                          )}
+                        </TableCell>
+                        <TableCell className="text-text-primary text-center">
+                          {isEditing && draft ? (
+                            <Select
+                              value={draft.speed || "none"}
+                              disabled={disabled}
+                              onValueChange={(newSpeed) => {
+                                onChangeEditDraft(id, {
+                                  speed: newSpeed === "none" ? "" : newSpeed,
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="h-9 w-28 mx-auto">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">-</SelectItem>
+                                {tournamentSpeeds.map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            tournamentSpeedLabel(tournament.speed)
                           )}
                         </TableCell>
                         <TableCell className="text-text-primary text-center">
