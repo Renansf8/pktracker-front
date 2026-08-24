@@ -179,6 +179,9 @@ export function TournamentsView() {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="text-text-primary text-center">
+                          Ações
+                        </TableHead>
+                        <TableHead className="text-text-primary text-center">
                           Data de Início
                         </TableHead>
                         <TableHead className="text-text-primary text-center">
@@ -190,14 +193,22 @@ export function TournamentsView() {
                         <TableHead className="text-text-primary text-center">
                           Buy-in
                         </TableHead>
-                        <TableHead className="text-text-primary text-center">
-                          Ações
-                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {day2Tournaments.map((tournament) => (
                         <TableRow key={tournament.id}>
+                          <TableCell className="text-center">
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                onOpenFinalizeDay2Modal(tournament)
+                              }
+                              className="bg-success/90 hover:bg-success/80 text-white h-8 px-4 text-xs"
+                            >
+                              Finalizar
+                            </Button>
+                          </TableCell>
                           <TableCell className="text-text-primary text-center">
                             {convertIsoDateToBr(tournament.date)}
                           </TableCell>
@@ -219,17 +230,6 @@ export function TournamentsView() {
                             ) : (
                               `$ ${Number(tournament.buyIn).toFixed(2)}`
                             )}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Button
-                              size="sm"
-                              onClick={() =>
-                                onOpenFinalizeDay2Modal(tournament)
-                              }
-                              className="bg-success/90 hover:bg-success/80 text-white h-8 px-4 text-xs"
-                            >
-                              Finalizar
-                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -303,6 +303,9 @@ export function TournamentsView() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-text-primary text-center">
+                    Ações
+                  </TableHead>
+                  <TableHead className="text-text-primary text-center">
                     Data
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
@@ -338,9 +341,6 @@ export function TournamentsView() {
                   <TableHead className="text-text-primary text-center">
                     Posição
                   </TableHead>
-                  <TableHead className="text-text-primary text-center">
-                    Ações
-                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -363,6 +363,50 @@ export function TournamentsView() {
 
                     return (
                       <TableRow key={tournament.id}>
+                        <TableCell className="text-text-primary text-center flex gap-2 justify-around">
+                          {isEditing ? (
+                            <>
+                              <button
+                                type="button"
+                                className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={disabled}
+                                onClick={() => onSaveEditTournament(tournament)}
+                                aria-label="Salvar edição do torneio"
+                              >
+                                <Check className="size-4" />
+                              </button>
+                              <button
+                                type="button"
+                                className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={disabled}
+                                onClick={() => onCancelEditTournament(id)}
+                                aria-label="Cancelar edição do torneio"
+                              >
+                                <X className="size-4" />
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              className="cursor-pointer"
+                              onClick={() => onStartEditTournament(tournament)}
+                              aria-label="Editar torneio"
+                            >
+                              <Edit className="size-4" />
+                            </button>
+                          )}
+                          <div className="cursor-pointer">
+                            <Trash
+                              className="size-4"
+                              color="red"
+                              onClick={() =>
+                                onSelectTournamentToDelete(
+                                  tournament.id ?? null,
+                                )
+                              }
+                            />
+                          </div>
+                        </TableCell>
                         <TableCell className="text-text-primary text-center">
                           {isEditing && draft ? (
                             <Popover
@@ -672,50 +716,6 @@ export function TournamentsView() {
                           ) : (
                             (tournament.position ?? "-")
                           )}
-                        </TableCell>
-                        <TableCell className="text-text-primary text-center flex gap-2 justify-around">
-                          {isEditing ? (
-                            <>
-                              <button
-                                type="button"
-                                className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={disabled}
-                                onClick={() => onSaveEditTournament(tournament)}
-                                aria-label="Salvar edição do torneio"
-                              >
-                                <Check className="size-4" />
-                              </button>
-                              <button
-                                type="button"
-                                className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={disabled}
-                                onClick={() => onCancelEditTournament(id)}
-                                aria-label="Cancelar edição do torneio"
-                              >
-                                <X className="size-4" />
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              type="button"
-                              className="cursor-pointer"
-                              onClick={() => onStartEditTournament(tournament)}
-                              aria-label="Editar torneio"
-                            >
-                              <Edit className="size-4" />
-                            </button>
-                          )}
-                          <div className="cursor-pointer">
-                            <Trash
-                              className="size-4"
-                              color="red"
-                              onClick={() =>
-                                onSelectTournamentToDelete(
-                                  tournament.id ?? null,
-                                )
-                              }
-                            />
-                          </div>
                         </TableCell>
                       </TableRow>
                     );

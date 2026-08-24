@@ -18,6 +18,20 @@ function baseProps(overrides: Partial<BankViewProps> = {}): BankViewProps {
     rakes: [],
     dailyLimitPct: 7,
     dailyLimitInput: "",
+    months: Array.from({ length: 12 }, (_, month) => ({
+      year: 2026,
+      month,
+      deposits: 0,
+      withdrawals: 0,
+      rake: 0,
+      depositCount: 0,
+      withdrawalCount: 0,
+      rakeCount: 0,
+      net: 0,
+    })),
+    yearTotals: { deposits: 0, withdrawals: 0, rake: 0, net: 0 },
+    selectedYear: 2026,
+    availableYears: [2026],
     onAmountChange: jest.fn(),
     onRakeAmountChange: jest.fn(),
     onRakePlatformChange: jest.fn(),
@@ -26,6 +40,7 @@ function baseProps(overrides: Partial<BankViewProps> = {}): BankViewProps {
     onRake: jest.fn(),
     onDailyLimitInputChange: jest.fn(),
     onSaveDailyLimit: jest.fn(),
+    onYearChange: jest.fn(),
     ...overrides,
   };
 }

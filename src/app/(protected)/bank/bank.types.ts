@@ -17,6 +17,25 @@ export interface BankRake {
   platform?: string;
 }
 
+export interface BankMonthlyStats {
+  year: number;
+  month: number;
+  deposits: number;
+  withdrawals: number;
+  rake: number;
+  depositCount: number;
+  withdrawalCount: number;
+  rakeCount: number;
+  net: number;
+}
+
+export interface BankYearTotals {
+  deposits: number;
+  withdrawals: number;
+  rake: number;
+  net: number;
+}
+
 export interface BankViewProps {
   isLoading: boolean;
   amount: string;
@@ -27,6 +46,10 @@ export interface BankViewProps {
   rakes: BankRake[];
   dailyLimitPct: number;
   dailyLimitInput: string;
+  months: BankMonthlyStats[];
+  yearTotals: BankYearTotals;
+  selectedYear: number;
+  availableYears: number[];
   onAmountChange: (value: string) => void;
   onRakeAmountChange: (value: string) => void;
   onRakePlatformChange: (value: string) => void;
@@ -35,4 +58,5 @@ export interface BankViewProps {
   onRake: () => void;
   onDailyLimitInputChange: (value: string) => void;
   onSaveDailyLimit: () => void;
+  onYearChange: (year: number) => void;
 }
