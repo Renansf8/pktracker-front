@@ -88,7 +88,7 @@ export function useBankViewModel(): BankViewProps {
         depositCount: monthDeposits.length,
         withdrawalCount: monthWithdrawals.length,
         rakeCount: monthRakes.length,
-        net: depositsTotal - withdrawalsTotal,
+        net: withdrawalsTotal - depositsTotal,
       };
     });
   }, [deposits, withdrawals, rakes, selectedYear]);
@@ -101,7 +101,7 @@ export function useBankViewModel(): BankViewProps {
       deposits: totalDeposits,
       withdrawals: totalWithdrawals,
       rake: totalRake,
-      net: totalDeposits - totalWithdrawals,
+      net: totalWithdrawals - totalDeposits,
     };
   }, [months]);
 
