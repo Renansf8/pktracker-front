@@ -173,6 +173,11 @@ export function FilterTournaments({
           setPlatform={setPlatform}
           isSelected={selectedPlatform === "ACR"}
         />
+        <ButtonFilter
+          platform="Coin"
+          setPlatform={setPlatform}
+          isSelected={selectedPlatform === "Coin"}
+        />
       </div>
       <Button
         className="text-[12px] p-2 h-[32px] max-w-[80px]"

@@ -11,6 +11,7 @@ const PLATFORM_STYLES: Record<
   YA: { bg: "#15803d", color: "#fff" },
   WPN: { bg: "#db2777", color: "#fff" },
   ACR: { bg: "#52525b", color: "#fff" },
+  Coin: { bg: "#ca8a04", color: "#fff" },
 };
 
 interface PlatformTagProps {

@@ -273,7 +273,7 @@ describe("TournamentsView — modo de edição", () => {
   });
 
   it("exibe inputs de edição quando torneio está em modo de edição", () => {
-    const tournament = makeTournament({ id: "t1", platform: "PokerStars", name: "Sunday" });
+    const tournament = makeTournament({ id: "t1", platform: "Poker Stars", name: "Sunday" });
     mockViewModel.mockReturnValue(
       baseProps({
         currentPageData: [tournament],
@@ -281,7 +281,7 @@ describe("TournamentsView — modo de edição", () => {
         editDraftById: {
           t1: {
             date: "2026-05-01T12:00:00.000Z",
-            platform: "PokerStars",
+            platform: "Poker Stars",
             name: "Sunday",
             currency: "USD",
             buyIn: 10,
@@ -299,8 +299,8 @@ describe("TournamentsView — modo de edição", () => {
 
     render(<TournamentsView />);
 
-    const platformInput = screen.getByDisplayValue("PokerStars");
-    expect(platformInput).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Sunday")).toBeInTheDocument();
+    expect(screen.getAllByText("Poker Stars").length).toBeGreaterThan(0);
   });
 
   it("exibe botões salvar e cancelar no modo de edição", () => {

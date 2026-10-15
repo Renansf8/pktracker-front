@@ -12,6 +12,7 @@ import type { Tournament } from "@/services/hooks/types";
 import { TournamentForm } from "./components/tournamentForm";
 import { convertIsoDateToBr } from "@/utils/dateConvert";
 import { PlatformTag } from "@/components/PlatformTag";
+import { platforms } from "@/utils/platforms";
 import {
   Check,
   ChevronDownIcon,
@@ -51,12 +52,6 @@ import {
 } from "@/components/ui/select";
 import { useTournamentsViewModel } from "./tournaments.viewmodel";
 import { getTournamentProfitNative } from "@/utils/tournamentLucro";
-import {
-  tournamentSpeedLabel,
-  tournamentSpeeds,
-  tournamentTypeLabel,
-  tournamentTypes,
-} from "@/utils/tournamentOptions";
 
 function EurTooltip({
   value,
@@ -327,12 +322,6 @@ export function TournamentsView() {
                     Profit
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
-                    Tipo
-                  </TableHead>
-                  <TableHead className="text-text-primary text-center">
-                    Velocidade
-                  </TableHead>
-                  <TableHead className="text-text-primary text-center">
                     ITM
                   </TableHead>
                   <TableHead className="text-text-primary text-center">
@@ -347,7 +336,7 @@ export function TournamentsView() {
                 {currentPageData.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={13}
+                      colSpan={11}
                       className="text-text-primary text-center"
                     >
                       Nenhum torneio encontrado
@@ -467,16 +456,27 @@ export function TournamentsView() {
                         </TableCell>
                         <TableCell className="text-center">
                           {isEditing && draft ? (
-                            <Input
-                              value={draft.platform}
-                              onChange={(e) =>
-                                onChangeEditDraft(id, {
-                                  platform: e.target.value,
-                                })
+                            <Select
+                              value={draft.platform || ""}
+                              onValueChange={(value) =>
+                                onChangeEditDraft(id, { platform: value })
                               }
                               disabled={disabled}
-                              className="h-9 text-text-primary"
-                            />
+                            >
+                              <SelectTrigger className="h-9 w-32 mx-auto">
+                                <SelectValue placeholder="Plataforma" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {platforms.map((platform) => (
+                                  <SelectItem
+                                    key={platform.id}
+                                    value={platform.name}
+                                  >
+                                    {platform.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           ) : (
                             <PlatformTag platform={tournament.platform} />
                           )}
@@ -582,66 +582,6 @@ export function TournamentsView() {
                             />
                           ) : (
                             `$ ${getTournamentProfitNative(tournament).toFixed(2)}`
-                          )}
-                        </TableCell>
-                        <TableCell className="text-text-primary text-center">
-                          {isEditing && draft ? (
-                            <Select
-                              value={draft.type || "none"}
-                              disabled={disabled}
-                              onValueChange={(newType) => {
-                                onChangeEditDraft(id, {
-                                  type: newType === "none" ? "" : newType,
-                                });
-                              }}
-                            >
-                              <SelectTrigger className="h-9 w-28 mx-auto">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="none">-</SelectItem>
-                                {tournamentTypes.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            tournamentTypeLabel(tournament.type)
-                          )}
-                        </TableCell>
-                        <TableCell className="text-text-primary text-center">
-                          {isEditing && draft ? (
-                            <Select
-                              value={draft.speed || "none"}
-                              disabled={disabled}
-                              onValueChange={(newSpeed) => {
-                                onChangeEditDraft(id, {
-                                  speed: newSpeed === "none" ? "" : newSpeed,
-                                });
-                              }}
-                            >
-                              <SelectTrigger className="h-9 w-28 mx-auto">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="none">-</SelectItem>
-                                {tournamentSpeeds.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            tournamentSpeedLabel(tournament.speed)
                           )}
                         </TableCell>
                         <TableCell className="text-text-primary text-center">

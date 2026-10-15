@@ -8,4 +8,5 @@ export const platforms = [
   { id: 7, name: "YA" },
   { id: 8, name: "WPN" },
   { id: 9, name: "ACR" },
+  { id: 10, name: "Coin" },
 ];

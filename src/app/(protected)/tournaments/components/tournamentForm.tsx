@@ -13,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useTournaments } from "@/services/hooks/useTournaments";
-import type { Tournament } from "@/services/hooks/types";
 import { TournamentNameCombobox } from "./TournamentNameCombobox";
 
 import {
@@ -24,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { platforms } from "@/utils/platforms";
-import { tournamentSpeeds, tournamentTypes } from "@/utils/tournamentOptions";
 import {
   Popover,
   PopoverContent,
@@ -61,28 +59,26 @@ export function TournamentForm({ platform }: TournamentFormProps) {
     hasFt: z.boolean(),
     hasSecondDay: z.boolean(),
     position: z.string().optional(),
-    type: z.string().optional(),
-    speed: z.string().optional(),
   });
 
   type FormData = z.infer<typeof schema>;
 
+  const getDefaultValues = (): FormData => ({
+    date: new Date().toISOString(),
+    platform: "",
+    name: "",
+    currency: "USD",
+    buyIn: "",
+    result: "",
+    itm: false,
+    hasFt: false,
+    hasSecondDay: false,
+    position: "",
+  });
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      date: "",
-      platform: "",
-      name: "",
-      currency: "USD",
-      buyIn: "",
-      result: "",
-      itm: false,
-      hasFt: false,
-      hasSecondDay: false,
-      position: "",
-      type: "",
-      speed: "",
-    },
+    defaultValues: getDefaultValues(),
   });
 
   const { createTournament } = useTournaments({ platform });
@@ -103,11 +99,9 @@ export function TournamentForm({ platform }: TournamentFormProps) {
       hasFt: data.hasFt,
       hasSecondDay: data.hasSecondDay,
       position: data.itm && data.position ? Number(data.position) : null,
-      type: data.type ? (data.type as Tournament["type"]) : undefined,
-      speed: data.speed ? (data.speed as Tournament["speed"]) : undefined,
     };
     createTournament.mutate(tournamentData);
-    form.reset();
+    form.reset(getDefaultValues());
   };
 
   return (
@@ -386,76 +380,6 @@ export function TournamentForm({ platform }: TournamentFormProps) {
                           disabled={!itm}
                           {...field}
                         />
-                      </FormControl>
-                    </div>
-                    <FormMessage className="text-[10px] min-h-[14px]" />
-                  </div>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <div className="flex flex-col justify-between h-[80px] w-32">
-                    <div className="gap-1 flex flex-col">
-                      <FormLabel>Tipo</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={(v) =>
-                            field.onChange(v === "none" ? "" : v)
-                          }
-                          value={field.value || "none"}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue placeholder="Tipo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">-</SelectItem>
-                            {tournamentTypes.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    </div>
-                    <FormMessage className="text-[10px] min-h-[14px]" />
-                  </div>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="speed"
-                render={({ field }) => (
-                  <div className="flex flex-col justify-between h-[80px] w-32">
-                    <div className="gap-1 flex flex-col">
-                      <FormLabel>Velocidade</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={(v) =>
-                            field.onChange(v === "none" ? "" : v)
-                          }
-                          value={field.value || "none"}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue placeholder="Velocidade" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">-</SelectItem>
-                            {tournamentSpeeds.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
                       </FormControl>
                     </div>
                     <FormMessage className="text-[10px] min-h-[14px]" />
