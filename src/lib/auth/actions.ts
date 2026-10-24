@@ -11,10 +11,21 @@ const API_URL = process.env.API_BASE_URL;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+const TOO_MANY_ATTEMPTS = "Muitas tentativas. Aguarde um minuto e tente novamente.";
+const SERVER_BUSY = "Servidor sobrecarregado. Tente novamente em alguns instantes.";
+
+/** A 429 from the API's own rate limit (Nest JSON error), not Render waking up. */
+async function isApiRateLimit(res: Response): Promise<boolean> {
+  if (res.status !== 429) return false;
+  const body = (await res.clone().json().catch(() => null)) as { statusCode?: number } | null;
+  return body?.statusCode === 429;
+}
+
 async function fetchWithColdStartRetry(url: string, init: RequestInit, retries = 5, delayMs = 10000): Promise<Response> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     const res = await fetch(url, init);
-    if (res.status !== 429 || attempt === retries) return res;
+    // Retrying a rate-limited request would only burn more attempts.
+    if (res.status !== 429 || attempt === retries || (await isApiRateLimit(res))) return res;
     await sleep(delayMs);
   }
   // nunca chega aqui, mas satisfaz o TypeScript
@@ -41,7 +52,7 @@ export async function signInAction(
     });
 
     if (res.status === 429) {
-      return { error: "Servidor sobrecarregado. Tente novamente em alguns instantes." };
+      return { error: (await isApiRateLimit(res)) ? TOO_MANY_ATTEMPTS : SERVER_BUSY };
     }
 
     if (!res.ok) {
@@ -139,9 +150,7 @@ export async function forgotPasswordAction(
     );
 
     if (res.status === 429) {
-      return {
-        error: "Servidor sobrecarregado. Tente novamente em alguns instantes.",
-      };
+      return { error: (await isApiRateLimit(res)) ? TOO_MANY_ATTEMPTS : SERVER_BUSY };
     }
 
     if (!res.ok) {
@@ -189,9 +198,7 @@ export async function resetPasswordAction(
     );
 
     if (res.status === 429) {
-      return {
-        error: "Servidor sobrecarregado. Tente novamente em alguns instantes.",
-      };
+      return { error: (await isApiRateLimit(res)) ? TOO_MANY_ATTEMPTS : SERVER_BUSY };
     }
 
     if (res.status === 400) {
