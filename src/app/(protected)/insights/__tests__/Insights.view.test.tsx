@@ -66,7 +66,7 @@ const dashboard: GeneratedDashboard = {
     {
       type: "table",
       rows: [
-        { label: "GG", entry: null, tournaments: 10, buyIns: 100, profit: -25.5, roi: -25.5, itmRate: 20, abi: 10 },
+        { label: "GG", entry: null, tournaments: 10, buyIns: 100, profit: -25.5, roi: -25.5, itmRate: 20, ftRate: 10, day2Rate: 0, wins: 0, podiums: 1, abi: 10, avgProfit: -2.55, biggestCash: 30 },
       ],
     },
   ],
@@ -165,7 +165,7 @@ describe("InsightsView", () => {
             {
               type: "table",
               rows: [
-                { label: "Bounty Hunters", entry: { platform: "Party Poker", currency: "USD", buyIn: 11 }, tournaments: 3, buyIns: 30, profit: 500, roi: 1666.7, itmRate: 33.3, abi: 10 },
+                { label: "Bounty Hunters", entry: { platform: "Party Poker", currency: "USD", buyIn: 11 }, tournaments: 3, buyIns: 30, profit: 500, roi: 1666.7, itmRate: 33.3, ftRate: 0, day2Rate: 0, wins: 0, podiums: 0, abi: 10, avgProfit: 166.67, biggestCash: 530 },
               ],
             },
           ],
@@ -178,6 +178,69 @@ describe("InsightsView", () => {
     expect(screen.getByRole("cell", { name: "Party Poker" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Buy-in" })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "$ 11.00" })).toBeInTheDocument();
+  });
+
+  it("lists individual tournaments with prize, position and currency", () => {
+    mockViewModel.mockReturnValue(
+      baseProps({
+        dashboard: {
+          spec: {
+            title: "Maiores prêmios",
+            summary: "s",
+            widgets: [
+              {
+                type: "tournament_list",
+                title: "Top prêmios",
+                sortBy: "prize",
+                order: "desc",
+                limit: 2,
+                period,
+                platform: null,
+              },
+            ],
+          },
+          data: [
+            {
+              type: "tournament_list",
+              rows: [
+                {
+                  date: "2026-05-08",
+                  name: "Bounty Hunters",
+                  platform: "Poker Stars",
+                  currency: "USD",
+                  buyIn: 5.5,
+                  prize: 800,
+                  profit: 794.5,
+                  position: 32,
+                  itm: true,
+                  hasFt: false,
+                },
+                {
+                  date: "2026-06-01",
+                  name: "Sunday Special",
+                  platform: "Winamax",
+                  currency: "EUR",
+                  buyIn: null,
+                  prize: "ticket",
+                  profit: 0,
+                  position: null,
+                  itm: false,
+                  hasFt: false,
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    );
+    render(<InsightsView />);
+
+    expect(screen.getByRole("columnheader", { name: "Prêmio" })).toBeInTheDocument();
+    expect(screen.getByText("08/05/2026")).toBeInTheDocument();
+    expect(screen.getByText("$ 800.00")).toBeInTheDocument();
+    expect(screen.getByText("32º")).toBeInTheDocument();
+    expect(screen.getAllByText("Ticket")).toHaveLength(2);
+    expect(screen.getByText("€ 0.00")).toBeInTheDocument();
   });
 
   it("labels tournament-name tables and shows the platform filter", () => {
@@ -204,7 +267,7 @@ describe("InsightsView", () => {
             {
               type: "table",
               rows: [
-                { label: "Daily Big $22", entry: { platform: "GG", currency: "EUR", buyIn: null }, tournaments: 1, buyIns: 22, profit: 100, roi: 454.5, itmRate: 100, abi: 22 },
+                { label: "Daily Big $22", entry: { platform: "GG", currency: "EUR", buyIn: null }, tournaments: 1, buyIns: 22, profit: 100, roi: 454.5, itmRate: 100, ftRate: 100, day2Rate: 0, wins: 1, podiums: 1, abi: 22, avgProfit: 100, biggestCash: 122 },
               ],
             },
           ],

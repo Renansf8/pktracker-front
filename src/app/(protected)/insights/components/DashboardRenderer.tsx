@@ -42,6 +42,7 @@ const GROUP_LABELS: Record<DashboardGroupBy, string> = {
   platform: "Plataforma",
   currency: "Moeda",
   tournament_name: "Torneio",
+  buy_in_range: "Faixa de buy-in",
 };
 
 export function formatValue(value: number | null, unit: DashboardValueUnit): string {
@@ -239,6 +240,7 @@ function TableWidget({
             <TableHead className="text-right">Lucro</TableHead>
             <TableHead className="text-right">ROI</TableHead>
             <TableHead className="text-right">ITM</TableHead>
+            <TableHead className="text-right">FT</TableHead>
             <TableHead className="text-right">ABI</TableHead>
           </TableRow>
         </TableHeader>
@@ -267,7 +269,68 @@ function TableWidget({
                 {formatValue(row.roi, "percent")}
               </TableCell>
               <TableCell className="text-right tabular-nums">{formatValue(row.itmRate, "percent")}</TableCell>
+              <TableCell className="text-right tabular-nums">{formatValue(row.ftRate, "percent")}</TableCell>
               <TableCell className="text-right tabular-nums">{formatValue(row.abi, "money")}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function formatMoneyIn(value: number, currency: string): string {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? `${currency} `;
+  return `${symbol} ${value.toFixed(2)}`;
+}
+
+function TournamentListWidget({
+  widget,
+  data,
+}: {
+  widget: Extract<DashboardWidget, { type: "tournament_list" }>;
+  data: Extract<DashboardWidgetData, { type: "tournament_list" }>;
+}) {
+  if (!data.rows.length) return <EmptyData />;
+  const showPlatform = !widget.platform;
+  return (
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Data</TableHead>
+            <TableHead>Torneio</TableHead>
+            {showPlatform && <TableHead>Plataforma</TableHead>}
+            <TableHead className="text-right">Buy-in</TableHead>
+            <TableHead className="text-right">Posição</TableHead>
+            <TableHead className="text-right">Prêmio</TableHead>
+            <TableHead className="text-right">Lucro</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.rows.map((row, index) => (
+            <TableRow key={`${row.date}-${row.name}-${index}`}>
+              <TableCell className="tabular-nums whitespace-nowrap">{formatIsoDate(row.date)}</TableCell>
+              <TableCell>{row.name}</TableCell>
+              {showPlatform && (
+                <TableCell>
+                  <PlatformTag platform={row.platform} />
+                </TableCell>
+              )}
+              <TableCell className="text-right tabular-nums">{formatEntryBuyIn(row)}</TableCell>
+              <TableCell className="text-right tabular-nums">
+                {row.position ? `${row.position}º` : "—"}
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
+                {row.prize === null
+                  ? "—"
+                  : row.prize === "ticket"
+                    ? "Ticket"
+                    : formatMoneyIn(row.prize, row.currency)}
+              </TableCell>
+              <TableCell className={cn("text-right tabular-nums", valueTone(row.profit, "money"))}>
+                {formatMoneyIn(row.profit, row.currency)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -300,6 +363,13 @@ function renderWidgetBody(widget: DashboardWidget, data: DashboardWidgetData | u
         <TableWidget
           widget={widget}
           data={data as Extract<DashboardWidgetData, { type: "table" }>}
+        />
+      );
+    case "tournament_list":
+      return (
+        <TournamentListWidget
+          widget={widget}
+          data={data as Extract<DashboardWidgetData, { type: "tournament_list" }>}
         />
       );
   }
