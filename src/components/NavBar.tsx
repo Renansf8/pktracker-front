@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/stats", label: "Estatísticas" },
   { href: "/monthly", label: "Mensal" },
   { href: "/analytics", label: "Análise" },
+  { href: "/insights", label: "Insights" },
   { href: "/career", label: "Carreira" },
   { href: "/profile", label: "Perfil" },
 ] as const;
