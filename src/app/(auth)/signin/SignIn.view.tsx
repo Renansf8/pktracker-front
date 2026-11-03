@@ -105,6 +105,11 @@ export function SignInView() {
                 Criar conta
               </Link>
             </div>
+            <div className="mt-3 text-center text-xs">
+              <Link href="/privacidade" className="text-text-secondary underline">
+                Política de privacidade
+              </Link>
+            </div>
           </form>
         </Form>
       </CardContent>

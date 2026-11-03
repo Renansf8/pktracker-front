@@ -122,6 +122,13 @@ export function SignUpView() {
                 Faça login
               </Link>
             </div>
+            <p className="mt-3 text-center text-xs text-text-secondary">
+              Ao criar uma conta, você declara ter lido a{" "}
+              <Link href="/privacidade" className="underline">
+                Política de privacidade
+              </Link>
+              .
+            </p>
           </form>
         </Form>
       </CardContent>
