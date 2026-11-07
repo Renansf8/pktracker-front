@@ -15,14 +15,16 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
 
   // Integrações do browser (Replay, BrowserTracing já vêm por padrão).
+  // As telas mostram dados financeiros e e-mail do jogador: o Replay grava a
+  // estrutura da página com todo texto, campo e mídia mascarados.
   integrations: [
     Sentry.replayIntegration({
-      maskAllText: false,
-      blockAllMedia: false,
+      maskAllText: true,
+      maskAllInputs: true,
+      blockAllMedia: true,
     }),
   ],
 
-  // Envia PII (IP, user-agent) automaticamente. Equivale ao `sendDefaultPii: true`
-  // que estava no setup anterior com @sentry/react.
-  sendDefaultPii: true,
+  // Não envia PII (IP, cookies, dados do usuário) para o Sentry.
+  sendDefaultPii: false,
 });

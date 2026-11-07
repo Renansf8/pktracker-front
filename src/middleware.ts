@@ -9,9 +9,15 @@ const PUBLIC_ROUTES = [
   "/reset-password",
 ];
 
+// Open to everyone, logged in or not (no redirect either way).
+const OPEN_ROUTES = ["/privacidade"];
+
 export function middleware(req: NextRequest) {
   const token = req.cookies.get(COOKIE_NAME)?.value;
   const { pathname } = req.nextUrl;
+  if (OPEN_ROUTES.some((r) => pathname.startsWith(r))) {
+    return NextResponse.next();
+  }
   const isPublicRoute = PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
 
   if (!token && !isPublicRoute) {
