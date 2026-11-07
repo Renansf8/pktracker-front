@@ -84,4 +84,8 @@ export const API_ENDPOINTS = {
   STATS: {
     SUMMARY: "/stats/summary",
   },
+  GENUI: {
+    DASHBOARD: "/genui/dashboard",
+    COMMENTARY: "/genui/dashboard/commentary",
+  },
 } as const;

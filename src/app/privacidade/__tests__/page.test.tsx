@@ -21,4 +21,12 @@ describe("PrivacyPolicyPage", () => {
     expect(screen.getByRole("heading", { name: "5. Cookies" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "8. Seus direitos" })).toBeInTheDocument();
   });
+
+  it("discloses that commenting on results sends the dashboard values to Anthropic", () => {
+    render(<PrivacyPolicyPage />);
+    expect(screen.getByText(/Comentar resultados/)).toBeInTheDocument();
+    expect(screen.getByText(/nomes de torneios e plataformas que aparecem nele/)).toBeInTheDocument();
+    expect(screen.getByText(/as moedas da sua conta e o texto do seu pedido/)).toBeInTheDocument();
+    expect(screen.getByText(/Seu nome e e-mail nunca são enviados/)).toBeInTheDocument();
+  });
 });

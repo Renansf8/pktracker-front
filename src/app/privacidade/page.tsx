@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 const CONTROLLER_NAME = "Renan Santiago";
 const CONTACT_EMAIL = "renansferreira8@gmail.com";
-const LAST_UPDATED = "24/10/2026";
+const LAST_UPDATED = "07/11/2026";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -59,7 +59,8 @@ export default function PrivacyPolicyPage() {
           </li>
           <li>
             <strong className="text-text-primary">Pedidos na página Insights:</strong> o texto que você
-            escreve para gerar um dashboard.
+            escreve para gerar um dashboard e, se você pedir um comentário, os valores calculados
+            para esse dashboard.
           </li>
           <li>
             <strong className="text-text-primary">Dados técnicos:</strong> o cookie de sessão que
@@ -110,9 +111,13 @@ export default function PrivacyPolicyPage() {
           </li>
           <li>
             <strong className="text-text-primary">Anthropic:</strong> só quando você usa a página
-            Insights. Recebe o texto do seu pedido e um resumo da sua conta (quantidade de torneios,
-            datas do primeiro e do último, plataformas e moedas que você usa). Seus resultados, valores
-            e nomes de torneios não são enviados: os números são calculados pelo próprio PkTracker.
+            Insights. Para montar o dashboard, recebe o texto do seu pedido e um resumo da sua conta
+            (quantidade de torneios, datas do primeiro e do último, plataformas e moedas que você
+            usa). Os números do dashboard são calculados pelo próprio PkTracker. Se você clicar em
+            &quot;Comentar resultados&quot;, a Anthropic também recebe os valores calculados para esse
+            dashboard (como lucro, ROI, buy-ins, prêmios, posições, datas, variações e quedas), os
+            nomes de torneios e plataformas que aparecem nele, as moedas da sua conta e o texto do seu
+            pedido, para escrever o comentário. Seu nome e e-mail nunca são enviados.
           </li>
         </ul>
         <p>
