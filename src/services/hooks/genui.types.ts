@@ -130,3 +130,44 @@ export interface GeneratedDashboard {
   /** Same order as spec.widgets. */
   data: DashboardWidgetData[];
 }
+
+// --- Commentary (POST /genui/dashboard/commentary) ---
+
+export type CommentaryFactUnit = "money" | "percent" | "count" | "date";
+
+export type CommentarySegment =
+  | { type: "text"; text: string }
+  | {
+      type: "fact";
+      factId: string;
+      /** Index into spec.widgets. */
+      widget: number;
+      /** e.g. "GG", "Bounty Hunters $115 (Party Poker)". */
+      label: string | null;
+      /** string only for dates (YYYY-MM-DD). */
+      value: number | string | null;
+      unit: CommentaryFactUnit;
+      currency: string | null;
+    };
+
+export interface CommentaryInsight {
+  segments: CommentarySegment[];
+  /** Indexes into spec.widgets the sentence refers to. */
+  widgets: number[];
+}
+
+export interface DashboardCommentary {
+  headline: CommentarySegment[];
+  insights: CommentaryInsight[];
+  caveat: string | null;
+}
+
+export interface CommentaryResponse {
+  /** null = nothing to comment on (no widgets or no data). */
+  commentary: DashboardCommentary | null;
+}
+
+export interface CommentaryRequest {
+  spec: DashboardSpec;
+  prompt?: string;
+}

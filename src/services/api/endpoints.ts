@@ -86,5 +86,6 @@ export const API_ENDPOINTS = {
   },
   GENUI: {
     DASHBOARD: "/genui/dashboard",
+    COMMENTARY: "/genui/dashboard/commentary",
   },
 } as const;

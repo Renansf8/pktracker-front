@@ -23,11 +23,11 @@ import {
 } from "@/components/ui/table";
 import { PlatformTag } from "@/components/PlatformTag";
 import { cn } from "@/lib/utils";
+import { CURRENCY_SYMBOLS, formatIsoDate, formatValue, valueTone } from "@/utils/insightsFormat";
 import type {
   DashboardBucket,
   DashboardGroupBy,
   DashboardPeriod,
-  DashboardValueUnit,
   DashboardWidget,
   DashboardWidgetData,
   GeneratedDashboard,
@@ -45,24 +45,10 @@ const GROUP_LABELS: Record<DashboardGroupBy, string> = {
   buy_in_range: "Faixa de buy-in",
 };
 
-export function formatValue(value: number | null, unit: DashboardValueUnit): string {
-  if (value === null || !Number.isFinite(value)) return "—";
-  if (unit === "money") return `$ ${value.toFixed(2)}`;
-  if (unit === "percent") return `${value.toFixed(1)}%`;
-  return String(Math.round(value));
-}
-
-const CURRENCY_SYMBOLS: Record<string, string> = { USD: "$", EUR: "€", BRL: "R$" };
-
 function formatEntryBuyIn(entry: { currency: string; buyIn: number | null }): string {
   if (entry.buyIn === null) return "Ticket";
   const symbol = CURRENCY_SYMBOLS[entry.currency] ?? `${entry.currency} `;
   return `${symbol} ${entry.buyIn.toFixed(2)}`;
-}
-
-function formatIsoDate(iso: string): string {
-  const [y, m, d] = iso.slice(0, 10).split("-");
-  return `${d}/${m}/${y}`;
 }
 
 function formatPeriod(period: DashboardPeriod): string {
@@ -73,13 +59,6 @@ function formatBucket(iso: string, bucket: DashboardBucket): string {
   const [y, m, d] = iso.slice(0, 10).split("-");
   if (bucket === "month") return `${MONTHS[Number(m) - 1]}/${y.slice(2)}`;
   return `${d}/${m}`;
-}
-
-function valueTone(value: number | null, unit: DashboardValueUnit) {
-  if (value === null || unit === "count") return "text-text-primary";
-  if (value > 0) return "text-green-500";
-  if (value < 0) return "text-red-500";
-  return "text-text-primary";
 }
 
 function WidgetShell({
@@ -375,7 +354,14 @@ function renderWidgetBody(widget: DashboardWidget, data: DashboardWidgetData | u
   }
 }
 
-export function DashboardRenderer({ dashboard }: { dashboard: GeneratedDashboard }) {
+export function DashboardRenderer({
+  dashboard,
+  afterSummary,
+}: {
+  dashboard: GeneratedDashboard;
+  /** Rendered between the dashboard summary and its widgets. */
+  afterSummary?: React.ReactNode;
+}) {
   const { spec, data } = dashboard;
 
   return (
@@ -384,6 +370,8 @@ export function DashboardRenderer({ dashboard }: { dashboard: GeneratedDashboard
         <h2 className="font-display text-2xl font-bold text-text-primary">{spec.title}</h2>
         <p className="text-sm text-muted-foreground mt-1">{spec.summary}</p>
       </div>
+
+      {afterSummary}
 
       {spec.widgets.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

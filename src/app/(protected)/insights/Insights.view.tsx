@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CommentaryPanel } from "./components/CommentaryPanel";
 import { DashboardRenderer } from "./components/DashboardRenderer";
 import { PROMPT_MAX_LENGTH } from "./insights.types";
 import { useInsightsViewModel } from "./insights.viewmodel";
@@ -14,6 +15,11 @@ export function InsightsView() {
     isGenerating,
     errorMessage,
     canSubmit,
+    commentary,
+    isCommenting,
+    commentaryError,
+    canComment,
+    onRequestCommentary,
     onPromptChange,
     onSubmit,
     onPickSuggestion,
@@ -94,7 +100,22 @@ export function InsightsView() {
         </p>
       )}
 
-      {!isGenerating && dashboard && <DashboardRenderer dashboard={dashboard} />}
+      {!isGenerating && dashboard && (
+        <DashboardRenderer
+          dashboard={dashboard}
+          afterSummary={
+            dashboard.spec.widgets.length > 0 ? (
+              <CommentaryPanel
+                commentary={commentary}
+                isCommenting={isCommenting}
+                error={commentaryError}
+                canComment={canComment}
+                onRequestCommentary={onRequestCommentary}
+              />
+            ) : undefined
+          }
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { InsightsView } from "../Insights.view";
 import { useInsightsViewModel } from "../insights.viewmodel";
 import type { InsightsViewProps } from "../insights.types";
-import type { GeneratedDashboard } from "@/services/hooks/genui.types";
+import type { CommentaryResponse, GeneratedDashboard } from "@/services/hooks/genui.types";
 
 jest.mock("../insights.viewmodel");
 jest.mock("recharts", () => ({
@@ -80,6 +80,11 @@ function baseProps(overrides: Partial<InsightsViewProps> = {}): InsightsViewProp
     isGenerating: false,
     errorMessage: null,
     canSubmit: false,
+    commentary: null,
+    isCommenting: false,
+    commentaryError: null,
+    canComment: true,
+    onRequestCommentary: jest.fn(),
     onPromptChange: jest.fn(),
     onSubmit: jest.fn(),
     onPickSuggestion: jest.fn(),
@@ -281,5 +286,170 @@ describe("InsightsView", () => {
     expect(screen.getByRole("cell", { name: "Ticket" })).toBeInTheDocument();
     expect(screen.getByText("Daily Big $22")).toBeInTheDocument();
     expect(screen.getByText("GG")).toBeInTheDocument();
+  });
+
+  describe("commentary", () => {
+    const commentary: CommentaryResponse = {
+      commentary: {
+        headline: [
+          { type: "text", text: "Seu maior prejuízo veio de " },
+          { type: "fact", factId: "f1", widget: 3, label: "GG", value: null, unit: "money", currency: null },
+          { type: "text", text: ", com " },
+          { type: "fact", factId: "f2", widget: 3, label: null, value: -25.5, unit: "money", currency: null },
+          { type: "text", text: "." },
+        ],
+        insights: [
+          {
+            widgets: [1],
+            segments: [
+              { type: "text", text: "O ROI ficou em " },
+              { type: "fact", factId: "f3", widget: 1, label: "GG", value: 20, unit: "percent", currency: null },
+              { type: "text", text: " e o lucro em " },
+              { type: "fact", factId: "f4", widget: 0, label: null, value: 30, unit: "money", currency: "EUR" },
+              { type: "text", text: " desde " },
+              { type: "fact", factId: "f5", widget: 0, label: null, value: "2026-07-15", unit: "date", currency: null },
+              { type: "text", text: "." },
+            ],
+          },
+        ],
+        caveat: "Poucos torneios no período.",
+      },
+    };
+
+    it("offers the button with the privacy notice and link", () => {
+      const props = baseProps({ dashboard });
+      mockViewModel.mockReturnValue(props);
+      render(<InsightsView />);
+
+      expect(screen.getByText(/envia os números deste dashboard à anthropic/i)).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /política de privacidade/i })).toHaveAttribute(
+        "href",
+        "/privacidade",
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Comentar resultados" }));
+      expect(props.onRequestCommentary).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not offer the button without a dashboard or without widgets", () => {
+      mockViewModel.mockReturnValue(baseProps());
+      const { unmount } = render(<InsightsView />);
+      expect(screen.queryByRole("button", { name: "Comentar resultados" })).not.toBeInTheDocument();
+      unmount();
+
+      mockViewModel.mockReturnValue(
+        baseProps({ dashboard: { spec: { ...dashboard.spec, widgets: [] }, data: [] } }),
+      );
+      render(<InsightsView />);
+      expect(screen.queryByRole("button", { name: "Comentar resultados" })).not.toBeInTheDocument();
+    });
+
+    it("shows a loading state without a clickable button", () => {
+      mockViewModel.mockReturnValue(baseProps({ dashboard, isCommenting: true, canComment: false }));
+      render(<InsightsView />);
+      expect(screen.getByText("Analisando seus números…")).toBeInTheDocument();
+      const button = screen.getByRole("button", { name: "Comentar resultados" });
+      expect(button).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("renders fact segments formatted, bold and uncolored, with the AI notice", () => {
+      mockViewModel.mockReturnValue(baseProps({ dashboard, commentary }));
+      render(<InsightsView />);
+
+      expect(screen.getByText("GG", { selector: "strong" })).toBeInTheDocument();
+      expect(screen.getAllByText("$ -25.50", { selector: "strong" })[0]).toBeInTheDocument();
+      const roi = screen.getByText("20.0%", { selector: "strong" });
+      expect(roi).not.toHaveClass("text-green-500");
+      expect(screen.getByText("€ 30.00", { selector: "strong" })).not.toHaveClass("text-green-500");
+      expect(screen.getAllByText("$ -25.50", { selector: "strong" })[0]).not.toHaveClass("text-red-500");
+      expect(screen.getByText("15/07/2026", { selector: "strong" })).toBeInTheDocument();
+      expect(screen.getByText("Poucos torneios no período.")).toBeInTheDocument();
+      expect(screen.getByText(/gerado por ia; os números vêm dos seus registros/i)).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Comentar resultados" })).not.toBeInTheDocument();
+    });
+
+    it("formats date facts as dd/MM/yyyy without timezone shifts and counts as integers", () => {
+      const fact = (factId: string, value: number | string, unit: "date" | "count") =>
+        ({ type: "fact", factId, widget: 0, label: null, value, unit, currency: null }) as const;
+      mockViewModel.mockReturnValue(
+        baseProps({
+          dashboard,
+          commentary: {
+            commentary: {
+              headline: [fact("f1", "2026-09-14", "date"), { type: "text", text: " / " }, fact("f2", "2026-01-01", "date")],
+              insights: [{ widgets: [0], segments: [fact("f3", 7, "count"), { type: "text", text: " e " }, fact("f4", 12.6, "count")] }],
+              caveat: null,
+            },
+          },
+        }),
+      );
+      render(<InsightsView />);
+      expect(screen.getByText("14/09/2026", { selector: "strong" })).toBeInTheDocument();
+      expect(screen.getByText("01/01/2026", { selector: "strong" })).toBeInTheDocument();
+      expect(screen.queryByText("2026-09-14")).not.toBeInTheDocument();
+      expect(screen.getByText("7", { selector: "strong" })).toBeInTheDocument();
+      expect(screen.getByText("13", { selector: "strong" })).toBeInTheDocument();
+    });
+
+    it("formats an unknown currency with a single space", () => {
+      mockViewModel.mockReturnValue(
+        baseProps({
+          dashboard,
+          commentary: {
+            commentary: {
+              headline: [
+                { type: "fact", factId: "f1", widget: 0, label: null, value: 12, unit: "money", currency: "ARS" },
+              ],
+              insights: [],
+              caveat: null,
+            },
+          },
+        }),
+      );
+      render(<InsightsView />);
+      expect(screen.getByText("ARS 12.00", { selector: "strong" })).toBeInTheDocument();
+    });
+
+    it("renders text as plain text, never as HTML", () => {
+      mockViewModel.mockReturnValue(
+        baseProps({
+          dashboard,
+          commentary: {
+            commentary: {
+              headline: [{ type: "text", text: "<img src=x onerror=alert(1)> **negrito**" }],
+              insights: [],
+              caveat: null,
+            },
+          },
+        }),
+      );
+      const { container } = render(<InsightsView />);
+      expect(screen.getByText("<img src=x onerror=alert(1)> **negrito**")).toBeInTheDocument();
+      expect(container.querySelector("img")).toBeNull();
+    });
+
+    it("moves focus to the result when it arrives", () => {
+      mockViewModel.mockReturnValue(baseProps({ dashboard }));
+      const { rerender } = render(<InsightsView />);
+      mockViewModel.mockReturnValue(baseProps({ dashboard, commentary }));
+      rerender(<InsightsView />);
+      expect(screen.getByText(/seu maior prejuízo/i).closest("[tabindex='-1']")).toHaveFocus();
+    });
+
+    it("keeps the dashboard and offers a retry when the commentary fails", () => {
+      const props = baseProps({ dashboard, commentaryError: "Não consegui comentar este dashboard. Tente de novo." });
+      mockViewModel.mockReturnValue(props);
+      render(<InsightsView />);
+
+      expect(screen.getByRole("alert")).toHaveTextContent("Não consegui comentar este dashboard.");
+      expect(screen.getByText("ROI por plataforma")).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Tentar de novo" }));
+      expect(props.onRequestCommentary).toHaveBeenCalledTimes(1);
+    });
+
+    it("says there is not enough data when the commentary is null", () => {
+      mockViewModel.mockReturnValue(baseProps({ dashboard, commentary: { commentary: null } }));
+      render(<InsightsView />);
+      expect(screen.getByText("Não há dados suficientes para comentar.")).toBeInTheDocument();
+    });
   });
 });
